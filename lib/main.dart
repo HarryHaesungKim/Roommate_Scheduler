@@ -92,13 +92,23 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 15),
               Container(
                 // decoration: BoxDecoration(color: Colors.green[300]),
-                width: 150.0,
-                height: 50.0,
+                width: 180.0,
+                height: 40.0,
+
                 child: ElevatedButton(
                     child: Text('Sign in',
                     style: TextStyle(color:Colors.white,
-                    fontSize: 18,
-                    ),
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',),),
+                    style: ButtonStyle(
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                                //side: BorderSide(color: Colors.white)
+                            )
+                        )
                     ),
                   onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage()));
@@ -109,13 +119,24 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height:15),
               Container(
                 // decoration: BoxDecoration(color: Colors.green[300]),
-                width: 150.0,
-                height: 50.0,
+                width: 180.0,
+                height: 40.0,
                 child: ElevatedButton(
                   child: Text('Register now',
                     style: TextStyle(color:Colors.white,
-                      fontSize: 18,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
                     ),
+                  ),
+                  style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18.0),
+                              //side: BorderSide(color: Colors.white)
+                          )
+                      )
                   ),
                   onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context) => registerationPage()));
