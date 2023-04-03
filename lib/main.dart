@@ -53,14 +53,19 @@ class _LoginPageState extends State<LoginPage> {
                child: Container(
                  decoration: BoxDecoration(
                    color: Colors.grey[130],
-                   border: Border.all(color: Colors.white),
+                   border: Border.all(color: Colors.grey),
                    borderRadius: BorderRadius.circular(5),
                  ),
                  child: Padding(
                    padding: const EdgeInsets.only(left:12.0),
                    child: TextField(
                      decoration: InputDecoration(
+                       prefixIcon: Icon(
+                         Icons.email,
+                         color: Colors.blue,
+                       ),
                        border:InputBorder.none,
+                       contentPadding: EdgeInsets.only(top: 14.0),
                        hintText: 'Email',
                      ),
                    ),
@@ -74,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.grey[130],
-                    border: Border.all(color: Colors.white),
+                    border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Padding(
@@ -82,7 +87,12 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextField(
                       decoration: InputDecoration(
                         border:InputBorder.none,
+                        contentPadding: EdgeInsets.only(top: 14.0),
                         hintText: 'Password',
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
                   ),
