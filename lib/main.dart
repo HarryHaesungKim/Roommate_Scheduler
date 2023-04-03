@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                   //Sign in
                 ),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 50),
               Container(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              SizedBox(height:15),
+              SizedBox(height:25),
               Container(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
