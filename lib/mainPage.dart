@@ -9,7 +9,7 @@ class mainPage extends StatelessWidget {
     return MaterialApp(
       title: "route",
       home: Scaffold(
-        appBar: AppBar(title: Text("Main Pgae"),),
+        // appBar: AppBar(title: Text("Main Pgae"),),
         body: Center(
           child: ElevatedButton(
             child: Text("Go Back"),
