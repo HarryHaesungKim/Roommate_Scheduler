@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:roommates/mainPage.dart';
 import 'package:roommates/registrationPage.dart';
+// import 'strings.dart'
 
 void main() {
   runApp(const MyApp());
