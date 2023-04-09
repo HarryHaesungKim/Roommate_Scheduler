@@ -54,6 +54,8 @@ class _homePage extends State<homePage> {
 
 // Need to implement list tile: https://api.flutter.dev/flutter/material/ListTile-class.html
 
+// Might be fun for messagingPage: https://docs.flutter.dev/cookbook/animation/page-route-animation
+
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({super.key});
 
