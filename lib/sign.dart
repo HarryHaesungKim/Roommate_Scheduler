@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/mainPage.dart';
 import 'package:roommates/registrationPage.dart';
-
+import 'package:roommates/AuthPage.dart';
 class sign extends StatelessWidget{
   const sign({Key? key}) : super(key:key);
 
@@ -15,9 +15,9 @@ class sign extends StatelessWidget{
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context,snapshot){
           if(snapshot.hasData){
-           return registerationPage();
+           return mainPage();
           }else{
-            return LoginPage();
+            return AuthPage();
           }
         },
       ),

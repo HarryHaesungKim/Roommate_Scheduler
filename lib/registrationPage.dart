@@ -6,9 +6,42 @@ import 'main.dart';
 
 import 'mainPage.dart';
 
-class registerationPage extends StatelessWidget {
-  const registerationPage({super.key});
+class registrationPage extends StatefulWidget {
+  const registrationPage({Key? key}) : super(key: key);
 
+  @override
+  State<registrationPage> createState() => _RegPageState();
+}
+
+class _RegPageState extends State<registrationPage> {
+  //controllers for text entered by user
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future registerAccount() async {
+    if (passwordsMatch()) {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim()
+      );
+    } else {
+      // display error saying password does not match
+    }
+  }
+
+  bool passwordsMatch() {
+    return (_passwordController.text.trim() ==
+        _confirmPasswordController.text.trim());
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +83,7 @@ class registerationPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(left:12.0),
                         child: TextField(
+                          controller:_emailController,
                           decoration: InputDecoration(
                             prefixIcon: Icon(
                               Icons.email,
@@ -76,6 +110,7 @@ class registerationPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(left:12.0),
                         child: TextField(
+                          controller: _passwordController,
                           decoration: InputDecoration(
                             border:InputBorder.none,
                             contentPadding: EdgeInsets.only(top: 14.0),
@@ -102,6 +137,7 @@ class registerationPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(left:12.0),
                         child: TextField(
+                          controller: _confirmPasswordController,
                           decoration: InputDecoration(
                             border:InputBorder.none,
                             contentPadding: EdgeInsets.only(top: 14.0),
@@ -137,7 +173,7 @@ class registerationPage extends StatelessWidget {
                           )
                       ),
                       onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage()));
+                        registerAccount();
                       },
                     ),
                   ),
