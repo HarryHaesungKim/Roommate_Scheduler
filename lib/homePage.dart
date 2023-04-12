@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:roommates/groceriesPage.dart';
+import 'package:roommates/messagingPage.dart';
 
 class homePage extends StatefulWidget {
   homePage({Key? key}) : super(key: key);
@@ -18,7 +20,23 @@ class _homePage extends State<homePage> {
       home: Scaffold(
         appBar: AppBar(
             backgroundColor: Colors.orange[700],
-            title: const Text("Home")
+            title: const Text("Home"),
+            actions: <Widget>[
+              Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => messagingPage()),
+                      );                    },
+                    child: Icon(
+                        Icons.send
+                    ),
+                  )
+              ),
+            ],
+
         ),
 
         body: const Center(
@@ -35,6 +53,8 @@ class _homePage extends State<homePage> {
 // Worth viewing: https://flutterforyou.com/how-to-add-space-between-listview-items-in-flutter/
 
 // Need to implement list tile: https://api.flutter.dev/flutter/material/ListTile-class.html
+
+// Might be fun for messagingPage: https://docs.flutter.dev/cookbook/animation/page-route-animation
 
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({super.key});
@@ -78,7 +98,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                     : Colors.blueAccent,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text('Scrollable 2 : Index $index'),
+                                  child: Text('Random task $index'),
                                 )
                               ));
 
