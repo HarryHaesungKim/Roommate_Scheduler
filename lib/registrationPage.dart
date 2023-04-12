@@ -8,7 +8,6 @@ import 'mainPage.dart';
 
 class registrationPage extends StatefulWidget {
   const registrationPage({Key? key}) : super(key: key);
-
   @override
   State<registrationPage> createState() => _RegPageState();
 }
@@ -25,6 +24,12 @@ class _RegPageState extends State<registrationPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future signIn()async{
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim());
   }
 
   Future registerAccount() async {
@@ -174,6 +179,7 @@ class _RegPageState extends State<registrationPage> {
                       ),
                       onPressed: (){
                         registerAccount();
+                        signIn();
                       },
                     ),
                   ),
