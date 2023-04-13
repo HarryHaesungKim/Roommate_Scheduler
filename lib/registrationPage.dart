@@ -1,20 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/mainPage.dart';
 
-import 'main.dart';
-
-import 'mainPage.dart';
 
 class registrationPage extends StatefulWidget {
   const registrationPage({Key? key}) : super(key: key);
+
   @override
   State<registrationPage> createState() => _RegPageState();
 }
 
 class _RegPageState extends State<registrationPage> {
   bool showMain = false;
-
   //controllers for text entered by user
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -28,20 +26,15 @@ class _RegPageState extends State<registrationPage> {
     super.dispose();
   }
 
-  Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim());
-    setState(() {showMain = true;
-    });
-  }
-
   Future registerAccount() async {
     if (passwordsMatch()) {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
-          password: _passwordController.text.trim()
+          password: _passwordController.text.trim(),
+
       );
+      setState(() {showMain = true;
+      });
     } else {
       // display error saying password does not match
     }
@@ -76,14 +69,6 @@ class _RegPageState extends State<registrationPage> {
                           fontSize: 20
                       ),
                     ),
-                    //Testing log out
-                    MaterialButton(onPressed: () {
-                      FirebaseAuth.instance.signOut();
-                    },
-                      child: Text('sign out'),
-                      color: Colors.blue,
-                    ),
-
                     SizedBox(height: 15),
                     //Email
                     Padding(
@@ -189,7 +174,6 @@ class _RegPageState extends State<registrationPage> {
                         ),
                         onPressed: () {
                           registerAccount();
-                          signIn();
                         },
                       ),
                     ),

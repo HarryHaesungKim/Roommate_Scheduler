@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/sign.dart';
+import 'package:roommates/registrationPage.dart';
 // import 'strings.dart'
 
 void main() async{

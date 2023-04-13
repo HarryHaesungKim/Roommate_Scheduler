@@ -1,15 +1,22 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/LoginPage.dart';
 
 class profilePage extends StatefulWidget {
   profilePage({Key? key}) : super(key: key);
 
   @override
   State<profilePage> createState() => _profilePage();
+
 }
 
 class _profilePage extends State<profilePage> {
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: ((context) => LoginPage())));
+  }
+
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   @override
@@ -26,7 +33,7 @@ class _profilePage extends State<profilePage> {
         size: 100,
     ),
     Text(
-    'Register',
+    'Profile',
     style: TextStyle(
     fontWeight: FontWeight.bold,
     fontSize:20
@@ -34,7 +41,7 @@ class _profilePage extends State<profilePage> {
     ),
     //Testing log out
     MaterialButton(onPressed:(){
-    FirebaseAuth.instance.signOut();
+      _signOut();
     },
     child: Text('sign out'),
     color: Colors.blue),

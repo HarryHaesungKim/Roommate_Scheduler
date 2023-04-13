@@ -18,7 +18,7 @@ class _mainPageState extends State<mainPage> {
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final screens = [
     homePage(),
-   // calendarPage(),
+    calendarPage(),
     groceriesPage(),
     notificationPage(),
     profilePage(),

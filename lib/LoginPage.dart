@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/mainPage.dart';
 import 'package:roommates/registrationPage.dart';
 
 class LoginPage extends StatefulWidget {
+
   const LoginPage({Key? key}) : super(key:key);
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -14,6 +16,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Future signIn()async{
     await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailController.text.trim(), password: passwordController.text.trim());
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: ((context) => mainPage())));
   }
   @override
   void dispose(){
