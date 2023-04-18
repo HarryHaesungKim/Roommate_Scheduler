@@ -44,7 +44,7 @@ class _profilePage extends State<profilePage> {
       _signOut();
     },
     child: Text('sign out'),
-    color: Colors.blue),
+    color: Colors.orange[700]),
   ]
     ),
     )
