@@ -1,36 +1,25 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
-import 'package:roommates/homePage/homePage.dart';
-import 'package:roommates/joinGroupPage.dart';
+import 'package:roommates/Task/taskController.dart';
+import 'package:roommates/groceriesPage.dart';
+import 'package:roommates/homePage/addTask.dart';
+import 'package:roommates/homePage/messagingPage.dart';
 import 'package:roommates/mainPage.dart';
-import 'package:roommates/registrationPage.dart';
+import 'package:roommates/theme.dart';
+import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 
-class LoginPage extends StatefulWidget {
+/**
+ * This class holds the widget that allows users to join or create a group.
+ */
+class joinGroupPage extends StatefulWidget {
+  joinGroupPage({Key? key}) : super(key: key);
 
-  const LoginPage({Key? key}) : super(key:key);
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<joinGroupPage> createState() => _joinGroupPage();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  Future signIn()async{
-    await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailController.text.trim(), password: passwordController.text.trim());
-    if (Navigator.of(context).pushReplacement(
-      // If you're logging in from an existing account, you should already be in a group
-      // You should be able to change your group in the settings page.
-        MaterialPageRoute(builder: ((context) => mainPage()))) != null) {
-
-    };
-  }
-  @override
-  void dispose(){
-    emailController.dispose();
-    passwordController.dispose();
-  }
-  @override
+class _joinGroupPage extends State<joinGroupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
@@ -44,15 +33,17 @@ class _LoginPageState extends State<LoginPage> {
                     size: 100,
                   ),
                   Text(
-                    'Roommates',
+                    'Join/Create Group',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize:20
                     ),
 
                   ),
+
+                  // Join group code textbox
                   SizedBox(height: 15),
-                  //Email
+                  // Group
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25.0),
                     child: Container(
@@ -64,48 +55,21 @@ class _LoginPageState extends State<LoginPage> {
                       child: Padding(
                         padding: const EdgeInsets.only(left:12.0),
                         child: TextField(
-                          controller: emailController,
                           decoration: InputDecoration(
                             prefixIcon: Icon(
-                              Icons.email,
+                              Icons.onetwothree_outlined,
                               color: Colors.blue,
                             ),
                             border:InputBorder.none,
                             contentPadding: EdgeInsets.only(top: 14.0),
-                            hintText: 'Email',
+                            hintText: 'Group Code',
                           ),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 15),
-                  //Password
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[130],
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left:12.0),
-                        child: TextField(
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            border:InputBorder.none,
-                            contentPadding: EdgeInsets.only(top: 14.0),
-                            hintText: 'Password',
-                            prefixIcon: Icon(
-                              Icons.lock,
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ),
-                      ),
-                      //Sign in
-                    ),
-                  ),
+
+                  // Join Group button
                   SizedBox(height: 50),
                   Container(
                     // decoration: BoxDecoration(color: Colors.green[300]),
@@ -113,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 40.0,
 
                     child: ElevatedButton(
-                      child: Text('Sign in',
+                      child: Text('Join group',
                         style: TextStyle(color:Colors.white,
                           letterSpacing: 1.5,
                           fontSize: 18.0,
@@ -128,19 +92,21 @@ class _LoginPageState extends State<LoginPage> {
                           )
                       ),
                       onPressed: (){
-                        signIn();
+                        // TODO: Database implementation
+                        // Need to connect to database. Link code to an existing group and tasks that belong to that group.
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage()));
                       },
                     ),
                   ),
 
-                  // Go to register page.
+                  // Create group button
                   SizedBox(height:25),
                   Container(
                     // decoration: BoxDecoration(color: Colors.green[300]),
                     width: 180.0,
                     height: 40.0,
                     child: ElevatedButton(
-                      child: Text('Register now',
+                      child: Text('Create group',
                         style: TextStyle(color:Colors.white,
                           letterSpacing: 1.5,
                           fontSize: 18.0,
@@ -157,12 +123,12 @@ class _LoginPageState extends State<LoginPage> {
                           )
                       ),
                       onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => registrationPage()));
+                        // TODO: Database implementation
+                        // Need to connect to database. Link code to a new group and tasks that belong to that group (empty).
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage()));
                       },
                     ),
                   ),
-
-
 
                 ],
               )
@@ -170,5 +136,4 @@ class _LoginPageState extends State<LoginPage> {
         )
     );
   }
-
 }
