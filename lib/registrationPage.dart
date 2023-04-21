@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/LoginPage.dart';
+import 'package:roommates/joinGroupPage.dart';
 import 'package:roommates/mainPage.dart';
 
-
+/**
+ * This class holds the widget that allows users to register their information and use the app.
+ */
 class registrationPage extends StatefulWidget {
   const registrationPage({Key? key}) : super(key: key);
 
@@ -12,7 +16,7 @@ class registrationPage extends StatefulWidget {
 }
 
 class _RegPageState extends State<registrationPage> {
-  bool showMain = false;
+  bool showJoinGroup = false;
   //controllers for text entered by user
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -33,7 +37,7 @@ class _RegPageState extends State<registrationPage> {
           password: _passwordController.text.trim(),
 
       );
-      setState(() {showMain = true;
+      setState(() {showJoinGroup = true;
       });
     } else {
       // display error saying password does not match
@@ -47,8 +51,8 @@ class _RegPageState extends State<registrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (showMain) {
-      return mainPage();
+    if (showJoinGroup) {
+      return joinGroupPage();
     }
     else {
       return Scaffold(
@@ -69,6 +73,8 @@ class _RegPageState extends State<registrationPage> {
                           fontSize: 20
                       ),
                     ),
+
+                    // Email textbox
                     SizedBox(height: 15),
                     //Email
                     Padding(
@@ -96,6 +102,8 @@ class _RegPageState extends State<registrationPage> {
                         ),
                       ),
                     ),
+
+                    // Password textbox
                     SizedBox(height: 15),
                     //Password
                     Padding(
@@ -124,6 +132,8 @@ class _RegPageState extends State<registrationPage> {
                         //Sign in
                       ),
                     ),
+
+                    // Confirm password textbox
                     SizedBox(height: 15),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -151,6 +161,8 @@ class _RegPageState extends State<registrationPage> {
                         //Sign in
                       ),
                     ),
+
+                    // Sign up button.
                     SizedBox(height: 35),
                     Container(
                       // decoration: BoxDecoration(color: Colors.green[300]),
@@ -177,6 +189,36 @@ class _RegPageState extends State<registrationPage> {
                         },
                       ),
                     ),
+
+                    // Return to login button.
+                    SizedBox(height: 25),
+                    Container(
+                      // decoration: BoxDecoration(color: Colors.green[300]),
+                      width: 180.0,
+                      height: 40.0,
+                      child: ElevatedButton(
+                        child: Text('Back to Login',
+                          style: TextStyle(color: Colors.white,
+                            letterSpacing: 1.5,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'OpenSans',),),
+                        style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18.0),
+                                  //side: BorderSide(color: Colors.white)
+                                )
+                            )
+                        ),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                        },
+                      ),
+                    ),
+
+
                   ],
                 )
             ),
