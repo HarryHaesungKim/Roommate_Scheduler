@@ -71,13 +71,6 @@ class _AddTaskPageState extends State<addTask> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Add Task",
-                style: headingTextStyle,
-              ),
-              SizedBox(
-                height: 8,
-              ),
               InputField(
                 title: "Title",
                 hint: "Enter title here.",
@@ -250,7 +243,7 @@ class _AddTaskPageState extends State<addTask> {
                   ElevatedButton(
                     child: Text('Create Task'),
                     onPressed: () {
-                      //_validateInputs();
+                      _validateInputs();
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
@@ -268,21 +261,40 @@ class _AddTaskPageState extends State<addTask> {
     );
   }
 
-  // _validateInputs() {
-  //   if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
-  //     Get.back();
-  //   } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
-  //     Get.snackbar(
-  //       "Required",
-  //       "All fields are required.",
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //   } else {
-  //     print("############ SOMETHING BAD HAPPENED #################");
-  //   }
-  // }
+  _validateInputs() {
+    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+      _addTaskToDB();
+      Get.back();
+    } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
+      Get.snackbar(
+        "Required",
+        "All fields are required.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      print("SOMETHING ERROR");
+    }
+  }
 
-  _colorChips() {
+  _addTaskToDB() async {
+    await _taskController.addTask(
+      task: Task(
+        note: _noteController.text.toString(),
+        title: _titleController.text.toString(),
+        date: DateFormat.yMd().format(_selectedDate),
+        startTime: _startTime,
+        endTime: _endTime,
+        remind: _selectedRemind,
+        repeat: _selectedRepeat,
+        color: _selectedColor,
+        isCompleted: 0,
+      ),
+    );
+
+  }
+
+
+    _colorChips() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         "Color",
