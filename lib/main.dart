@@ -12,7 +12,7 @@ import 'Task/database_demo.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await DBHelper.initDb();
+  //await DBHelper.initDb();
   await GetStorage.init();
   runApp(const MyApp());
 }

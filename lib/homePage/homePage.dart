@@ -8,7 +8,7 @@ import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
-import '../Task/taks.dart';
+import '../Task/task.dart';
 import '../Task/taskView.dart';
 
 class homePage extends StatefulWidget {

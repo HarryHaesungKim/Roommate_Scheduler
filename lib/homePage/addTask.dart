@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../Task/input_field.dart';
-import '../Task/taks.dart';
+import '../Task/task.dart';
 import '../Task/taskController.dart';
 import '../theme.dart';
 

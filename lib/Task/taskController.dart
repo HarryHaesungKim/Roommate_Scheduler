@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:roommates/Task/database_demo.dart';
-import 'package:roommates/Task/taks.dart';
+import 'package:roommates/Task/task.dart';
+import 'package:roommates/Task/database_demo.dart';
 
 class taskController extends GetxController {
   //this will hold the data and update the ui
+  final _db = Get.put(DBHelper());
 
   @override
   void onReady() {
@@ -16,25 +18,24 @@ class taskController extends GetxController {
   // add data to table
   //second brackets means they are named optional parameters
   Future<void> addTask({required Task task}) async {
-    await DBHelper.insert(task);
-
+    await _db.createTask(task);
   }
 
   // get all the data from table
   void getTasks() async {
-    List<Map<String, dynamic>> tasks = await DBHelper.query();
+    List<Map<String, dynamic>> tasks = await _db.getTasks();
     taskList.assignAll(tasks.map((data) => new Task.fromJson(data)).toList());
   }
 
   // delete data from table
   void deleteTask(Task task) async {
-    await DBHelper.delete(task);
-    getTasks();
-  }
+     await _db.deleteTask(task);
+     getTasks();
+   }
 
   // update data int table
   void markTaskCompleted(int? id) async {
-    await DBHelper.update(id);
-    getTasks();
-  }
+     await _db.markTaskDone(id);
+     getTasks();
+   }
 }
