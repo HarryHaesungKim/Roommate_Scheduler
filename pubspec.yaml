@@ -43,6 +43,8 @@ dependencies:
   google_fonts: ^4.0.3
   get_storage: ^2.0.3
   sqflite: ^2.0.2
+  cloud_firestore: ^4.5.2
+
 
 dev_dependencies:
   flutter_test:
