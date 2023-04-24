@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/joinGroupPage.dart';
 import 'package:get/get.dart';
 import 'package:roommates/User/user_model.dart';
-import 'package:roommates/User/user_data.dart';
+
 
 /**
  * This class holds the widget that allows users to register their information and use the app.
@@ -25,8 +26,6 @@ class _RegPageState extends State<registrationPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  final userData = Get.put(UserData());
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -43,8 +42,8 @@ class _RegPageState extends State<registrationPage> {
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
             userName: _userName.text.trim());
+       // FirebaseFirestore.instance
         //More code about database
-        await userData.createUser(user);
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:roommates/calendarPage.dart';
+//import 'package:roommates/calendarPage.dart';
 import 'package:roommates/groceriesPage.dart';
 import 'package:roommates/homePage/homePage.dart';
 import 'package:roommates/notificationPage.dart';
@@ -18,7 +18,7 @@ class _mainPageState extends State<mainPage> {
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final screens = [
     homePage(),
-    calendarPage(),
+    //calendarPage(),
     groceriesPage(),
     notificationPage(),
     profilePage(),
