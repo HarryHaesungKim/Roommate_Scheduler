@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/joinGroupPage.dart';
-import 'package:roommates/mainPage.dart';
 import 'package:get/get.dart';
 import 'package:roommates/User/user_model.dart';
 import 'package:roommates/User/user_data.dart';
@@ -27,30 +25,35 @@ class _RegPageState extends State<registrationPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  final userData = Get.put(UserData());
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _userName.dispose();
     super.dispose();
   }
 
   Future registerAccount() async {
     if (passwordsMatch()) {
       try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
         final user = UserModel(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
             userName: _userName.text.trim());
-       //More code about database
+        //More code about database
+        await userData.createUser(user);
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
         setState(() {
           showJoinGroup = true;
         });
-      } on FirebaseAuthException catch (e) {
+      } on FirebaseAuthException catch(e) {
         //Error Message
         showDialog(
             context: context,
@@ -98,8 +101,35 @@ class _RegPageState extends State<registrationPage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
 
-                // Email textbox
-                SizedBox(height: 15),
+                // Username textbox
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[130],
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: TextField(
+                        controller: _userName,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.account_circle,
+                            color: Colors.blue,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.only(top: 14.0),
+                          hintText: 'Username',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 10),
                 //Email
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -127,8 +157,7 @@ class _RegPageState extends State<registrationPage> {
                   ),
                 ),
 
-                // Password textbox
-                SizedBox(height: 15),
+                SizedBox(height: 10),
                 //Password
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -158,7 +187,7 @@ class _RegPageState extends State<registrationPage> {
                 ),
 
                 // Confirm password textbox
-                SizedBox(height: 15),
+                SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
@@ -187,7 +216,7 @@ class _RegPageState extends State<registrationPage> {
                 ),
 
                 // Sign up button.
-                SizedBox(height: 35),
+                SizedBox(height: 20),
                 Container(
                   // decoration: BoxDecoration(color: Colors.green[300]),
                   width: 180.0,
@@ -227,7 +256,7 @@ class _RegPageState extends State<registrationPage> {
                 ),
 
                 // Return to login button.
-                SizedBox(height: 25),
+                SizedBox(height: 20),
                 Container(
                   // decoration: BoxDecoration(color: Colors.green[300]),
                   width: 180.0,
