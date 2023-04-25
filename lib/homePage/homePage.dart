@@ -7,6 +7,7 @@ import 'package:roommates/homePage/messagingPage.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../Task/taks.dart';
 import '../Task/taskView.dart';
@@ -86,8 +87,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             children:[
               addTaskBar(),
               SizedBox(
-                  width: constraints.maxWidth,
-                  height: constraints.maxHeight - 85,
+                  width: constraints.maxWidth - constraints.maxWidth * 0.05,
+                  height: constraints.maxHeight - constraints.maxHeight * 0.2,
                   child: Obx(() {
                     //thumbVisibility: true,
                     //thickness: 10,
