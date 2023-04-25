@@ -37,17 +37,17 @@ class _RegPageState extends State<registrationPage> {
   Future registerAccount() async {
     if (passwordsMatch()) {
       try {
-        final user = UserModel(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-            userName: _userName.text.trim());
-        await FirebaseFirestore.instance.collection("Users").add(user.toJson());
-        //More code about database
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-
+        String? userID = FirebaseAuth.instance.currentUser?.uid;
+        final user = userModel(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+            username: _userName.text.trim());
+        await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
+        //More code about database
         setState(() {
           showJoinGroup = true;
         });
@@ -90,7 +90,11 @@ class _RegPageState extends State<registrationPage> {
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset("images/logo.png",height: 100,width: 100, ),
+                Image.asset(
+                  "images/logo.png",
+                  height: 100,
+                  width: 100,
+                ),
                 Text(
                   'Register',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
