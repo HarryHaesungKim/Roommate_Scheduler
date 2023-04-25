@@ -192,6 +192,36 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               ),
             ],
           ),
+
+          // Refresh button
+          // ElevatedButton.icon(
+          //   onPressed:  () async {
+          //     build(context);
+          //   },
+          //   style: ButtonStyle(
+          //     backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
+          //   ),
+          //   icon: const Icon(
+          //     Icons.refresh,
+          //     color: Colors.white,
+          //     size: 24.0,
+          //   ),
+          //     label: const Text(''),
+          // ),
+
+          Container(
+            height: 37.0,
+            width: 40.0,
+            color: Colors.orange[700],
+            child: TextButton(
+              child: Icon(Icons.refresh, color: Colors.white,),
+              onPressed: () {
+                build(context);
+              },
+            ),
+          ),
+
+          // Add task button
           ElevatedButton(
             child: Text('+ Add Task',),
 
