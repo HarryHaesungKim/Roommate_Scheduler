@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-//import 'package:roommates/calendarPage.dart';
+import 'package:roommates/calendarPage.dart';
 import 'package:roommates/groceriesPage.dart';
 import 'package:roommates/homePage/homePage.dart';
 import 'package:roommates/notificationPage.dart';
@@ -15,46 +15,52 @@ class mainPage extends StatefulWidget {
 class _mainPageState extends State<mainPage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final screens = [
     homePage(),
-    //calendarPage(),
+    calendarPage(),
     groceriesPage(),
     notificationPage(),
-    profilePage(),
+    ProfilePage(),
   ];
 
-  String returnPageTitle(int index){
+  String returnPageTitle(int index) {
     String title = "";
-    switch(index) {
-      case 0: {
-        title = "Home";
-      }
-      break;
-      case 1: {
-        title = "Calender";
-      }
-      break;
+    switch (index) {
+      case 0:
+        {
+          title = "Home";
+        }
+        break;
+      case 1:
+        {
+          title = "Calender";
+        }
+        break;
 
-      case 2: {
-        title = "Groceries";
-      }
-      break;
+      case 2:
+        {
+          title = "Groceries";
+        }
+        break;
 
-      case 3: {
-        title = "Notifications";
-      }
-      break;
+      case 3:
+        {
+          title = "Notifications";
+        }
+        break;
 
-      case 4: {
-        title = "Profile";
-      }
-      break;
+      case 4:
+        {
+          title = "Profile";
+        }
+        break;
 
-      default: {
-        title = "Error";
-      }
-      break;
+      default:
+        {
+          title = "Error";
+        }
+        break;
     }
     return title;
   }
@@ -96,11 +102,26 @@ class _mainPageState extends State<mainPage> {
               tabBackgroundColor: Colors.orange.shade500,
               color: Colors.white,
               tabs: const [
-                GButton(icon:Icons.home, text: "Home",),
-                GButton(icon:Icons.calendar_month, text: "Calendar",),
-                GButton(icon:Icons.money, text: "Groceries",),
-                GButton(icon:Icons.notifications, text: "Notification",),
-                GButton(icon:Icons.account_circle, text: "Profile",),
+                GButton(
+                  icon: Icons.home,
+                  text: "Home",
+                ),
+                GButton(
+                  icon: Icons.calendar_month,
+                  text: "Calendar",
+                ),
+                GButton(
+                  icon: Icons.money,
+                  text: "Groceries",
+                ),
+                GButton(
+                  icon: Icons.notifications,
+                  text: "Notification",
+                ),
+                GButton(
+                  icon: Icons.account_circle,
+                  text: "Profile",
+                ),
               ],
               selectedIndex: _selectedIndex,
               onTabChange: (index) {

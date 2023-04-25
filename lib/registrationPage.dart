@@ -6,7 +6,6 @@ import 'package:roommates/joinGroupPage.dart';
 import 'package:get/get.dart';
 import 'package:roommates/User/user_model.dart';
 
-
 /**
  * This class holds the widget that allows users to register their information and use the app.
  */
@@ -42,7 +41,7 @@ class _RegPageState extends State<registrationPage> {
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
             userName: _userName.text.trim());
-       // FirebaseFirestore.instance
+        await FirebaseFirestore.instance.collection("Users").add(user.toJson());
         //More code about database
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
@@ -52,13 +51,13 @@ class _RegPageState extends State<registrationPage> {
         setState(() {
           showJoinGroup = true;
         });
-      } on FirebaseAuthException catch(e) {
+      } on FirebaseAuthException catch (e) {
         //Error Message
         showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
-                content: Text("The email is already taken"),
+                content: Text(e.message.toString()),
               );
             });
       }
