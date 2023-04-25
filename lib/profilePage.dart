@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/settingsPage.dart';
 
@@ -10,27 +11,36 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _profilePage();
 }
 class _profilePage extends State<ProfilePage> {
-  // late String userName;
-  // late String email;
-  // late String password;
+   static String userName = "";
+   static String email = "";
+   static String password = "";
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: ((context) => LoginPage())));
   }
-  // void getUserData() async {
-  //   final user = FirebaseAuth.instance.currentUser;
-  //   DocumentSnapshot db =  await FirebaseFirestore.instance.collection("Users").doc(user?.uid).get();
-  //    userName = db.get("UserName");
-  //    email = db.get("Email");
-  //    password = db.get("Password");
-  // }
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if(user !=null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      print(list.length);
+      userName = list['UserName'];
+      email = list['Email'];
+      password = list['Password'];
+    }
+   //return userName;
+  }
 
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+
   @override
   Widget build(BuildContext context) {
+    getUserData();
     return Scaffold(
       appBar: AppBar(
         leading: null,
@@ -101,8 +111,9 @@ class _profilePage extends State<ProfilePage> {
                 ),
               ),
               SizedBox(height: 15),
-              buildUserInformation("Username", "Jay"),
-              buildUserInformation("Email", "test@gmail.com"),
+              buildUserInformation("Username", userName),
+              buildUserInformation("Email", email),
+              buildUserInformation("Passwword", password),
               Container(
                 child: ElevatedButton(
                   child: Text(
@@ -156,11 +167,12 @@ class _profilePage extends State<ProfilePage> {
     );
   }
 
-  Widget buildUserInformation(String label, String text)  {
-   //s getUserData();
+  Widget buildUserInformation(String label, String text) {
     return Padding(
       padding: EdgeInsets.only(bottom: 30),
-      child: TextField(
+      // child: Text(text),
+        // child: TextFormField(initialValue: text)
+      child: TextField (
         decoration: InputDecoration(
             contentPadding: EdgeInsets.only(bottom: 5),
             labelText: label,
@@ -173,6 +185,7 @@ class _profilePage extends State<ProfilePage> {
               color: Colors.black,
             )),
       ),
+
     );
   }
 }

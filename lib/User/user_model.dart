@@ -1,21 +1,25 @@
-class UserModel {
-  final String? id;
-  final String userName;
-  final String email;
-  final String password;
+class userModel {
+  String? username;
+  String? password;
+  String? email;
 
-  const UserModel({
-    this.id,
-    required this.email,
-    required this.password,
-    required this.userName,
+  userModel({
+    this.email,
+    this.password,
+    this.username,
   });
 
-  toJson() {
-    return {
-      "UserName": userName,
-      "Email": email,
-      "Password": password,
-    };
+  userModel.fromJson(Map<String, dynamic> json) {
+    email = json['Email'].toString();
+    password = json['Password'].toString();
+    username = json['UserName'].toString();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Email'] = this.email;
+    data['Password'] = this.password;
+    data['UserName'] = this.username;
+    return data;
   }
 }
