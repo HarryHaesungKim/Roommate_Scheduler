@@ -39,7 +39,7 @@ class DBHelper {
         (querySnapshot) {
           for (var task in querySnapshot.docs)
             {
-              if(!task.data().containsValue(null)) {
+              if(!task.data().containsKey("dummy")) {
                 tasks.add(task.data());
               }
             }
