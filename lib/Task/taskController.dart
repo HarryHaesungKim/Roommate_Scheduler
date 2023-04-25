@@ -34,7 +34,7 @@ class taskController extends GetxController {
    }
 
   // update data int table
-  void markTaskCompleted(int? id) async {
+  void markTaskCompleted(String? id) async {
      await _db.markTaskDone(id);
      getTasks();
    }

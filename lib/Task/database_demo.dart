@@ -16,38 +16,41 @@ class DBHelper {
   /// This method creates a task in the database given the input Task.
   ///
   createTask(Task task) async {
-    //add the task to the database
-    await _db.collection("Tasks").add(task.toJson()).whenComplete(() =>
-    //success tell user
+
+    await _db.collection("Tasks").add(task.toJson()).then((value)
+    =>
+        _db.collection("Tasks").doc(value.id).update({"id": value.id.toString()})).whenComplete(() =>
         Get.snackbar("Success!",
-        "Task has been created.")).
+           "Task has been created.")).
     catchError((error, stackTrace) {
-      // something went wrong. tell user
+       //something went wrong. tell user
       Get.snackbar("ERROR", "Whoops, something went wrong.");
     });
+    //add the task to the database
+
   }
 
   getTasks() async {
     List<Map<String, dynamic>> tasks = [];
-    _db.collection("Tasks").get().then(
+    await _db.collection("Tasks").get().then(
         (querySnapshot) {
           for (var task in querySnapshot.docs)
             {
               tasks.add(task.data());
             }
         }
-    );
+    ).whenComplete(() => Get.snackbar(
+        "Tasks Pulled", "Tasks successfully pulled"));
     return tasks;
   }
 
-  markTaskDone(int? taskid) async {
+  markTaskDone(String? taskid) async {
     final docref = _db.collection("Tasks").doc(taskid.toString());
     docref.update({"isCompleted": 1});
   }
 
   deleteTask(Task task) async {
-    _db.collection("Tasks").doc(task.id.toString()).delete();
-
+    _db.collection("Tasks").doc(task.id).delete();
   }
 
   // static Future<void> initDb() async {
