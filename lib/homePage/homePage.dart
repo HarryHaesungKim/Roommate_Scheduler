@@ -87,7 +87,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               addTaskBar(),
               SizedBox(
                   width: constraints.maxWidth,
-                  height: constraints.maxHeight - 100,
+                  height: constraints.maxHeight - 85,
                   child: Obx(() {
                     //thumbVisibility: true,
                     //thickness: 10,
