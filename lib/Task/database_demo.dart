@@ -30,6 +30,9 @@ class DBHelper {
 
   }
 
+  ///
+  ///  This method returns all the tasks currently in the database
+  ///
   getTasks() async {
     List<Map<String, dynamic>> tasks = [];
     await _db.collection("Tasks").get().then(
@@ -40,17 +43,34 @@ class DBHelper {
             }
         }
     ).whenComplete(() => Get.snackbar(
-        "Tasks Pulled", "Tasks successfully pulled"));
+        "Tasks Pulled", "Tasks successfully pulled."));
     return tasks;
+  }
+
+  getUsers() async {
+
+
   }
 
   markTaskDone(String? taskid) async {
     final docref = _db.collection("Tasks").doc(taskid.toString());
-    docref.update({"isCompleted": 1});
+    docref.update({"isCompleted": 1}).whenComplete(() =>
+        Get.snackbar("Completed",
+            "Task marked as complete.")).
+    catchError((error, stackTrace) {
+      //something went wrong. tell user
+      Get.snackbar("ERROR", "Whoops, something went wrong.");
+    });
   }
 
   deleteTask(Task task) async {
-    _db.collection("Tasks").doc(task.id).delete();
+    _db.collection("Tasks").doc(task.id).delete().whenComplete(() =>
+        Get.snackbar("Success!",
+            "Task has been deleted.")).
+    catchError((error, stackTrace) {
+      //something went wrong. tell user
+      Get.snackbar("ERROR", "Whoops, something went wrong.");
+    });
   }
 
   // static Future<void> initDb() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
 import '../Task/task.dart';
 import '../Task/taskController.dart';
@@ -17,6 +18,8 @@ class _AddTaskPageState extends State<addTask> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+
+  final _db = Get.put(DBHelper());
 
   DateTime _selectedDate = DateTime.now();
   String? _startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
