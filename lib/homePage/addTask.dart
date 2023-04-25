@@ -12,6 +12,7 @@ import '../theme.dart';
 class addTask extends StatefulWidget {
   @override
   _AddTaskPageState createState() => _AddTaskPageState();
+
 }
 
 class _AddTaskPageState extends State<addTask> {
@@ -50,6 +51,11 @@ class _AddTaskPageState extends State<addTask> {
     'Weekly',
     'Monthly',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

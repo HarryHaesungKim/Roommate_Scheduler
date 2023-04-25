@@ -11,6 +11,8 @@ import 'strings.dart';
 class mainPage extends StatefulWidget {
   @override
   _mainPageState createState() => _mainPageState();
+
+
 }
 
 class _mainPageState extends State<mainPage> {
@@ -19,11 +21,16 @@ class _mainPageState extends State<mainPage> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final screens = [
     homePage(),
-    //calendarPage(),
+    calendarPage(),
     groceriesPage(),
     notificationPage(),
     ProfilePage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   String returnPageTitle(int index) {
     String title = "";

@@ -39,11 +39,12 @@ class DBHelper {
         (querySnapshot) {
           for (var task in querySnapshot.docs)
             {
-              tasks.add(task.data());
+              if(!task.data().containsValue(null)) {
+                tasks.add(task.data());
+              }
             }
         }
-    ).whenComplete(() => Get.snackbar(
-        "Tasks Pulled", "Tasks successfully pulled."));
+    );
     return tasks;
   }
 
