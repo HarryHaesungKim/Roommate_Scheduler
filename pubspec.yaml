@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  get:
   flutter:
     sdk: flutter
 
@@ -44,7 +45,7 @@ dependencies:
   get_storage: ^2.0.3
   sqflite: ^2.0.2
   cloud_firestore: ^4.5.2
-  get: ^4.6.5
+  #get: ^4.6.5
 
 dev_dependencies:
   flutter_test:

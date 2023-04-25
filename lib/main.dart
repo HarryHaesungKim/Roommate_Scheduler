@@ -12,13 +12,15 @@ import 'Task/database_demo.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await DBHelper.initDb();
+  //await DBHelper.initDb();
   await GetStorage.init();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key:key);
+
+
 
   // This widget is the root of your application.
   @override

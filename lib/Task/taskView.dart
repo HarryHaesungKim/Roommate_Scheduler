@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/Task/taks.dart';
+import 'package:roommates/Task/task.dart';
 
 import '../theme.dart';
 

@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../Task/taks.dart';
+import '../Task/task.dart';
 import '../Task/taskView.dart';
 
 class homePage extends StatefulWidget {
@@ -22,6 +22,12 @@ class homePage extends StatefulWidget {
 class _homePage extends State<homePage> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
