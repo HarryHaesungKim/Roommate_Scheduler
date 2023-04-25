@@ -24,11 +24,11 @@ class _LoginPageState extends State<LoginPage> {
           email: emailController.text.trim(),
           password: passwordController.text.trim());
       if (Navigator.of(context).pushReplacement(
-        // If you're logging in from an existing account, you should already be in a group
-        // You should be able to change your group in the settings page.
+          // If you're logging in from an existing account, you should already be in a group
+          // You should be able to change your group in the settings page.
           MaterialPageRoute(builder: ((context) => mainPage()))) != null) {}
       ;
-    }on FirebaseAuthException catch(e){
+    } on FirebaseAuthException catch (e) {
       //Error Message
       showDialog(
           context: context,
@@ -39,7 +39,6 @@ class _LoginPageState extends State<LoginPage> {
           });
     }
   }
-
 
   @override
   void dispose() {
@@ -56,10 +55,13 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.ios_share_rounded, //change icon
-                size: 100,
-              ),
+              Image.asset("images/logo.png",height: 100,width: 100, ),
+
+              // Icon(
+              //   widget.icon
+              //   size: 100,
+              // ),
+
               Text(
                 'Roommates',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),

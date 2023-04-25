@@ -90,10 +90,7 @@ class _RegPageState extends State<registrationPage> {
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.ios_share_rounded, //change icon
-                  size: 100,
-                ),
+                Image.asset("images/logo.png",height: 100,width: 100, ),
                 Text(
                   'Register',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
