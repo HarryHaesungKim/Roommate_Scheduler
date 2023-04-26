@@ -32,7 +32,6 @@ class _profilePage extends State<ProfilePage> {
       email = list['Email'];
       password = list['Password'];
     }
-   //return userName;
   }
 
   static const TextStyle optionStyle =

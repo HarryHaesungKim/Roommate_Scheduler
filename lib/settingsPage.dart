@@ -14,7 +14,7 @@ class _settingsProfileState extends State<settingsProfile> {
     return Scaffold(
         appBar: AppBar(
         backgroundColor: Colors.orange[700],
-        title: const Text("Profile"),
+        title: const Text("Settings"),
     ),
     );
   }
