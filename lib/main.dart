@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:roommates/LoginPage.dart';
@@ -9,11 +10,15 @@ import 'package:roommates/registrationPage.dart';
 import 'Task/database_demo.dart';
 // import 'strings.dart'
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   //await DBHelper.initDb();
   await GetStorage.init();
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  print(fcmToken);
   runApp(const MyApp());
 }
 
