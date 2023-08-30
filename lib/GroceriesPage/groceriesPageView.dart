@@ -8,6 +8,7 @@ class groceriesPage extends StatefulWidget {
 }
 
 class _groceriesPage extends State<groceriesPage> {
+
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   @override
@@ -25,3 +26,5 @@ class _groceriesPage extends State<groceriesPage> {
     );
   }
 }
+
+//Still thinking how to do the UI

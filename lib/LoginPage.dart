@@ -15,9 +15,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _obscureText= true;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
   Future signIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -57,12 +57,10 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset("images/logo.png",height: 100,width: 100, ),
-
               // Icon(
               //   widget.icon
               //   size: 100,
               // ),
-
               Text(
                 'Roommates',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
@@ -108,14 +106,24 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.only(left: 12.0),
                     child: TextField(
                       controller: passwordController,
+                      obscureText: _obscureText,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.only(top: 14.0),
                         hintText: 'Password',
                         prefixIcon: Icon(
-                          Icons.lock,
+                          Icons.password,
                           color: Colors.blue,
                         ),
+                        suffixIcon: GestureDetector(
+                          onTap: (){
+                            setState(() {
+                              _obscureText =!_obscureText;
+                            });
+                          },
+                          child: Icon(_obscureText? Icons.visibility:Icons.visibility_off),
+                        )
+
                       ),
                     ),
                   ),
