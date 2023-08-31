@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 // @dart=2.9
 class groceriesPage extends StatefulWidget {
@@ -14,17 +16,12 @@ class _groceriesPage extends State<groceriesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:  Color.fromARGB(255, 227, 227, 227),
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 25),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Text('Groceries Page',
-            style: optionStyle,),
-        ),
-      ),
+      //Replace by database data
+        floatingActionButton: FloatingActionButton(onPressed: (){
+
+    },
+        )
+
     );
   }
 }
-
-//Still thinking how to do the UI

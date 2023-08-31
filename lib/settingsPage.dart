@@ -41,10 +41,10 @@ class _settingsProfileState extends State<settingsProfile> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: Column(
               children:  <Widget>[
-                //Change Account Information
+                //Manage Account Information
                 ListTile(
                   leading: Icon(Icons.password,color: Colors.orange,),
-                  title: Text("Change Account Information"),
+                  title: Text("Manage Account Information"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   //Undo
                   onTap: (){
@@ -58,12 +58,22 @@ class _settingsProfileState extends State<settingsProfile> {
                   color: Colors.grey.shade300,
                 ),
 
-                //Invite Group member
+                //Mangage Group member
                 ListTile(
                   leading: Icon(Icons.password_outlined,color: Colors.orange,),
-                  title: Text("Invite Group Member"),
+                  title: Text("Mangage Group Member"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                  //Undo
+                  onTap: (){
+
+                  },
+                ),
+                //Mangage balance
+                ListTile(
+                  leading: Icon(Icons.password_outlined,color: Colors.orange,),
+                  title: Text("Mangage Balance"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  //Undo
                   onTap: (){
 
                   },
