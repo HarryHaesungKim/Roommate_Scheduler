@@ -1,67 +1,61 @@
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:roommates/Task/taskController.dart';
-import 'package:roommates/groceriesPage/groceriesPage.dart';
-import 'package:roommates/homePage/addTask.dart';
-import 'package:roommates/homePage/messagingPage.dart';
+import 'package:roommates/groceriesPage/addGroceries.dart';
+import 'package:roommates/groceriesPage/topCard.dart';
+import '../Task/task.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
-//import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../Task/task.dart';
-import '../Task/taskView.dart';
+import 'groceriesView.dart';
+// @dart=2.9
+class groceriesPage extends StatefulWidget {
+  groceriesPage({Key? key}) : super(key: key);
 
-class homePage extends StatefulWidget {
-  homePage({Key? key}) : super(key: key);
   @override
-  State<homePage> createState() => _homePage();
+  State<groceriesPage> createState() => _groceriesPage();
 }
 
-class _homePage extends State<homePage> {
+class _groceriesPage extends State<groceriesPage> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Tasks",
       home: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.orange[700],
-            title: const Text("Home"),
-            actions: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => messagingPage()),
-                      );                    },
-                    child: Icon(
-                        Icons.send
-                    ),
-                  )
-              ),
-            ],
+          backgroundColor: Colors.orange[700],
+          title: const Text("Groceries"),
 
         ),
 
-        body: const Center(
-          child: MyStatefulWidget()
+        body: const Column(
+            // child: MyStatefulWidget()
+
+          children: [
+            SizedBox(
+              height: 12,
+            ),
+            TopNeuCard(
+              balance: '20000',
+              income: '100',
+              expense: '100',
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Expanded(
+                child: MyStatefulWidget()
+            ),
+          ],
         ),
       ),
     );
   }
-}
-
-// Copy and pasted code from https://api.flutter.dev/flutter/material/Scrollbar-class.html
+}// Copy and pasted code from https://api.flutter.dev/flutter/material/Scrollbar-class.html
 // Slightly modified.
 
 // Worth viewing: https://flutterforyou.com/how-to-add-space-between-listview-items-in-flutter/
@@ -90,7 +84,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         builder: (BuildContext context, BoxConstraints constraints) {
           return Column(
             children:[
-              addTaskBar(),
               SizedBox(
                   width: constraints.maxWidth - constraints.maxWidth * 0.05,
                   height: constraints.maxHeight - constraints.maxHeight * 0.2,
@@ -111,64 +104,29 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                             padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
 
                             child: Container(
-                                //color: Color(coloDB!),
+                              //color: Color(coloDB!),
                               // color: index.isEven
                               //     ? Colors.amberAccent
                               //     : Colors.blueAccent,
                                 child: InkWell(
-                                  child: taskView(task),
+                                  child: groceriesView(task),
                                   onTap: () {
                                     showBottomSheet(context, task);
                                   },
                                 )
 
-                              ),
-                            );
+                            ),
+                          );
                         }
 
                     );
                   })
 
               ),
-
+              addTaskBar(),
             ],
           );
         });
-  }
-  scrollList() {
-    return Container(
-        margin: EdgeInsets.only(bottom: 500, left: 20),
-        child: Scrollbar(
-          // This vertical scroll view has primary set to true, so it is
-          // using the PrimaryScrollController. On mobile platforms, the
-          // PrimaryScrollController automatically attaches to vertical
-          // ScrollViews, unlike on Desktop platforms, where the primary
-          // parameter is required.
-          //thumbVisibility: true,
-          thickness: 10,
-          child: ListView.builder(
-              primary: true,
-              itemCount: 5,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  // Spacing between elements:
-                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    child: Container(
-                        height: 100,
-                        //padding: const EdgeInsets.all(2),
-
-                        color: index.isEven
-                            ? Colors.amberAccent
-                            : Colors.blueAccent,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('Random task $index'),
-                        )
-                    ));
-
-              }),
-        )
-    );
   }
   addTaskBar() {
     return Container(
@@ -177,65 +135,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                DateFormat.yMMMMd().format(DateTime.now()),
-                style: subHeadingTextStyle,
-              ),
-              SizedBox(height: 10,),
-              Text(
-                "Upcoming Tasks",
-                style: headingTextStyle,
-              ),
-            ],
-          ),
-
-          // Refresh button
-          // ElevatedButton.icon(
-          //   onPressed:  () async {
-          //     build(context);
-          //   },
-          //   style: ButtonStyle(
-          //     backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
-          //   ),
-          //   icon: const Icon(
-          //     Icons.refresh,
-          //     color: Colors.white,
-          //     size: 24.0,
-          //   ),
-          //     label: const Text(''),
-          // ),
-
-          Container(
-            height: 37.0,
-            width: 40.0,
-            color: Colors.orange[700],
-            child: TextButton(
-              child: Icon(Icons.refresh, color: Colors.white,),
-              onPressed: () {
-                build(context);
-              },
-            ),
-          ),
-
           // Add task button
-          ElevatedButton(
-            child: Text('+ Add Task',),
-
+          FloatingActionButton(
+            backgroundColor: Colors.orange[700],
             onPressed:  () async {
-                //await Get.to(addTask());
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => addTask()),
-                // );
-              await Get.to(addTask());
+              await Get.to(addGroceries());
               _taskController.getTasks();
-              //_taskController = Get.put(taskController());
-              },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
+            },
+            child: Icon(
+              Icons.add,
             ),
           ),
         ],
