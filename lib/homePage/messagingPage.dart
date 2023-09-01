@@ -15,6 +15,8 @@ class messagingPage extends StatefulWidget {
 
 class _messagingPage extends State<messagingPage> {
 
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   late List<String> groupchatTitles = ["The Boys", "Andrew", "Bob"];
   late List<String> groupchatLastMessage = ["Hey what's up, guys?", "Hey Andrew, can you take out the trash?", "Bob, please take a shower."];
 
@@ -69,6 +71,64 @@ class _messagingPage extends State<messagingPage> {
         },
       ),
     );
+  }
+
+  Future<void> showInformationDialog(BuildContext context) async {
+    return await showDialog(context: context, builder: (context) {
+      // Replaced textEditingController with _newChatNameController.
+      // final TextEditingController textEditingController = TextEditingController();
+      bool? isChecked = false;
+
+      // Clears input field upon every pop-up.
+      _newChatNameController.clear();
+
+      return StatefulBuilder(builder: (context, setState) {
+       return AlertDialog(
+         title: const Text("Create New Group Chat"),
+         content: Form(
+             key: formKey,
+             child: Column(
+               mainAxisSize: MainAxisSize.min,
+               children: [
+
+                 // Group chat title input.
+                 TextFormField(
+                   controller: _newChatNameController,
+                   validator: (value){
+                     return value!.isNotEmpty ? null : "Invalid Field";
+                   },
+                   decoration: const InputDecoration(hintText: "Enter title"),
+                 ),
+
+                 // The checklist.
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   children: [
+                     const Text("Choice Box"),
+                     Checkbox(value: isChecked, onChanged: (checked){
+                       setState(() {
+                         isChecked = checked;
+                       });
+                     })
+                   ],
+                 )
+               ],
+             )),
+
+         actions: <Widget>[
+           TextButton(
+             child: const Text("Okay"),
+             onPressed: () {
+               if(formKey.currentState!.validate()){
+                 addItemToList();
+                 Navigator.of(context).pop();
+               }
+             },
+           ),
+         ],
+       );
+      });
+    });
   }
 
   static const TextStyle optionStyle =
@@ -147,46 +207,48 @@ class _messagingPage extends State<messagingPage> {
       ),
 
       // Button to add a new chat.
-      floatingActionButton: FloatingActionButton(onPressed: (){
+      floatingActionButton: FloatingActionButton(onPressed: () async {
 
         // show a dialog for user to input event name
-        showDialog(context: context, builder: (context) {
-          return AlertDialog(
-            scrollable: true,
-            title: const Text("Group Chat Name:"),
-            content: TextField(
-                    controller: _newChatNameController,
-                  ),
+        await showInformationDialog(context);
 
-            actions: [
-              ElevatedButton(
-                onPressed: (){
-                  addItemToList();
-                  // Closes pop-up.
-                  Navigator.of(context).pop();
+        // showDialog(context: context, builder: (context) {
+        //   return AlertDialog(
+        //     scrollable: true,
+        //     title: const Text("Group Chat Name:"),
+        //     content: TextField(
+        //             controller: _newChatNameController,
+        //           ),
+        //
+        //     actions: [
+        //       ElevatedButton(
+        //         onPressed: (){
+        //           addItemToList();
+        //           // Closes pop-up.
+        //           Navigator.of(context).pop();
+        //
+        //           // TODO: Open a new alert dialog that has a list of your group mates to add to the chat.
+        //           showDialog(context: context, builder: (context) {
+        //             return AlertDialog(
+        //               title: const Text("Select members: "),
+        //               content: StatefulBuilder(
+        //                 builder: (BuildContext context, StateSetter setState) {
+        //                   return selectPeopleAlertDialogContainer();
+        //                 },
+        //
+        //               ),
+        //
+        //             );
+        //           });
+        //
+        //         },
+        //         child: const Text("Create Chat"),
+        //       )
+        //     ],
+        //   );
+        // });
 
-                  // TODO: Open a new alert dialog that has a list of your group mates to add to the chat.
-                  showDialog(context: context, builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Select members: "),
-                      content: StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                          return selectPeopleAlertDialogContainer();
-                        },
-
-                      ),
-
-                    );
-                  });
-
-                },
-                child: const Text("Create Chat"),
-              )
-            ],
-          );
-        });
-      },child: const Icon(Icons.add)),
-
+      }, child: const Icon(Icons.add)),
     );
   }
 }
