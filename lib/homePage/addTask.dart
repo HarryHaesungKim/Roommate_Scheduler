@@ -37,7 +37,7 @@ class _AddTaskPageState extends State<addTask> {
     20,
   ];
   String _selectedAssigness = "None";
-  List<String> AssigneesList = [
+  List<String> AssigneesList =[
     "Harry Kim",
     "Jianwei Cheng",
     "Braden Morfin",

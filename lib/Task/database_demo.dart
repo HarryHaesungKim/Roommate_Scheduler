@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:roommates/Task/task.dart';
-import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
   final _db = FirebaseFirestore.instance;
@@ -49,9 +48,18 @@ class DBHelper {
   }
 
   getUsers() async {
-
-
+    List<Map<String, dynamic>> names = [];
+    await _db.collection("Users").get().then(
+            (querySnapshot) {
+          for (var user in querySnapshot.docs)
+          {
+            names.add(user.data());
+          }
+        }
+    );
+    return names;
   }
+
 
   markTaskDone(String? taskid) async {
     final docref = _db.collection("Tasks").doc(taskid.toString());
@@ -73,55 +81,4 @@ class DBHelper {
       Get.snackbar("ERROR", "Whoops, something went wrong.");
     });
   }
-
-  // static Future<void> initDb() async {
-  //   if (_db != null) {
-  //     debugPrint("not null db");
-  //     return;
-  //   }
-  //   try {
-  //     String _path = await getDatabasesPath() + 'tasks.db';
-  //     debugPrint("in database path");
-  //     _db = await openDatabase(
-  //       _path,
-  //       version: _version,
-  //       onCreate: (db, version) {
-  //         debugPrint("creating a new one");
-  //         return db.execute(
-  //           "CREATE TABLE $_tableName("
-  //               "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-  //               "title STRING, note TEXT, date STRING, "
-  //               "startTime STRING, endTime STRING, "
-  //               "remind INTEGER, repeat STRING, "
-  //               "color INTEGER, "
-  //               "isCompleted INTEGER)",
-  //         );
-  //       },
-  //     );
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
-  //
-  // static Future<int> insert(Task task) async {
-  //     print("insert function called");
-  //     return _db!.insert(_tableName, task.toJson());
-  //
-  // }
-  // static Future<int> delete(Task task) async =>
-  //     await _db!.delete(_tableName, where: 'id = ?',
-  //         whereArgs: [task.id]);
-  //
-  // static Future<List<Map<String, dynamic>>> query() async {
-  //   print("query function called");
-  //   return _db!.query(_tableName);
-  // }
-  // static Future<int> update(int? id) async {
-  //   print("update function called");
-  //   return await _db!.rawUpdate('''
-  //   UPDATE tasks
-  //   SET isCompleted = ?
-  //   WHERE id = ?
-  //   ''', [1, id]);
-  // }
 }
