@@ -1,11 +1,7 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:roommates/Task/task.dart';
-import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
   final _db = FirebaseFirestore.instance;

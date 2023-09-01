@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:roommates/Task/taskController.dart';
+import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 import 'package:roommates/groceriesPage/addGroceries.dart';
 import 'package:roommates/groceriesPage/topCard.dart';
-import '../Task/task.dart';
+import 'package:roommates/groceriesPage/groceriesPageController.dart';
+import 'package:roommates/groceriesPage/GroceriesPageDatabase.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'groceriesView.dart';
 // @dart=2.9
@@ -24,7 +24,6 @@ class _groceriesPage extends State<groceriesPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Tasks",
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.orange[700],
@@ -73,13 +72,14 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final ScrollController _firstController = ScrollController();
-  final _taskController = Get.put(taskController());
+  final _groceriesPageController = Get.put(GroceriesPageController());
   static late MediaQueryData _mediaQueryData;
 
   @override
   Widget build(BuildContext context) {
-    _taskController.getTasks();
+    _groceriesPageController.getGroceries();
     _mediaQueryData = MediaQuery.of(context);
+    print( _groceriesPageController.groceriesList.length);
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Column(
@@ -92,11 +92,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     //thickness: 10,
                     return ListView.builder(
                         primary: true,
-                        itemCount: _taskController.taskList.length,
+                        itemCount: _groceriesPageController.groceriesList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          Task task = _taskController.taskList[index];
-                          var title = task.title;
-                          int? coloDB = task.color;
+                          Groceries groceries = _groceriesPageController.groceriesList[index];
+                          var title = groceries.title;
 
                           return Padding(
 
@@ -109,9 +108,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                               //     ? Colors.amberAccent
                               //     : Colors.blueAccent,
                                 child: InkWell(
-                                  child: groceriesView(task),
+                                  child:
+                                  groceriesView(groceries),
                                   onTap: () {
-                                    showBottomSheet(context, task);
+                                    showBottomSheet(context, groceries);
                                   },
                                 )
 
@@ -140,7 +140,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             backgroundColor: Colors.orange[700],
             onPressed:  () async {
               await Get.to(addGroceries());
-              _taskController.getTasks();
+              _groceriesPageController.getGroceries();
             },
             child: Icon(
               Icons.add,
@@ -150,13 +150,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       ),
     );
   }
-  showBottomSheet(BuildContext context, Task task) {
+  showBottomSheet(BuildContext context,  Groceries groceries) {
     Get.bottomSheet(
       Container(
         padding: EdgeInsets.only(top: 4),
-        height: task.isCompleted == 1
-            ? _mediaQueryData.size.height * 0.24
-            : _mediaQueryData.size.height * 0.32,
+        // height: groceries.isCompleted == 1
+        //     ? _mediaQueryData.size.height * 0.24
+        //     : _mediaQueryData.size.height * 0.32,
+        height: _mediaQueryData.size.height * 0.32,
         width: _mediaQueryData.size.width,
         color: Get.isDarkMode ? darkHeaderClr : Colors.white,
         child: Column(children: [
@@ -168,19 +169,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
           ),
           Spacer(),
-          task.isCompleted == 1
-              ? Container()
-              : _buildBottomSheetButton(
-              label: "Task Completed",
-              onTap: () {
-                _taskController.markTaskCompleted(task.id);
-                Get.back();
-              },
-              clr: primaryClr),
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                _taskController.deleteTask(task);
+                _groceriesPageController.deleteGroceries(groceries);
                 Get.back();
               },
               clr: Colors.red[300]),

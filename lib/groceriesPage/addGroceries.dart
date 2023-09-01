@@ -2,24 +2,25 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:roommates/groceriesPage/groceriesPage.dart';
+import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
-import '../Task/task.dart';
-import '../Task/taskController.dart';
 import '../theme.dart';
+import 'package:roommates/groceriesPage/groceriesPageController.dart';
 
 class addGroceries extends StatefulWidget {
   @override
-  _AddTaskPageState createState() => _AddTaskPageState();
+  _AddGroceriesPageState createState() => _AddGroceriesPageState();
 
 }
 
-class _AddTaskPageState extends State<addGroceries> {
-  final taskController _taskController = Get.find<taskController>();
+class _AddGroceriesPageState extends State<addGroceries> {
+  final GroceriesPageController _groceriesPageController = Get.find<GroceriesPageController>();
 
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
 
   final _db = Get.put(DBHelper());
 
@@ -42,6 +43,10 @@ class _AddTaskPageState extends State<addGroceries> {
     "Jianwei Cheng",
     "Braden Morfin",
     "Qimeng Chao",
+  ];
+  String _selectedSplit = "None";
+  List<String> splitList = [
+    "Equal"
   ];
 
   String? _selectedRepeat = 'None';
@@ -89,7 +94,7 @@ class _AddTaskPageState extends State<addGroceries> {
               InputField(
                   title: "Amount",
                   hint: "Enter Amount in \$.",
-                  controller: _noteController),
+                  controller: _amountController),
               InputField(
                 title: "Date",
                 hint: DateFormat.yMd().format(_selectedDate),
@@ -136,7 +141,7 @@ class _AddTaskPageState extends State<addGroceries> {
                 ),
               ),
               InputField(
-                title: "Assignees",
+                title: "Paid Name",
                 hint: "$_selectedAssigness",
                 widget: Row(
                   children: [
@@ -156,6 +161,37 @@ class _AddTaskPageState extends State<addGroceries> {
                           });
                         },
                         items: AssigneesList
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value.toString(),
+                            child: Text(value.toString()),
+                          );
+                        }).toList()),
+                    SizedBox(width: 6),
+                  ],
+                ),
+              ),
+              InputField(
+                title: "Split",
+                hint: "$_selectedSplit",
+                widget: Row(
+                  children: [
+                    DropdownButton<String>(
+                      //value: _selectedRemind.toString(),
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.grey,
+                        ),
+                        iconSize: 32,
+                        elevation: 4,
+                        style: subTitleTextStle,
+                        underline: Container(height: 0),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _selectedSplit = newValue!;
+                          });
+                        },
+                        items: splitList
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value.toString(),
@@ -197,10 +233,10 @@ class _AddTaskPageState extends State<addGroceries> {
   }
 
   _validateInputs() {
-    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+    if (_titleController.text.isNotEmpty && _amountController.text.isNotEmpty) {
       _addTaskToDB();
       Get.back();
-    } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
+    } else if (_titleController.text.isEmpty || _amountController.text.isEmpty) {
       Get.snackbar(
         "Required",
         "All fields are required.",
@@ -212,20 +248,13 @@ class _AddTaskPageState extends State<addGroceries> {
   }
 
   _addTaskToDB() async {
-    await _taskController.addTask(
-      task: Task(
-        note: _noteController.text.toString(),
+    await _groceriesPageController.addGroceries(
+      groceries: Groceries(
+        amount: double.parse(_amountController.text),
         title: _titleController.text.toString(),
         date: DateFormat.yMd().format(_selectedDate),
-        startTime: _startTime,
-        endTime: _endTime,
         remind: _selectedRemind,
-        repeat: _selectedRepeat,
-        color: _selectedColor,
-        isCompleted: 0,
-
       ),
-
     );
 
   }

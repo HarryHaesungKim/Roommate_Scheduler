@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:roommates/Task/taskController.dart';
-import 'package:roommates/groceriesPage/groceriesPage.dart';
+import 'package:roommates/groceriesPage/groceriesView.dart';
 import 'package:roommates/homePage/addTask.dart';
 import 'package:roommates/homePage/messagingPage.dart';
 import 'package:roommates/theme.dart';

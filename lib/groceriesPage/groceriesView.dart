@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/Task/task.dart';
+import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
 import '../theme.dart';
 
 class groceriesView extends StatelessWidget {
-  final Task task;
-  groceriesView(this.task);
+  final Groceries groceries;
+  groceriesView(this.groceries);
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -34,7 +34,7 @@ class groceriesView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      task.title!,
+                      groceries.title!,
                       style: GoogleFonts.lato(
                         textStyle: TextStyle(
                             fontSize: 20,
@@ -44,7 +44,7 @@ class groceriesView extends StatelessWidget {
                     ),
                     SizedBox(width: _mediaQueryData.size.width*0.2),
                     Text(
-                      "${task.date}",
+                      "${groceries.date}",
                       style: GoogleFonts.lato(
                         textStyle:
                         TextStyle(fontSize: 13, color: Colors.grey[100]),
@@ -59,9 +59,9 @@ class groceriesView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
 
-                    SizedBox(width: _mediaQueryData.size.width*0.55),
+                    SizedBox(width: _mediaQueryData.size.width*0.5),
                     Text(
-                      "${task.note} \$",
+                      "${groceries.amount} \$",
                       style: GoogleFonts.lato(
                         textStyle:
                         TextStyle(fontSize: 20, color: Colors.white),
@@ -71,7 +71,7 @@ class groceriesView extends StatelessWidget {
                 ),
                 SizedBox(height: 0),
                 Text(
-                  task.id!,
+                  groceries.id!,
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(fontSize: 13, color: Colors.grey[100]),
                   ),

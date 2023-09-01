@@ -18,7 +18,8 @@ class registrationPage extends StatefulWidget {
 
 class _RegPageState extends State<registrationPage> {
   bool showJoinGroup = false;
-
+  bool _password= true;
+  bool _confirmPassword= true;
   //controllers for text entered by user
   final _userName = TextEditingController();
   final _emailController = TextEditingController();
@@ -170,6 +171,7 @@ class _RegPageState extends State<registrationPage> {
                       padding: const EdgeInsets.only(left: 12.0),
                       child: TextField(
                         controller: _passwordController,
+                        obscureText: _password,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.only(top: 14.0),
@@ -177,7 +179,14 @@ class _RegPageState extends State<registrationPage> {
                           prefixIcon: Icon(
                             Icons.lock,
                             color: Colors.blue,
-                          ),
+                          ), suffixIcon: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  _password =!_password;
+                                });
+                              },
+                              child: Icon(_password? Icons.visibility:Icons.visibility_off),
+                            )
                         ),
                       ),
                     ),
@@ -199,6 +208,7 @@ class _RegPageState extends State<registrationPage> {
                       padding: const EdgeInsets.only(left: 12.0),
                       child: TextField(
                         controller: _confirmPasswordController,
+                        obscureText: _confirmPassword,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.only(top: 14.0),
@@ -207,6 +217,14 @@ class _RegPageState extends State<registrationPage> {
                             Icons.password,
                             color: Colors.blue,
                           ),
+                            suffixIcon: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  _confirmPassword =!_confirmPassword;
+                                });
+                              },
+                              child: Icon(_confirmPassword? Icons.visibility:Icons.visibility_off),
+                            )
                         ),
                       ),
                     ),

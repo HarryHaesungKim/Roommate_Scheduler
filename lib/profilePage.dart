@@ -11,15 +11,11 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _profilePage();
 }
 class _profilePage extends State<ProfilePage> {
-   static String userName = "";
-   static String email = "";
-   static String password = "";
+    bool _password = true;
+    String userName = "";
+    String email = "";
+    String password = "";
 
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: ((context) => LoginPage())));
-  }
   void getUserData() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if(user !=null) {
@@ -27,10 +23,11 @@ class _profilePage extends State<ProfilePage> {
           .doc(user)
           .get();
       Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-      print(list.length);
-      userName = list['UserName'];
-      email = list['Email'];
-      password = list['Password'];
+      setState(() {
+        userName = list['UserName'];
+        email = list['Email'];
+        password = list['Password'];
+      });
     }
   }
 
@@ -110,55 +107,11 @@ class _profilePage extends State<ProfilePage> {
                 ),
               ),
               SizedBox(height: 15),
+
               buildUserInformation("Username", userName),
               buildUserInformation("Email", email),
-              buildUserInformation("Passwword", password),
-              Container(
-                child: ElevatedButton(
-                  child: Text(
-                    'Sign out',
-                    style: TextStyle(
-                      color: Colors.yellow,
-                      letterSpacing: 2,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'OpenSans',
-                    ),
-                  ),
-                  style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                            //side: BorderSide(color: Colors.white)
-                          ))),
-                  onPressed: () {
-                    _signOut();
-                  },
-                ),
-              ),
+           //   buildUserInformation("Password", password),
               SizedBox(height: 15),
-              //Need to fix
-              Container(
-                child: ElevatedButton(
-                  child: Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.yellow,
-                      letterSpacing: 2,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'OpenSans',
-                    ),
-                  ),
-                  style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                            //side: BorderSide(color: Colors.white)
-                          ))),
-                  onPressed: () {},
-                ),
-              )
             ],
           ),
         ),
@@ -167,11 +120,10 @@ class _profilePage extends State<ProfilePage> {
   }
 
   Widget buildUserInformation(String label, String text) {
-    return Padding(
+      return Padding(
       padding: EdgeInsets.only(bottom: 30),
-      // child: Text(text),
-        // child: TextFormField(initialValue: text)
       child: TextField (
+        enabled: false,
         decoration: InputDecoration(
             contentPadding: EdgeInsets.only(bottom: 5),
             labelText: label,
@@ -182,6 +134,7 @@ class _profilePage extends State<ProfilePage> {
               fontWeight: FontWeight.bold,
               fontFamily: 'OpenSans',
               color: Colors.black,
+
             )),
       ),
 
