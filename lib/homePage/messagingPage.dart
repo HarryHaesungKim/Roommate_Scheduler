@@ -147,7 +147,7 @@ class _messagingPage extends State<messagingPage> {
                if(formKey.currentState!.validate() && _newChatNameController.text.isNotEmpty && addPeopleYesOrNo.contains(true)){
                  addItemToList();
                  Navigator.of(context).pop();
-                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage(groupChatID: "Requires New ID.",)),);
+                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage(receiverUserEmail: "dummyEmail@gmail.com", receiverUserID: "dum1234", groupChatID: "Requires New ID.",)),);
                }
 
                // TODO: Need some way to warn user that at least one checkbox needs to be checked.
@@ -187,7 +187,7 @@ class _messagingPage extends State<messagingPage> {
               // This is how each group's ID will be determined and sent.
               print(groupChatUniqueIDs[index]);
 
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(groupChatID: groupChatUniqueIDs[index],)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(receiverUserEmail: "dummyEmail@gmail.com", receiverUserID: "dum1234", groupChatID: groupChatUniqueIDs[index],)));
             },
 
             //tileColor: Colors.orange,
