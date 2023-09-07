@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:roommates/homePage/ChatPage.dart';
 
 class messagingPage extends StatefulWidget {
   messagingPage({Key? key}) : super(key: key);
@@ -17,13 +18,18 @@ class _messagingPage extends State<messagingPage> {
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  // Different group chat information.
   late List<String> groupchatTitles = ["The Boys", "Andrew", "Bob"];
   late List<String> groupchatLastMessage = ["Hey what's up, guys?", "Hey Andrew, can you take out the trash?", "Bob, please take a shower."];
 
   late List<String> peopleInGroup = ["Andrew", "Bob", "Eric", "Tate", "Henry"];
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
-
-  // Text controller for adding new chat pop-up
+  
+  // Idea is to pass a unique groupchat ID from messagingPage.dart to ChatPage.dart.
+  // ChatPage.dart will then use this groupchat ID to pull relevant data from firebase instead of trying to send a million things at once within this class.
+  late List<String> groupChatUniqueIDs = ["0", "1", "2"];
+  
+  // Text controller for adding new chat pop-up.
   final TextEditingController _newChatNameController = TextEditingController();
 
   // Method that currently adds titles and list item body manually. TODO: Implement firebase to show different messages.
@@ -36,6 +42,7 @@ class _messagingPage extends State<messagingPage> {
         groupchatTitles.insert(0,_newChatNameController.text);
       }
       groupchatLastMessage.insert(0, "");
+      groupChatUniqueIDs.insert(0, "Requires new ID");
     });
   }
 
@@ -50,30 +57,7 @@ class _messagingPage extends State<messagingPage> {
     });
   }
 
-  //
-  Widget selectPeopleAlertDialogContainer() {
-    return SizedBox(
-      //height: 300.0, // Change as per your requirement
-      width: 200.0, // Change as per your requirement
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: peopleInGroup.length,
-        itemBuilder: (BuildContext context, int index) {
-          return CheckboxListTile(
-              value: addPeopleYesOrNo[index],
-              onChanged: (bool? value) {
-                setState(() {
-                  addPeopleYesOrNo[index] = value!;
-                });
-            },
-            title: Text(peopleInGroup[index])
-          );
-        },
-      ),
-    );
-  }
-
-  Future<void> showInformationDialog(BuildContext context) async {
+  Future<void> showCreateNewGroupChatInformationDialog(BuildContext context) async {
     return await showDialog(context: context, builder: (context) {
       // Replaced textEditingController with _newChatNameController.
       // final TextEditingController textEditingController = TextEditingController();
@@ -87,42 +71,87 @@ class _messagingPage extends State<messagingPage> {
          title: const Text("Create New Group Chat"),
          content: Form(
              key: formKey,
-             child: Column(
-               mainAxisSize: MainAxisSize.min,
-               children: [
+             child: SizedBox(
+               width: double.maxFinite,
+               child: Column(
+                 mainAxisSize: MainAxisSize.min,
+                 children: [
 
-                 // Group chat title input.
-                 TextFormField(
-                   controller: _newChatNameController,
-                   validator: (value){
-                     return value!.isNotEmpty ? null : "Invalid Field";
-                   },
-                   decoration: const InputDecoration(hintText: "Enter title"),
-                 ),
+                   // Group chat title input.
+                   TextFormField(
+                     controller: _newChatNameController,
+                     validator: (value){
+                       return value!.isNotEmpty ? null : "Invalid Field";
+                     },
+                     decoration: const InputDecoration(hintText: "Enter title"),
+                   ),
 
-                 // The checklist.
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                   children: [
-                     const Text("Choice Box"),
-                     Checkbox(value: isChecked, onChanged: (checked){
-                       setState(() {
-                         isChecked = checked;
-                       });
-                     })
-                   ],
-                 )
-               ],
+                   // Padding
+                   const SizedBox(height: 30),
+
+                   // Text
+                   const Align(
+                     alignment: Alignment.centerLeft,
+                     child: Text(
+                       "Select Group Members",
+                       style: TextStyle(
+                           fontWeight: FontWeight.bold,
+                         fontSize: 18,
+                       ),
+                     ),
+                   ),
+
+                   // Padding
+                   const SizedBox(height: 20),
+
+                   // Checklist
+                   Container(
+                     // Can change color.
+                     color: const Color.fromARGB(255, 227, 227, 227),
+                     child: SizedBox(
+                       width: double.maxFinite,
+                       height: 150,
+                       child: Scrollbar(
+                         thumbVisibility: true,
+                         thickness: 5,
+                         child: ListView.builder(
+                           shrinkWrap: true,
+                           itemCount: peopleInGroup.length,
+                           itemBuilder: (BuildContext context, int index) {
+                             return CheckboxListTile(
+                                 value: addPeopleYesOrNo[index],
+                                 onChanged: (bool? value) {
+                                   setState(() {
+                                     addPeopleYesOrNo[index] = value!;
+                                   });
+                                 },
+                                 title: Text(peopleInGroup[index])
+                             );
+                           },
+                         ),
+                       ),
+
+                     ),
+                   ),
+
+                 ],
+               ),
              )),
 
          actions: <Widget>[
            TextButton(
              child: const Text("Okay"),
              onPressed: () {
-               if(formKey.currentState!.validate()){
+               // If text input is empty or not valid or no group members are selected, don't let it proceed.
+               // Switch over to ChatPage.
+               if(formKey.currentState!.validate() && _newChatNameController.text.isNotEmpty && addPeopleYesOrNo.contains(true)){
                  addItemToList();
                  Navigator.of(context).pop();
+                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage(groupChatID: "Requires New ID.",)),);
                }
+
+               // TODO: Need some way to warn user that at least one checkbox needs to be checked.
+               
              },
            ),
          ],
@@ -150,6 +179,17 @@ class _messagingPage extends State<messagingPage> {
         // Convert each item into a widget based on the type of item it is.
         itemBuilder: (context, index) {
           return ListTile(
+
+            // If you click on a tile, it will send you to the ChatPage.
+            onTap: () {
+
+              // Delete later.
+              // This is how each group's ID will be determined and sent.
+              print(groupChatUniqueIDs[index]);
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(groupChatID: groupChatUniqueIDs[index],)));
+            },
+
             //tileColor: Colors.orange,
             leading: CircleAvatar(
               // TODO: Let color be a choice when creating a new chat?
@@ -169,7 +209,7 @@ class _messagingPage extends State<messagingPage> {
 
                   // set up the buttons
                   Widget continueButton = ElevatedButton(
-                    child: const Text("Continue"),
+                    child: const Text("Delete"),
                     onPressed:  () {
                       // print("Need to delete chat...");
                       deleteItemFromList(index);
@@ -210,43 +250,7 @@ class _messagingPage extends State<messagingPage> {
       floatingActionButton: FloatingActionButton(onPressed: () async {
 
         // show a dialog for user to input event name
-        await showInformationDialog(context);
-
-        // showDialog(context: context, builder: (context) {
-        //   return AlertDialog(
-        //     scrollable: true,
-        //     title: const Text("Group Chat Name:"),
-        //     content: TextField(
-        //             controller: _newChatNameController,
-        //           ),
-        //
-        //     actions: [
-        //       ElevatedButton(
-        //         onPressed: (){
-        //           addItemToList();
-        //           // Closes pop-up.
-        //           Navigator.of(context).pop();
-        //
-        //           // TODO: Open a new alert dialog that has a list of your group mates to add to the chat.
-        //           showDialog(context: context, builder: (context) {
-        //             return AlertDialog(
-        //               title: const Text("Select members: "),
-        //               content: StatefulBuilder(
-        //                 builder: (BuildContext context, StateSetter setState) {
-        //                   return selectPeopleAlertDialogContainer();
-        //                 },
-        //
-        //               ),
-        //
-        //             );
-        //           });
-        //
-        //         },
-        //         child: const Text("Create Chat"),
-        //       )
-        //     ],
-        //   );
-        // });
+        await showCreateNewGroupChatInformationDialog(context);
 
       }, child: const Icon(Icons.add)),
     );
