@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/Task/taskController.dart';
 import 'package:roommates/groceriesPage.dart';
@@ -7,6 +8,9 @@ import 'package:roommates/mainPage.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+
+import 'Group/groupController.dart';
+
 
 /**
  * This class holds the widget that allows users to join or create a group.
@@ -19,6 +23,42 @@ class joinGroupPage extends StatefulWidget {
 }
 
 class _joinGroupPage extends State<joinGroupPage> {
+
+  /// controller for groupid text field
+  final _groupIDController = TextEditingController();
+
+
+  /// groupController
+  final _groupController = Get.put(groupController());
+
+  final _uID = FirebaseAuth.instance.currentUser?.uid;
+
+  ///
+  /// This method returns whether the groupID is formatted correct
+  /// returns whether the group id is a 5 digit number
+  ///
+  bool isGIDFormatted(String groupID) {
+    final fiveDigit = RegExp(r'^\d{5}$');
+    return fiveDigit.hasMatch(groupID);
+  }
+
+  ///
+  /// Method attempts to have user join the group with the specified group code
+  ///
+  joinGroup(String groupID, String uID) async
+  {
+    bool groupExist =  await _groupController.doesGroupExist(groupID);
+    // first check if the group exists in the db or not
+    if(!groupExist)
+      {
+        Get.snackbar("Error", "This is not a valid group ID, try another or create group");
+        return;
+      }
+    // group exists add user to this group
+    _groupController.addUserToGroup(groupID, uID);
+    MaterialPageRoute(builder: ((context) => mainPage()));
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
@@ -51,6 +91,7 @@ class _joinGroupPage extends State<joinGroupPage> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 12.0),
                     child: TextField(
+                      controller: _groupIDController,
                       decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.onetwothree_outlined,
@@ -92,6 +133,10 @@ class _joinGroupPage extends State<joinGroupPage> {
                   onPressed: () {
                     // TODO: Database implementation
                     // Need to connect to database. Link code to an existing group and tasks that belong to that group.
+                    if(isGIDFormatted(_groupIDController.text.trim()))
+                      {
+                        joinGroup(_groupIDController.text.trim(), _uID!);
+                      }
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => mainPage()));
                   },

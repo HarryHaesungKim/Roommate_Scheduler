@@ -5,7 +5,7 @@ import 'package:roommates/joinGroupPage.dart';
 import 'package:roommates/forgotPassWordPage.dart';
 import 'package:get/get.dart';
 import 'package:roommates/mainPage.dart';
-import 'package:roommates/registrationPage.dart';
+import 'package:roommates/registrationPageCreatGroup.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

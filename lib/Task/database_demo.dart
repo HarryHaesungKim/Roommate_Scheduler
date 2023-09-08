@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:roommates/Task/task.dart';
 
+import '../Group/groupModel.dart';
+
 class DBHelper {
   final _db = FirebaseFirestore.instance;
   //static final int _version = 1;
@@ -23,6 +25,38 @@ class DBHelper {
     final doc = await docref.get();
     return doc.exists;
   }
+
+  ///
+  /// This method adds a user to an existing group in the DB
+  ///
+  addUserToGroup(String groupID, String uID) async {
+      // add user to a list
+      List<String> user = [uID];
+      // union current list of users in group with user we just made into a list
+      // this simply adds the user to the list of users in the group
+      final groupref = _db.collection("Group").doc(groupID);
+      groupref.update({'Users': FieldValue.arrayUnion(user)});
+
+      //now make sure the groupID of the user matches the group they are now in
+      final userRef = _db.collection("Users").doc(uID);
+      userRef.update({"groupID": groupID});
+  }
+
+
+  ///
+  /// This method sends a message
+  ///
+  sendMessage() async {
+
+  }
+
+  ///
+  /// This method creates a Group in the firestore database
+  ///
+  createGroup(GroupModel group) async {
+    await _db.collection("Group").add(group.toJson());
+  }
+
   ///
   /// This method creates a task in the database given the input Task.
   ///
