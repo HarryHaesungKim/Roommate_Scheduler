@@ -38,10 +38,20 @@ class DBHelper {
       groupref.update({'Users': FieldValue.arrayUnion(user)});
 
       //now make sure the groupID of the user matches the group they are now in
-      final userRef = _db.collection("Users").doc(uID);
+      final userRef = _db.collection("users").doc(uID);
       userRef.update({"groupID": groupID});
   }
 
+  ///
+  /// Adds a new group to the DB
+  ///
+  createGroup(GroupModel group,String uID) async {
+    await _db.collection("Group").doc(group.id).set(group.toJson());
+
+
+    final userRef = _db.collection("users").doc(uID);
+    userRef.update({"groupID": group.id});
+  }
 
   ///
   /// This method sends a message
@@ -50,12 +60,6 @@ class DBHelper {
 
   }
 
-  ///
-  /// This method creates a Group in the firestore database
-  ///
-  createGroup(GroupModel group) async {
-    await _db.collection("Group").add(group.toJson());
-  }
 
   ///
   /// This method creates a task in the database given the input Task.

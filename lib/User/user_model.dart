@@ -3,12 +3,14 @@ class userModel {
   String? password;
   String? email;
   String? groupID;
+  List<String>? chatRooms;
 
   userModel({
     this.email,
     this.password,
     this.username,
-    this.groupID
+    this.groupID,
+    this.chatRooms
   });
 
   userModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,7 @@ class userModel {
     password = json['Password'].toString();
     username = json['UserName'].toString();
     groupID = json['groupID'].toString();
+    chatRooms = json['chatRooms'];
   }
 
   Map<String, dynamic> toJson() {
@@ -24,6 +27,7 @@ class userModel {
     data['Password'] = this.password;
     data['UserName'] = this.username;
     data['groupID'] = this.groupID;
+    data['chatRooms'] = this.chatRooms;
     return data;
   }
 }

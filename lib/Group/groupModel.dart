@@ -35,7 +35,7 @@ class GroupModel {
     return data;
   }
 
-  String groupGenerater() {
+  static Future<String> groupGenerator() async {
     final _db = Get.put(DBHelper());
     // generates a random 5 digit number (groupID)
     String groupID = "";
@@ -46,8 +46,8 @@ class GroupModel {
     //check if that groupID is already being used
 
     //if groupID already exists, generate a new one
-    if (_db.groupIDExists(groupID)) {
-      groupID = groupGenerater();
+    if (await _db.groupIDExists(groupID)) {
+      groupID = await groupGenerator();
     }
 
     //else return the group id

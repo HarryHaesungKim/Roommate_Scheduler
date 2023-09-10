@@ -47,7 +47,8 @@ class _RegPageState extends State<registrationPage> {
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
             username: _userName.text.trim(),
-            groupID: "");
+            groupID: "",
+            chatRooms: []);
         await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
 
         //More code about database

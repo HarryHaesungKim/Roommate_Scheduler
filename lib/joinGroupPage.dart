@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 import 'Group/groupController.dart';
+import 'Group/groupModel.dart';
 
 
 /**
@@ -59,7 +60,11 @@ class _joinGroupPage extends State<joinGroupPage> {
     MaterialPageRoute(builder: ((context) => mainPage()));
   }
 
-  Widget build(BuildContext context) {
+  createGroup(GroupModel group) async {
+
+  }
+
+  Widget build(BuildContext context)  {
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -166,7 +171,16 @@ class _joinGroupPage extends State<joinGroupPage> {
                     borderRadius: BorderRadius.circular(18.0),
                     //side: BorderSide(color: Colors.white)
                   ))),
-                  onPressed: () {
+                  onPressed: () async {
+                    //first create an new groupID that is not taken
+                    final group = GroupModel(
+                      id: await GroupModel.groupGenerator(),
+                      parentMode: false,
+                      users: [_uID!],
+                      tasks: []);
+
+                    _groupController.createGroup(group, _uID!);
+
                     // TODO: Database implementation
                     // Need to connect to database. Link code to a new group and tasks that belong to that group (empty).
                     Navigator.push(context,

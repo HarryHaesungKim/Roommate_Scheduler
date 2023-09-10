@@ -17,9 +17,7 @@ class groupController extends GetxController {
 
   // add data to table
   //second brackets means they are named optional parameters
-  Future<void> addGroup({required GroupModel group}) async {
-    await _db.createGroup(group);
-  }
+
 
   // get all the data from table
   Future<bool> doesGroupExist(String groupID) async {
@@ -28,6 +26,10 @@ class groupController extends GetxController {
 
   Future<void> addUserToGroup(String groupID, String uID) async {
     await _db.addUserToGroup(groupID, uID);
+  }
+
+  Future<void> createGroup(GroupModel group, String uID) async {
+    await _db.createGroup(group, uID);
   }
 
 }
