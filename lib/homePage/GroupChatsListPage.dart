@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:roommates/homePage/ChatPage.dart';
 
-class messagingPage extends StatefulWidget {
-  messagingPage({Key? key}) : super(key: key);
+class GroupChatsListPage extends StatefulWidget {
+  GroupChatsListPage({Key? key}) : super(key: key);
 
   @override
-  State<messagingPage> createState() => _messagingPage();
+  State<GroupChatsListPage> createState() => _messagingPage();
 }
 
 // https://docs.flutter.dev/cookbook/lists/mixed-list
@@ -14,7 +14,7 @@ class messagingPage extends StatefulWidget {
 
 // https://www.youtube.com/watch?v=Fd5ZlOxyZJ4&ab_channel=RetroPortalStudio
 
-class _messagingPage extends State<messagingPage> {
+class _messagingPage extends State<GroupChatsListPage> {
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -25,7 +25,7 @@ class _messagingPage extends State<messagingPage> {
   late List<String> peopleInGroup = ["Andrew", "Bob", "Eric", "Tate", "Henry"];
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
   
-  // Idea is to pass a unique groupchat ID from messagingPage.dart to ChatPage.dart.
+  // Idea is to pass a unique groupchat ID from GroupChatsListPage.dart to ChatPage.dart.
   // ChatPage.dart will then use this groupchat ID to pull relevant data from firebase instead of trying to send a million things at once within this class.
   late List<String> groupChatUniqueIDs = ["0", "1", "2"];
   
@@ -46,18 +46,27 @@ class _messagingPage extends State<messagingPage> {
     });
   }
 
+  void buildGroupChatList(){
+
+
+
+  }
+
   // Method that deletes the chat from the list.
   // Should this be replaced to leave chat?
   // Should you only be able to leave chats once you're inside the ChatPage?
   // TODO: Figure this out...
   void deleteItemFromList(index){
     setState(() {
+
+      // Remove user from the groupchat.
+
       groupchatTitles.removeAt(index);
       groupchatLastMessage.removeAt(index);
     });
   }
 
-  Future<void> showCreateNewGroupChatInformationDialog(BuildContext context) async {
+  Future<void> showCreateNewGroupChatAlertDialog(BuildContext context) async {
     return await showDialog(context: context, builder: (context) {
       // Replaced textEditingController with _newChatNameController.
       // final TextEditingController textEditingController = TextEditingController();
@@ -165,6 +174,8 @@ class _messagingPage extends State<messagingPage> {
   @override
   Widget build(BuildContext context) {
 
+    buildGroupChatList();
+
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.orange[700],
@@ -250,7 +261,7 @@ class _messagingPage extends State<messagingPage> {
       floatingActionButton: FloatingActionButton(onPressed: () async {
 
         // show a dialog for user to input event name
-        await showCreateNewGroupChatInformationDialog(context);
+        await showCreateNewGroupChatAlertDialog(context);
 
       }, child: const Icon(Icons.add)),
     );

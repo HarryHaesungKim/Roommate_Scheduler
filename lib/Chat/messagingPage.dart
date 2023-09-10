@@ -26,7 +26,7 @@ class _messagingPage extends State<messagingPage> {
   late List<String> peopleInGroup = ["Andrew", "Bob", "Eric", "Tate", "Henry"];
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
 
-  // Idea is to pass a unique groupchat ID from messagingPage.dart to ChatPage.dart.
+  // Idea is to pass a unique groupchat ID from GroupChatsListPage.dart to ChatPage.dart.
   // ChatPage.dart will then use this groupchat ID to pull relevant data from firebase instead of trying to send a million things at once within this class.
   late List<String> groupChatUniqueIDs = ["0", "1", "2"];
 

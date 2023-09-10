@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:roommates/Task/taskController.dart';
 import 'package:roommates/groceriesPage.dart';
 import 'package:roommates/homePage/addTask.dart';
-import 'package:roommates/homePage/messagingPage.dart';
+import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -43,7 +43,7 @@ class _homePage extends State<homePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => messagingPage()),
+                        MaterialPageRoute(builder: (context) => GroupChatsListPage()),
                       );                    },
                     child: Icon(
                         Icons.send
