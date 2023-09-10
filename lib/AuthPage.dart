@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:roommates/LoginPage.dart';
-import 'registrationPage.dart';
+import 'registrationPageCreatGroup.dart';
 import 'package:roommates/AuthPage.dart';
-import 'package:roommates/registrationPage.dart';
+import 'package:roommates/registrationPageCreatGroup.dart';
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
 

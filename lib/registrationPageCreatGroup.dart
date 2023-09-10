@@ -41,12 +41,16 @@ class _RegPageState extends State<registrationPage> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+
         String? userID = FirebaseAuth.instance.currentUser?.uid;
         final user = userModel(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
-            username: _userName.text.trim());
+            username: _userName.text.trim(),
+            groupID: "",
+            chatRooms: []);
         await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
+
         //More code about database
         setState(() {
           showJoinGroup = true;
@@ -185,7 +189,7 @@ class _RegPageState extends State<registrationPage> {
                   ),
                 ),
 
-                // Confirm password textbox
+                /// Confirm password textbox
                 SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -213,6 +217,8 @@ class _RegPageState extends State<registrationPage> {
                     //Sign in
                   ),
                 ),
+
+
 
                 // Sign up button.
                 SizedBox(height: 20),
