@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:roommates/homePage/homePage.dart';
-import 'package:roommates/joinGroupPage.dart';
 import 'package:roommates/forgotPassWordPage.dart';
 import 'package:get/get.dart';
 import 'package:roommates/mainPage.dart';
@@ -18,16 +16,14 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText= true;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   Future signIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim());
-      if (Navigator.of(context).pushReplacement(
-          // If you're logging in from an existing account, you should already be in a group
-          // You should be able to change your group in the settings page.
-          MaterialPageRoute(builder: ((context) => mainPage()))) != null) {}
-      ;
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => mainPage()));
     } on FirebaseAuthException catch (e) {
       //Error Message
       showDialog(
@@ -186,6 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                         "All fields are required.",
                         snackPosition: SnackPosition.TOP,
                       );
+
                     } else {
                       signIn();
                     }

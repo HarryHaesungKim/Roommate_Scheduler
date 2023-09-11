@@ -25,7 +25,9 @@ class _RegPageState extends State<registrationPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _intbalance = "0";
+  final _balance = "0";
+  final _income = "0";
+  final _expense = "0";
   @override
   void dispose() {
     _emailController.dispose();
@@ -47,7 +49,9 @@ class _RegPageState extends State<registrationPage> {
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
             username: _userName.text.trim(),
-            balance:_intbalance,
+            balance:_balance,
+            income: _income,
+           expense:  _expense,
                 );
         await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
         //More code about database

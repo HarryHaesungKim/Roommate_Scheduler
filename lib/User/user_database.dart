@@ -21,4 +21,9 @@ class UserDatabaseHelper {
     );
     return userdatas;
   }
+
+  UpdateUserData(UserData userData) async {
+    //await _db.collection("Users").doc(userData.id).update(userData.toJson());
+
+  }
 }

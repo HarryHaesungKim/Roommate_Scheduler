@@ -22,7 +22,12 @@ class _AddGroceriesPageState extends State<addGroceries> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
   DateTime _selectedDate = DateTime.now();
   String? _startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
 
