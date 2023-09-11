@@ -5,7 +5,7 @@ import 'package:roommates/groceriesPage/groceriesPage.dart';
 import 'package:roommates/homePage/homePage.dart';
 import 'package:roommates/notificationPage.dart';
 import 'package:roommates/profilePage.dart';
-import 'calendarPage.dart';
+import 'calendarPage/calendarPage.dart';
 import 'strings.dart';
 
 class mainPage extends StatefulWidget {

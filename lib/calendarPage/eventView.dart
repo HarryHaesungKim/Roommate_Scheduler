@@ -1,12 +1,12 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/Task/task.dart';
-
+import 'package:roommates/calendarPage/event.dart';
 import '../theme.dart';
 
-class taskView extends StatelessWidget {
-  final Task task;
-  taskView(this.task);
+class eventView extends StatelessWidget {
+  final Event event;
+  eventView(this.event);
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -22,56 +22,43 @@ class taskView extends StatelessWidget {
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: _getBGClr(task.color),
+          color: Colors.grey,
         ),
         child: Row(children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  task.title!,
-                  style: GoogleFonts.lato(
-                    textStyle: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
+
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.alarm,
-                      color: Colors.grey[200],
-                      size: 18,
-                    ),
-                    SizedBox(width: 4),
                     Text(
-                      "${task.startTime} - ${task.endTime}",
+                      event.title!,
                       style: GoogleFonts.lato(
-                        textStyle:
-                        TextStyle(fontSize: 13, color: Colors.grey[100]),
+                        textStyle: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87),
                       ),
                     ),
-                    SizedBox(width: 12),
+                    SizedBox(width: _mediaQueryData.size.width*0.2),
                     Text(
-                      "${task.date}",
+                      "${event.date}",
                       style: GoogleFonts.lato(
                         textStyle:
-                        TextStyle(fontSize: 13, color: Colors.grey[100]),
+                        TextStyle(fontSize: 13, color: Colors.black87),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
-                  task.note!,
+                  event.note!,
                   style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
+                    textStyle: TextStyle(fontSize: 15, color: Colors.black87),
                   ),
                 ),
               ],
@@ -81,19 +68,7 @@ class taskView extends StatelessWidget {
             margin: EdgeInsets.symmetric(horizontal: 10),
             height: 60,
             width: 0.5,
-            color: Colors.grey[200]!.withOpacity(0.7),
-          ),
-          RotatedBox(
-            quarterTurns: 3,
-            child: Text(
-              task.isCompleted == 1 ? "COMPLETED" : "TODO",
-              style: GoogleFonts.lato(
-                textStyle: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ),
+            color: Colors.black87!.withOpacity(0.7),
           ),
         ]),
       ),
