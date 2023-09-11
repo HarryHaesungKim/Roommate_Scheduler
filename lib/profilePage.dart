@@ -22,13 +22,13 @@ class _profilePage extends State<ProfilePage> {
           .doc(user)
           .get();
       Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-
-      setState(() {
-        userName = list['UserName'];
-        email = list['Email'];
-        password = list['Password'];
-
-      });
+      if (mounted) {
+        setState(() {
+          userName = list['UserName'];
+          email = list['Email'];
+          password = list['Password'];
+        });
+      }
     }
   }
 

@@ -7,18 +7,55 @@ import 'package:roommates/User/user_model.dart';
 
 class EditProfile extends StatefulWidget {
   EditProfile({Key? key}) : super(key: key);
+
   @override
   State<EditProfile> createState() => _editProfilePage();
 }
 //Edit profile page
 class _editProfilePage extends State<EditProfile> {
+  String userName = "";
+  String email = "";
+  String password = "";
+  String balance = "";
+  String income ="";
+  String expense = "";
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if(user !=null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+
+      setState(() {
+        userName = list['UserName'];
+        email = list['Email'];
+        password = list['Password'];
+        balance = list['Balance'];
+        income = list['Income'];
+        expense = list['Expense'];
+      });
+    }
+  }
+  Future updateUserData() async {
+    String? userID = FirebaseAuth.instance.currentUser?.uid;
+    final user = UserData(
+      email: _emailController.text.trim(),
+      password: _passWordController.text.trim(),
+      username: _userNameController.text.trim(),
+      balance:balance,
+      income: income,
+      expense: expense,
+    );
+    await FirebaseFirestore.instance.collection("Users").doc(userID).update(user.toJson());
+  }
+  final TextEditingController _passWordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _userNameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(userController());
-    final TextEditingController _passWordController = TextEditingController();
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _userNameController = TextEditingController();
-
+    getUserData();
     return Scaffold(
     appBar: AppBar(
       leading: null,
@@ -80,9 +117,10 @@ class _editProfilePage extends State<EditProfile> {
                         Form(child: Column(
                           children: [
                             TextFormField(
-                              initialValue: "123",
+                              controller: _userNameController,
                               decoration: InputDecoration(
                                 label:Text("Full Name"),
+                                hintText: userName,
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                                 prefixIcon: Icon(Icons.people),
 
@@ -90,8 +128,9 @@ class _editProfilePage extends State<EditProfile> {
                             ),
                             SizedBox(height: 20,),
                             TextFormField(
-                              initialValue: "123",
+                              controller: _emailController,
                               decoration: InputDecoration(
+                                hintText: email,
                                 label:Text("Email"),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                                 prefixIcon: Icon(Icons.email),
@@ -100,8 +139,9 @@ class _editProfilePage extends State<EditProfile> {
                             ),
                             SizedBox(height: 20,),
                             TextFormField(
-                              initialValue: "234",
+                              controller: _passWordController,
                               decoration: InputDecoration(
+                                hintText: password,
                                 label:Text("Password"),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                                 prefixIcon: Icon(Icons.password),
@@ -112,7 +152,18 @@ class _editProfilePage extends State<EditProfile> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () =>Get.to((EditProfile())),
+                                onPressed: ()  {
+                                  updateUserData();
+                                  if (mounted) {
+                                  setState(() {
+                                    userName = _userNameController.text.trim();
+                                    password = _passWordController.text.trim();
+                                    email = _emailController.text.trim();
+                                    balance = balance;
+                                  }
+                                      );
+                                  }
+                                },
                                 style:ElevatedButton.styleFrom(
                                     backgroundColor: Colors.orange,side: BorderSide.none, shape: const StadiumBorder()
                                 ) ,

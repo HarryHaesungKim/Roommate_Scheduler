@@ -16,6 +16,9 @@ class userController extends GetxController {
   void getUserDatas() async {
     List<Map<String, dynamic>> userdatas = await _userData.getUserData();
     userdataList.assignAll(
-        userdatas.map((data) => new UserData.fromJson(data)).toList());
+        userdatas.map((data) => new UserData.formJson(data)).toList());
+  }
+  updateUserData(UserData user) async{
+    _userData.UpdateUserData(user);
   }
 }

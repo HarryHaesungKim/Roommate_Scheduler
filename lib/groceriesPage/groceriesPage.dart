@@ -4,12 +4,11 @@ import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 import 'package:roommates/groceriesPage/addGroceries.dart';
 import 'package:roommates/groceriesPage/topCard.dart';
 import 'package:roommates/groceriesPage/groceriesPageController.dart';
-import 'package:roommates/groceriesPage/GroceriesPageDatabase.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:roommates/theme.dart';
-import 'package:intl/intl.dart';
-import 'package:get/get.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'groceriesView.dart';
+import 'package:roommates/User/user_model.dart';
 // @dart=2.9
 class groceriesPage extends StatefulWidget {
   groceriesPage({Key? key}) : super(key: key);
@@ -19,10 +18,36 @@ class groceriesPage extends StatefulWidget {
 }
 
 class _groceriesPage extends State<groceriesPage> {
+  String username = "";
+  String password = "";
+  String email = "";
+  String balance = "";
+  String income = "";
+  String expense = "";
+  Future getCurrentBalance() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if (user != null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+
+      setState(() {
+        username = list['UserName'];
+        password = list['Password'];
+        email = list['Email'];
+        balance = list['Balance'];
+        income = list['Income'];
+        expense = list['Expense'];
+      });
+    }
+  }
+
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   @override
   Widget build(BuildContext context) {
+    getCurrentBalance();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -39,9 +64,9 @@ class _groceriesPage extends State<groceriesPage> {
               height: 12,
             ),
             TopNeuCard(
-              balance: '20000',
-              income: '100',
-              expense: '100',
+              balance: balance,
+              income: income,
+              expense: expense,
             ),
             SizedBox(
               height: 30,
@@ -172,6 +197,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           _buildBottomSheetButton(
               label: "Pay Groceries",
               onTap: () {
+                //Undo
                 Get.back();
               },
               clr: Colors.blue[300]),
