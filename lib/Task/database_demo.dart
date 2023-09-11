@@ -44,11 +44,6 @@ class DBHelper {
     return tasks;
   }
 
-  getUsers() async {
-
-
-  }
-
   markTaskDone(String? taskid) async {
     final docref = _db.collection("Tasks").doc(taskid.toString());
     docref.update({"isCompleted": 1}).whenComplete(() =>

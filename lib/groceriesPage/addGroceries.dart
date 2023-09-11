@@ -5,10 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:roommates/groceriesPage/groceriesPage.dart';
 import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
-import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
 import '../theme.dart';
 import 'package:roommates/groceriesPage/groceriesPageController.dart';
+
+import 'GroceriesPageDatabase.dart';
 
 class addGroceries extends StatefulWidget {
   @override
@@ -22,12 +23,9 @@ class _AddGroceriesPageState extends State<addGroceries> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
 
-  final _db = Get.put(DBHelper());
-
   DateTime _selectedDate = DateTime.now();
   String? _startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
 
-  String? _endTime = "9:30 AM";
   int _selectedColor = 0;
 
   int _selectedRemind = 5;
@@ -49,14 +47,6 @@ class _AddGroceriesPageState extends State<addGroceries> {
     "Equal"
   ];
 
-  String? _selectedRepeat = 'None';
-  List<String> repeatList = [
-    'None',
-    'Daily',
-    'Weekly',
-    'Monthly',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -65,14 +55,9 @@ class _AddGroceriesPageState extends State<addGroceries> {
   @override
   Widget build(BuildContext context) {
     //Below shows the time like Sep 15, 2021
-    //print(new DateFormat.yMMMd().format(new DateTime.now()));
-    print(" starttime " + _startTime!);
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
-    print(format.format(dt));
-    print("add Task date: " + DateFormat.yMd().format(_selectedDate));
-    //_startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
     return Scaffold(
       //backgroundColor: context.theme.backgroundColor,
       appBar: AppBar(
@@ -93,7 +78,7 @@ class _AddGroceriesPageState extends State<addGroceries> {
               ),
               InputField(
                   title: "Amount",
-                  hint: "Enter Amount in \$.",
+                  hint: "Enter Amount",
                   controller: _amountController),
               InputField(
                 title: "Date",
@@ -212,7 +197,7 @@ class _AddGroceriesPageState extends State<addGroceries> {
                   _colorChips(),
 
                   ElevatedButton(
-                    child: Text('Create Task'),
+                    child: Text('Create Grocery'),
                     onPressed: () {
                       _validateInputs();
                     },
@@ -234,7 +219,7 @@ class _AddGroceriesPageState extends State<addGroceries> {
 
   _validateInputs() {
     if (_titleController.text.isNotEmpty && _amountController.text.isNotEmpty) {
-      _addTaskToDB();
+      _addGrocerieToDB();
       Get.back();
     } else if (_titleController.text.isEmpty || _amountController.text.isEmpty) {
       Get.snackbar(
@@ -247,13 +232,15 @@ class _AddGroceriesPageState extends State<addGroceries> {
     }
   }
 
-  _addTaskToDB() async {
+  _addGrocerieToDB() async {
     await _groceriesPageController.addGroceries(
       groceries: Groceries(
         amount: double.parse(_amountController.text),
         title: _titleController.text.toString(),
         date: DateFormat.yMd().format(_selectedDate),
         remind: _selectedRemind,
+        paidName: _selectedAssigness,
+        split: _selectedSplit,
       ),
     );
 
@@ -309,24 +296,24 @@ class _AddGroceriesPageState extends State<addGroceries> {
 
   double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 
-  _getTimeFromUser({required bool isStartTime}) async {
-    var _pickedTime = await _showTimePicker();
-    print(_pickedTime.format(context));
-    String? _formatedTime = _pickedTime.format(context);
-    print(_formatedTime);
-    if (_pickedTime == null)
-      print("time canceld");
-    else if (isStartTime)
-      setState(() {
-        _startTime = _formatedTime;
-      });
-    else if (!isStartTime) {
-      setState(() {
-        _endTime = _formatedTime;
-      });
-      //_compareTime();
-    }
-  }
+  // _getTimeFromUser({required bool isStartTime}) async {
+  //   var _pickedTime = await _showTimePicker();
+  //   print(_pickedTime.format(context));
+  //   String? _formatedTime = _pickedTime.format(context);
+  //   print(_formatedTime);
+  //   if (_pickedTime == null)
+  //     print("time canceld");
+  //   else if (isStartTime)
+  //     setState(() {
+  //       _startTime = _formatedTime;
+  //     });
+  //   else if (!isStartTime) {
+  //     setState(() {
+  //       _endTime = _formatedTime;
+  //     });
+  //     //_compareTime();
+  //   }
+  // }
 
   _showTimePicker() async {
     return showTimePicker(

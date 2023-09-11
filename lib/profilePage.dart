@@ -15,7 +15,6 @@ class _profilePage extends State<ProfilePage> {
     String userName = "";
     String email = "";
     String password = "";
-
   void getUserData() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if(user !=null) {
@@ -23,10 +22,12 @@ class _profilePage extends State<ProfilePage> {
           .doc(user)
           .get();
       Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+
       setState(() {
         userName = list['UserName'];
         email = list['Email'];
         password = list['Password'];
+
       });
     }
   }
