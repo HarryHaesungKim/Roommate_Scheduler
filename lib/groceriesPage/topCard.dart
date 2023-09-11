@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:roommates/User/user_model.dart';
 
 class TopNeuCard extends StatelessWidget {
   final String balance;
   final String income;
   final String expense;
-
   const TopNeuCard({
     required this.balance,
     required this.expense,

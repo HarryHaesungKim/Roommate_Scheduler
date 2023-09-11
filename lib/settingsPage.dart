@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/LoginPage.dart';
+import 'package:roommates/Settings/accountInformation.dart';
+import 'package:roommates/Settings/helpMenu.dart';
+import 'package:roommates/User/user_model.dart';
 class settingsProfile extends StatefulWidget {
   const settingsProfile({Key? key}) : super(key: key);
 
@@ -47,8 +50,11 @@ class _settingsProfileState extends State<settingsProfile> {
                   title: Text("Manage Account Information"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   //Undo
-                  onTap: (){
-
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfile()),
+                    );
                   },
 
                 ),
@@ -105,9 +111,11 @@ class _settingsProfileState extends State<settingsProfile> {
                   leading: Icon(Icons.password_outlined,color: Colors.orange,),
                   title: Text("Help Menu"),
                   trailing: Icon(Icons.keyboard_arrow_right),
-                  //Undo
                   onTap: (){
-
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return HelpMenuPage();
+                        }));
                   },
 
                 ),

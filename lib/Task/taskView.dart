@@ -30,6 +30,7 @@ class taskView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
+
                   task.title!,
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(

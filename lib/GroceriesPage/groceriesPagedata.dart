@@ -3,9 +3,9 @@ class Groceries {
   String? title;
   double? amount;
   String? paidName;
-  int? percentage;
   int? remind;
   String? date;
+  String? split;
 
   Groceries({
     this.id,
@@ -13,17 +13,18 @@ class Groceries {
     this.amount,
     this.paidName,
     this.remind,
-    this.percentage,
     this.date,
+    this.split,
   });
+
   Groceries.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'].toString();
     amount = json['amount'];
     paidName = json['paidName'];
-    percentage = json['percentage'];
     remind = json['remind'];
     date = json['date'];
+    split = json['split'];
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -32,8 +33,8 @@ class Groceries {
     data['amount'] = this.amount;
     data['paidName'] = this.paidName;
     data['remind'] = this.remind;
-    data['percentage'] = this.percentage;
     data['date'] = this.date;
+    data['split'] = this.split;
     return data;
   }
 }

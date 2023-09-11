@@ -15,7 +15,7 @@ class sign extends StatelessWidget{
           if(snapshot.hasData){
            return mainPage();
           }else{
-            return AuthPage();
+            return mainPage();
           }
         },
       ),

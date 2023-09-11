@@ -58,10 +58,9 @@ class groceriesView extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-
-                    SizedBox(width: _mediaQueryData.size.width*0.5),
+                    SizedBox(width: _mediaQueryData.size.width*0.35),
                     Text(
-                      "${groceries.amount} \$",
+                      "\$${groceries.amount}",
                       style: GoogleFonts.lato(
                         textStyle:
                         TextStyle(fontSize: 20, color: Colors.white),
@@ -69,9 +68,9 @@ class groceriesView extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 0),
+                SizedBox(height: 10),
                 Text(
-                  groceries.id!,
+                  groceries.paidName!,
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(fontSize: 13, color: Colors.grey[100]),
                   ),

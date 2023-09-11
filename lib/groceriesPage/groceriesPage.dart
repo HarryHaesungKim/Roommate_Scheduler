@@ -31,7 +31,7 @@ class _groceriesPage extends State<groceriesPage> {
 
         ),
 
-        body: const Column(
+        body: Column(
             // child: MyStatefulWidget()
 
           children: [
@@ -170,7 +170,16 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           ),
           Spacer(),
           _buildBottomSheetButton(
-              label: "Delete Task",
+              label: "Pay Groceries",
+              onTap: () {
+                Get.back();
+              },
+              clr: Colors.blue[300]),
+          SizedBox(
+            height: 20,
+          ),
+          _buildBottomSheetButton(
+              label: "Delete Groceries",
               onTap: () {
                 _groceriesPageController.deleteGroceries(groceries);
                 Get.back();
