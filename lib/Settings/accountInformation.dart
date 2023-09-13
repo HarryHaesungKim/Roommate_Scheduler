@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:roommates/User/user_controller.dart';
 import 'package:roommates/User/user_model.dart';
 
 class EditProfile extends StatefulWidget {
@@ -48,11 +46,22 @@ class _editProfilePage extends State<EditProfile> {
       income: income,
       expense: expense,
     );
+
     await FirebaseFirestore.instance.collection("Users").doc(userID).update(user.toJson());
   }
   final TextEditingController _passWordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
+
+  Future updateEmailAndPassWord(String _email, String _newEmail, String _password, String _newPassWord) async {
+    var user = await FirebaseAuth.instance.currentUser!;
+    final cred = await EmailAuthProvider.credential(email: _email, password: _password);
+    await user.reauthenticateWithCredential(cred).then((value) async{
+      user.updateEmail(_newEmail);
+      user.updatePassword(_newPassWord);
+      });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +131,12 @@ class _editProfilePage extends State<EditProfile> {
                               decoration: InputDecoration(
                                 label:Text("Full Name"),
                                 hintText: userName,
+                                hintStyle: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'OpenSans',
+                                  color: Colors.black,
+                                ),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                                 prefixIcon: Icon(Icons.people),
 
@@ -132,6 +147,12 @@ class _editProfilePage extends State<EditProfile> {
                               controller: _emailController,
                               decoration: InputDecoration(
                                 hintText: email,
+                                hintStyle: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'OpenSans',
+                                  color: Colors.black,
+                                ),
                                 label:Text("Email"),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                                 prefixIcon: Icon(Icons.email),
@@ -144,6 +165,12 @@ class _editProfilePage extends State<EditProfile> {
                               decoration: InputDecoration(
                                 hintText: password,
                                 label:Text("Password"),
+                                hintStyle: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'OpenSans',
+                                  color: Colors.black,
+                                ),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                                 prefixIcon: Icon(Icons.password),
 
@@ -155,14 +182,14 @@ class _editProfilePage extends State<EditProfile> {
                               child: ElevatedButton(
                                 onPressed: ()  {
                                   updateUserData();
+                                  updateEmailAndPassWord(email,_emailController.text,password,_passWordController.text);
                                   if (mounted) {
-                                  setState(() {
-                                    userName = _userNameController.text.trim();
-                                    password = _passWordController.text.trim();
-                                    email = _emailController.text.trim();
-                                    balance = balance;
-                                  }
-                                      );
+                                    setState(() {
+                                      userName = _userNameController.text.trim();
+                                      password = _passWordController.text.trim();
+                                      email = _emailController.text.trim();
+                                      balance = balance;
+                                    });
                                   }
                                 },
                                 style:ElevatedButton.styleFrom(
