@@ -27,21 +27,17 @@ class _mangageBalance extends State<mangageBalance> {
           .doc(user)
           .get();
       Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-
-      setState(() {
-        userName = list['UserName'];
-        password = list['Password'];
-        email = list['Email'];
-        balance = list['Balance'];
-        income = list['Income'];
-        expense = list['Expense'];
-      });
+      if (mounted) {
+        setState(() {
+          userName = list['UserName'];
+          password = list['Password'];
+          email = list['Email'];
+          balance = list['Balance'];
+          income = list['Income'];
+          expense = list['Expense'];
+        });
+      }
     }
-  }
-  @override
-  void dispose() {
- _balanceController.dispose();
-    super.dispose();
   }
   Future addBalance() async {
     String? userID = FirebaseAuth.instance.currentUser?.uid;
@@ -49,7 +45,7 @@ class _mangageBalance extends State<mangageBalance> {
       username: userName,
      password: password,
      email: email,
-     balance: ( int.parse(_balanceController.text.trim())  + int.parse(balance)).toString(),
+     balance: ( double.parse(_balanceController.text.trim())  + double.parse(balance)).toString(),
       income: _balanceController.text.trim(),
       expense: expense,
 

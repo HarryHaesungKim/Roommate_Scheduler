@@ -72,7 +72,10 @@ class _settingsProfileState extends State<settingsProfile> {
                   trailing: Icon(Icons.keyboard_arrow_right),
                  //Undo
                   onTap: (){
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfile()),
+                    );
                   },
                 ),
                 //Mangage balance

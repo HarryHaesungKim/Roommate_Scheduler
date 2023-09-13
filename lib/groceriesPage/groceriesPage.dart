@@ -31,16 +31,29 @@ class _groceriesPage extends State<groceriesPage> {
           .doc(user)
           .get();
       Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-
-      setState(() {
-        username = list['UserName'];
-        password = list['Password'];
-        email = list['Email'];
-        balance = list['Balance'];
-        income = list['Income'];
-        expense = list['Expense'];
-      });
+      if (mounted) {
+        setState(() {
+          username = list['UserName'];
+          password = list['Password'];
+          email = list['Email'];
+          balance = list['Balance'];
+          income = list['Income'];
+          expense = list['Expense'];
+        });
+      }
     }
+  }
+  Future updateUserData(double newBanlance) async {
+    String? userID = FirebaseAuth.instance.currentUser?.uid;
+    final user = UserData(
+      email: username,
+      password: password,
+      username: email,
+      balance:newBanlance.toString(),
+      income: income,
+      expense: expense,
+    );
+    await FirebaseFirestore.instance.collection("Users").doc(userID).update(user.toJson());
   }
 
   static const TextStyle optionStyle =
@@ -57,7 +70,7 @@ class _groceriesPage extends State<groceriesPage> {
         ),
 
         body: Column(
-            // child: MyStatefulWidget()
+          // child: MyStatefulWidget()
 
           children: [
             SizedBox(
@@ -99,12 +112,47 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final ScrollController _firstController = ScrollController();
   final _groceriesPageController = Get.put(GroceriesPageController());
   static late MediaQueryData _mediaQueryData;
-
+  String username = "";
+  String password = "";
+  String email = "";
+  String balance = "";
+  String income = "";
+  String expense = "";
+  Future updateUserData(double newBanlance,double amount) async {
+    String? userID = FirebaseAuth.instance.currentUser?.uid;
+    final user = UserData(
+      email: username,
+      password: password,
+      username: email,
+      balance:newBanlance.toString(),
+      income: income,
+      expense: amount.toString(),
+    );
+    await FirebaseFirestore.instance.collection("Users").doc(userID).update(user.toJson());
+  }
+  Future getCurrentBalance() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if (user != null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          username = list['UserName'];
+          password = list['Password'];
+          email = list['Email'];
+          balance = list['Balance'];
+          income = list['Income'];
+          expense = list['Expense'];
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     _groceriesPageController.getGroceries();
     _mediaQueryData = MediaQuery.of(context);
-    print( _groceriesPageController.groceriesList.length);
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return Column(
@@ -198,6 +246,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               label: "Pay Groceries",
               onTap: () {
                 //Undo
+                getCurrentBalance();
+                updateUserData(double.parse(balance) - (groceries.amount as double),groceries.amount as double);
+
+                _groceriesPageController.deleteGroceries(groceries);
                 Get.back();
               },
               clr: Colors.blue[300]),

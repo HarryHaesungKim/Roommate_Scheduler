@@ -26,15 +26,16 @@ class _editProfilePage extends State<EditProfile> {
           .doc(user)
           .get();
       Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-
-      setState(() {
-        userName = list['UserName'];
-        email = list['Email'];
-        password = list['Password'];
-        balance = list['Balance'];
-        income = list['Income'];
-        expense = list['Expense'];
-      });
+      if (mounted) {
+        setState(() {
+          userName = list['UserName'];
+          email = list['Email'];
+          password = list['Password'];
+          balance = list['Balance'];
+          income = list['Income'];
+          expense = list['Expense'];
+        });
+      }
     }
   }
   Future updateUserData() async {
