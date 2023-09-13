@@ -32,4 +32,14 @@ class groupController extends GetxController {
     await _db.createGroup(group, uID);
   }
 
+  Future<List<String>> getUsersInGroup(String uID) async
+  {
+    return await _db.getUsersInGroupID(uID);
+  }
+
+  Future<List<String>> getUserIDsInGroup(String uID) async
+  {
+    return await  _db.getUsersIDsInGroup(uID);
+  }
+
 }

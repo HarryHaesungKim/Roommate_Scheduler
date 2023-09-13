@@ -1,5 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/ChatRoom/ChatRoomController.dart';
 import 'package:roommates/homePage/ChatPage.dart';
+import 'package:get/get.dart';
+import '../Group/groupController.dart';
+import '../Task/database_demo.dart';
 
 class GroupChatsListPage extends StatefulWidget {
   GroupChatsListPage({Key? key}) : super(key: key);
@@ -16,14 +21,23 @@ class GroupChatsListPage extends StatefulWidget {
 
 class _messagingPage extends State<GroupChatsListPage> {
 
+  final _db = Get.put(DBHelper());
+
+  /// groupController
+  final _groupController = Get.put(groupController());
+  
+  ///chatRoomController
+  final _chatRoomController = Get.put(ChatRoomController());
+
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   // Different group chat information.
-  late List<String> groupchatTitles = ["The Boys", "Andrew", "Bob"];
+  late List<String> groupchatTitles = [];
   late List<String> groupchatLastMessage = ["Hey what's up, guys?", "Hey Andrew, can you take out the trash?", "Bob, please take a shower."];
-
-  late List<String> peopleInGroup = ["Andrew", "Bob", "Eric", "Tate", "Henry"];
+  // names of people in group
+  late List<String> peopleInGroup =  [];
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
+  late List<String> peopleinGroupIDs = [];
   
   // Idea is to pass a unique groupchat ID from GroupChatsListPage.dart to ChatPage.dart.
   // ChatPage.dart will then use this groupchat ID to pull relevant data from firebase instead of trying to send a million things at once within this class.
@@ -43,13 +57,35 @@ class _messagingPage extends State<GroupChatsListPage> {
       }
       groupchatLastMessage.insert(0, "");
       groupChatUniqueIDs.insert(0, "Requires new ID");
+
     });
   }
 
-  void buildGroupChatList(){
 
+  ///
+  /// This method creates a new chat
+  ///
+  void createGroupChat(List<String> receiverIds, String title) async {
+    String? uID = FirebaseAuth.instance.currentUser?.uid;
+    _chatRoomController.createChatRoom(uID!, receiverIds, title);
+  }
 
+  ///
+  /// This method creates the list users to select from and their ids
+  ///
+  void buildGroupChatList() async{
+    //user id
+    String? uID = FirebaseAuth.instance.currentUser?.uid;
+    peopleInGroup = await _groupController.getUsersInGroup(uID!);
+    peopleinGroupIDs = await _groupController.getUserIDsInGroup(uID!);
+  }
 
+  ///
+  /// This method fills the list of groupChatTitles
+  ///
+  void buildGroupChatTitles() async {
+    String? uID = FirebaseAuth.instance.currentUser?.uid;
+    groupchatTitles = await _chatRoomController.getGroupChatTitles(uID!);
   }
 
   // Method that deletes the chat from the list.
@@ -67,6 +103,8 @@ class _messagingPage extends State<GroupChatsListPage> {
   }
 
   Future<void> showCreateNewGroupChatAlertDialog(BuildContext context) async {
+    buildGroupChatTitles();
+
     return await showDialog(context: context, builder: (context) {
       // Replaced textEditingController with _newChatNameController.
       // final TextEditingController textEditingController = TextEditingController();
@@ -155,6 +193,15 @@ class _messagingPage extends State<GroupChatsListPage> {
                // Switch over to ChatPage.
                if(formKey.currentState!.validate() && _newChatNameController.text.isNotEmpty && addPeopleYesOrNo.contains(true)){
                  addItemToList();
+                 List<String> receiverids = [];
+                 for(int i = 0; i < addPeopleYesOrNo.length; i++)
+                   {
+                     if(addPeopleYesOrNo[i])
+                       {
+                         receiverids.add(peopleinGroupIDs[i]);
+                       }
+                   }
+                 createGroupChat(receiverids, _newChatNameController.text);
                  Navigator.of(context).pop();
                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage(receiverUserEmail: "dummyEmail@gmail.com", receiverUserID: "dum1234", groupChatID: "Requires New ID.",)),);
                }
@@ -174,7 +221,9 @@ class _messagingPage extends State<GroupChatsListPage> {
   @override
   Widget build(BuildContext context) {
 
+    buildGroupChatTitles();
     buildGroupChatList();
+
 
     return Scaffold(
       appBar: AppBar(
