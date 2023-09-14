@@ -1,7 +1,6 @@
 import "package:roommates/User/user_model.dart";
 
-
-import "../User/user_model.dart";
+import 'package:roommates/User/user_model.dart';
 
 class Task {
   String? id;
@@ -14,7 +13,7 @@ class Task {
   int? color;
   int? remind;
   String? repeat;
-  userModel? assignedUser;
+  UserData? assignedUser;
 
   Task({
     this.id,

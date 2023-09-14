@@ -7,8 +7,8 @@ import "../User/user_model.dart";
 class Chat {
   Timestamp? timestamp;
   String? chatContent;
-  List<userModel>? toUsers;
-  userModel? fromUser;
+  List<UserData>? toUsers;
+  UserData? fromUser;
 
 
   Chat({

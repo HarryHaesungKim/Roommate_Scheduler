@@ -42,7 +42,7 @@ class _RegPageState extends State<registrationPage> {
           password: _passwordController.text.trim(),
         );
         String? userID = FirebaseAuth.instance.currentUser?.uid;
-        final user = userModel(
+        final user = UserData(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
             username: _userName.text.trim());

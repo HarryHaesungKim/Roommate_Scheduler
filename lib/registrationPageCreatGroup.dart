@@ -51,12 +51,11 @@ class _RegPageState extends State<registrationPage> {
             password: _passwordController.text.trim(),
             username: _userName.text.trim(),
             groupID: "",
-            chatRooms: []);
-            username: _userName.text.trim(),
+            chatRooms: [],
             balance:_balance,
             income: _income,
-           expense:  _expense,
-                );
+            expense:  _expense,
+        );
         await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
 
         //More code about database
