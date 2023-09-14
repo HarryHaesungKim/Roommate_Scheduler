@@ -4,6 +4,7 @@ import 'package:roommates/User/user_model.dart';
 class userController extends GetxController {
   final _userData = Get.put(UserDatabaseHelper());
 
+
   @override
   void onReady() {
     getUserDatas();
@@ -21,4 +22,12 @@ class userController extends GetxController {
   updateUserData(UserData user) async{
     _userData.UpdateUserData(user);
   }
+
+  ///
+  /// Given a userID returns the username of that user
+  ///
+  Future<String> getUserName(String uID) async {
+    return await _userData.getUserName(uID);
+  }
+
 }

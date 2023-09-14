@@ -13,7 +13,28 @@ class DBHelper {
   //static final int _version = 1;
   //static final String _tableName = 'tasks';
 
+  ///
+  /// Given a uID and chatroomid get all userIDs that are not uID
+  ///
+  List<String> getUsersInChatID(String uID, String chatID) {
 
+    List<String> users = chatID.split("_");
+    int index = 0;
+    for(int i = 0; i < users.length; i++)
+      {
+        if(users[i] == uID)
+          {
+            index = i;
+          }
+      }
+
+    users.removeAt(index);
+    return users;
+  }
+
+  ///
+  /// This method takes a userID and from that returns a list of groupChat titles that user is in
+  ///
   Future<List<String>> getGroupChatTitles(String uID) async {
     final userRef = await _db.collection("Users").doc(uID).get();
     var array = userRef.data()?['chatRooms'];
@@ -27,6 +48,26 @@ class DBHelper {
     print("Group chat titles" + titles.toString());
     return titles;
   }
+
+  ///
+  /// This method returns a map of groupchatids and titles
+  ///
+  Future<Map<String, String>> getGroupChatInfo(String uID) async {
+    final userRef = await _db.collection("Users").doc(uID).get();
+    var array = userRef.data()?['chatRooms'];
+    List<String> titles = [];
+    for(int i = 0; i < array.length; i++)
+    {
+      final chatRef = await _db.collection("chat_rooms").doc(array[i]).get();
+      titles.add(chatRef.data()!['title'].toString());
+    }
+    Map<String, String> groupInfo = {};
+    for(int i = 0; i < array.length; i++)
+      {
+        groupInfo.assign(array[i], titles[i]);
+      }
+    return groupInfo;
+}
 
   ///
   /// This method gets the groupID of a given user
@@ -75,7 +116,7 @@ class DBHelper {
     ids.add(senderID);
     ids.sort();
 
-    String chatID = ids.join("");
+    String chatID = ids.join("_");
 
     //create the new chatroom in fireStore with the created chatID and title
     print("chatroom id :" + chatID);
@@ -133,7 +174,7 @@ class DBHelper {
     await _db.collection("Group").doc(group.id).set(group.toJson());
 
 
-    final userRef = _db.collection("users").doc(uID);
+    final userRef = _db.collection("Users").doc(uID);
     userRef.update({"groupID": group.id});
   }
 

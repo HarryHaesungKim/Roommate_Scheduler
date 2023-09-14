@@ -18,19 +18,16 @@ import 'my_text_field.dart';
 class ChatPage extends StatefulWidget {
 
   // Declare a field that holds the group chat data
-  final String groupChatID;
 
   // from video
-  final String receiverUserEmail;
-  final String receiverUserID;
+  final String receiverUserName;
+  final List<String> receiverUserIDs;
 
   const ChatPage({
     super.key,
-    required this.receiverUserEmail,
-    required this.receiverUserID,
+    required this.receiverUserName,
+    required this.receiverUserIDs,
 
-    // not in video
-    required this.groupChatID,
   });
 
   @override
@@ -53,7 +50,7 @@ class _ChatPage extends State<ChatPage> {
   void sendMessage() async {
     // only send message if there is something to send.
     if (_messageController.text.isNotEmpty){
-      await _chatService.sendMessage(widget.receiverUserID, _messageController.text);
+      await _chatService.sendMessage(widget.receiverUserIDs, _messageController.text);
       // clear the text controller after sending the message.
       _messageController.clear();
     }
@@ -62,9 +59,6 @@ class _ChatPage extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
 
-    String groupChatID = widget.groupChatID;
-    
-    print('The group chat ID is: $groupChatID');
     
     return Scaffold(
 
@@ -101,7 +95,7 @@ class _ChatPage extends State<ChatPage> {
   // build message list
   Widget _buildMessageList(){
     return StreamBuilder(
-      stream: _chatService.getMessages(widget.receiverUserID, _firebaseAuth.currentUser!.uid),
+      stream: _chatService.getMessages(_firebaseAuth.currentUser!.uid, widget.receiverUserIDs),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error${snapshot.error}');
@@ -138,7 +132,7 @@ class _ChatPage extends State<ChatPage> {
             ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         children: [
-          Text(data['senderEmail']),
+          Text(data['senderUserName']),
           const SizedBox(height: 5,),
           ChatBubble(message: data['message']),
         ]

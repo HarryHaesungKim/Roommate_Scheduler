@@ -26,4 +26,13 @@ class UserDatabaseHelper {
     //await _db.collection("Users").doc(userData.id).update(userData.toJson());
 
   }
+
+  ///
+  /// Given a userID this method returns the Username of that user
+  ///
+  Future<String> getUserName(String uID) async {
+    final userRef = await _db.collection("Users").doc(uID).get();
+    String userName = userRef['UserName'];
+    return userName;
+  }
 }

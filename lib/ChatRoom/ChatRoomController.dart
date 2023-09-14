@@ -21,5 +21,11 @@ class ChatRoomController extends GetxController {
     return await _db.getGroupChatTitles(uID);
   }
 
+  Future<Map<String, String>> getGroupInfo(String uID) async {
+    return await _db.getGroupChatInfo(uID);
+  }
 
+  List<String> getUserInChatID(String uID, String chatID) {
+    return _db.getUsersInChatID(uID, chatID);
+  }
 }

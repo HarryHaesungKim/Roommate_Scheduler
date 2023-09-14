@@ -46,6 +46,11 @@ class _messagingPage extends State<GroupChatsListPage> {
   late List<String> peopleInGroup = [];
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
   late List<String> peopleinGroupIDs = [];
+  // map of group info, key is groupchatID, and the value is the title of that group chat
+  late Map<String, String> groupInfo = {};
+  // inverse of group Info, chat title is the key and chatID is value
+  late Map<String, String> groupInfoInv = {};
+
 
   // Idea is to pass a unique groupchat ID from GroupChatsListPage.dart to ChatPage.dart.
   // ChatPage.dart will then use this groupchat ID to pull relevant data from firebase instead of trying to send a million things at once within this class.
@@ -85,6 +90,8 @@ class _messagingPage extends State<GroupChatsListPage> {
     String? uID = FirebaseAuth.instance.currentUser?.uid;
     peopleInGroup = await _groupController.getUsersInGroup(uID!);
     peopleinGroupIDs = await _groupController.getUserIDsInGroup(uID!);
+    groupInfo = await _chatRoomController.getGroupInfo(uID);
+    groupInfoInv = groupInfo.map((k,v) => MapEntry(v, k));
   }
 
   ///
@@ -109,7 +116,7 @@ class _messagingPage extends State<GroupChatsListPage> {
   }
 
   Future<void> showCreateNewGroupChatAlertDialog(BuildContext context) async {
-    buildGroupChatTitles();
+    buildGroupChatList();
 
     return await showDialog(context: context, builder: (context) {
       // Replaced textEditingController with _newChatNameController.
@@ -211,10 +218,9 @@ class _messagingPage extends State<GroupChatsListPage> {
                   createGroupChat(receiverids, _newChatNameController.text);
                   Navigator.of(context).pop();
                   Navigator.push(context, MaterialPageRoute(builder: (
-                      context) => const ChatPage(
-                    receiverUserEmail: "dummyEmail@gmail.com",
-                    receiverUserID: "dum1234",
-                    groupChatID: "Requires New ID.",)),);
+                      context) =>  ChatPage(
+                    receiverUserName: peopleInGroup.toString(),
+                    receiverUserIDs: receiverids)),);
                 }
 
                 // TODO: Need some way to warn user that at least one checkbox needs to be checked.
@@ -232,6 +238,7 @@ class _messagingPage extends State<GroupChatsListPage> {
 
   @override
   Widget build(BuildContext context) {
+    buildGroupChatList();
     return FutureBuilder(future: buildGroupChatTitles(),
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if (!snapshot.hasData) return Container();
@@ -256,13 +263,17 @@ class _messagingPage extends State<GroupChatsListPage> {
                   onTap: () {
                     // Delete later.
                     // This is how each group's ID will be determined and sent.
+
                     print(groupChatUniqueIDs[index]);
 
+                    String title = groupchatTitles[index];
+                    String? chatID = groupInfoInv[title];
+                    String? uID = FirebaseAuth.instance.currentUser?.uid;
+                    List<String> receiverids = _chatRoomController.getUserInChatID(uID!, chatID!);
                     Navigator.push(context, MaterialPageRoute(
                         builder: (context) =>
-                            ChatPage(receiverUserEmail: "dummyEmail@gmail.com",
-                              receiverUserID: "dum1234",
-                              groupChatID: groupChatUniqueIDs[index],)));
+                            ChatPage(receiverUserName: peopleInGroup.toString(),
+                              receiverUserIDs: receiverids)));
                   },
 
                   //tileColor: Colors.orange,
