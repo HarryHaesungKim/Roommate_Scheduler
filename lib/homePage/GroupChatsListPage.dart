@@ -25,7 +25,7 @@ class _messagingPage extends State<GroupChatsListPage> {
 
   /// groupController
   final _groupController = Get.put(groupController());
-  
+
   ///chatRoomController
   final _chatRoomController = Get.put(ChatRoomController());
 
@@ -33,31 +33,38 @@ class _messagingPage extends State<GroupChatsListPage> {
 
   // Different group chat information.
   late List<String> groupchatTitles = [];
-  late List<String> groupchatLastMessage = ["Hey what's up, guys?", "Hey Andrew, can you take out the trash?", "Bob, please take a shower."];
+  late List<String> groupchatLastMessage = [
+    "Hey what's up, guys?",
+    "Hey Andrew, can you take out the trash?",
+    "Bob, please take a shower.",
+    "",
+    "",
+    "",
+  ];
+
   // names of people in group
-  late List<String> peopleInGroup =  [];
+  late List<String> peopleInGroup = [];
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
   late List<String> peopleinGroupIDs = [];
-  
+
   // Idea is to pass a unique groupchat ID from GroupChatsListPage.dart to ChatPage.dart.
   // ChatPage.dart will then use this groupchat ID to pull relevant data from firebase instead of trying to send a million things at once within this class.
   late List<String> groupChatUniqueIDs = ["0", "1", "2"];
-  
+
   // Text controller for adding new chat pop-up.
   final TextEditingController _newChatNameController = TextEditingController();
 
   // Method that currently adds titles and list item body manually. TODO: Implement firebase to show different messages.
-  void addItemToList(){
+  void addItemToList() {
     setState(() {
-      if (_newChatNameController.text.isEmpty){
-        groupchatTitles.insert(0,"New Chat");
+      if (_newChatNameController.text.isEmpty) {
+        groupchatTitles.insert(0, "New Chat");
       }
-      else{
-        groupchatTitles.insert(0,_newChatNameController.text);
+      else {
+        groupchatTitles.insert(0, _newChatNameController.text);
       }
       groupchatLastMessage.insert(0, "");
       groupChatUniqueIDs.insert(0, "Requires new ID");
-
     });
   }
 
@@ -73,7 +80,7 @@ class _messagingPage extends State<GroupChatsListPage> {
   ///
   /// This method creates the list users to select from and their ids
   ///
-  void buildGroupChatList() async{
+  void buildGroupChatList() async {
     //user id
     String? uID = FirebaseAuth.instance.currentUser?.uid;
     peopleInGroup = await _groupController.getUsersInGroup(uID!);
@@ -83,18 +90,17 @@ class _messagingPage extends State<GroupChatsListPage> {
   ///
   /// This method fills the list of groupChatTitles
   ///
-  void buildGroupChatTitles() async {
+  Future<List<String>> buildGroupChatTitles() async {
     String? uID = FirebaseAuth.instance.currentUser?.uid;
-    groupchatTitles = await _chatRoomController.getGroupChatTitles(uID!);
+    return await _chatRoomController.getGroupChatTitles(uID!);
   }
 
   // Method that deletes the chat from the list.
   // Should this be replaced to leave chat?
   // Should you only be able to leave chats once you're inside the ChatPage?
   // TODO: Figure this out...
-  void deleteItemFromList(index){
+  void deleteItemFromList(index) {
     setState(() {
-
       // Remove user from the groupchat.
 
       groupchatTitles.removeAt(index);
@@ -114,208 +120,308 @@ class _messagingPage extends State<GroupChatsListPage> {
       _newChatNameController.clear();
 
       return StatefulBuilder(builder: (context, setState) {
-       return AlertDialog(
-         title: const Text("Create New Group Chat"),
-         content: Form(
-             key: formKey,
-             child: SizedBox(
-               width: double.maxFinite,
-               child: Column(
-                 mainAxisSize: MainAxisSize.min,
-                 children: [
+        return AlertDialog(
+          title: const Text("Create New Group Chat"),
+          content: Form(
+              key: formKey,
+              child: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
 
-                   // Group chat title input.
-                   TextFormField(
-                     controller: _newChatNameController,
-                     validator: (value){
-                       return value!.isNotEmpty ? null : "Invalid Field";
-                     },
-                     decoration: const InputDecoration(hintText: "Enter title"),
-                   ),
+                    // Group chat title input.
+                    TextFormField(
+                      controller: _newChatNameController,
+                      validator: (value) {
+                        return value!.isNotEmpty ? null : "Invalid Field";
+                      },
+                      decoration: const InputDecoration(
+                          hintText: "Enter title"),
+                    ),
 
-                   // Padding
-                   const SizedBox(height: 30),
+                    // Padding
+                    const SizedBox(height: 30),
 
-                   // Text
-                   const Align(
-                     alignment: Alignment.centerLeft,
-                     child: Text(
-                       "Select Group Members",
-                       style: TextStyle(
-                           fontWeight: FontWeight.bold,
-                         fontSize: 18,
-                       ),
-                     ),
-                   ),
+                    // Text
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Select Group Members",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
 
-                   // Padding
-                   const SizedBox(height: 20),
+                    // Padding
+                    const SizedBox(height: 20),
 
-                   // Checklist
-                   Container(
-                     // Can change color.
-                     color: const Color.fromARGB(255, 227, 227, 227),
-                     child: SizedBox(
-                       width: double.maxFinite,
-                       height: 150,
-                       child: Scrollbar(
-                         thumbVisibility: true,
-                         thickness: 5,
-                         child: ListView.builder(
-                           shrinkWrap: true,
-                           itemCount: peopleInGroup.length,
-                           itemBuilder: (BuildContext context, int index) {
-                             return CheckboxListTile(
-                                 value: addPeopleYesOrNo[index],
-                                 onChanged: (bool? value) {
-                                   setState(() {
-                                     addPeopleYesOrNo[index] = value!;
-                                   });
-                                 },
-                                 title: Text(peopleInGroup[index])
-                             );
-                           },
-                         ),
-                       ),
+                    // Checklist
+                    Container(
+                      // Can change color.
+                      color: const Color.fromARGB(255, 227, 227, 227),
+                      child: SizedBox(
+                        width: double.maxFinite,
+                        height: 150,
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          thickness: 5,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: peopleInGroup.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return CheckboxListTile(
+                                  value: addPeopleYesOrNo[index],
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      addPeopleYesOrNo[index] = value!;
+                                    });
+                                  },
+                                  title: Text(peopleInGroup[index])
+                              );
+                            },
+                          ),
+                        ),
 
-                     ),
-                   ),
+                      ),
+                    ),
 
-                 ],
-               ),
-             )),
+                  ],
+                ),
+              )),
 
-         actions: <Widget>[
-           TextButton(
-             child: const Text("Okay"),
-             onPressed: () {
-               // If text input is empty or not valid or no group members are selected, don't let it proceed.
-               // Switch over to ChatPage.
-               if(formKey.currentState!.validate() && _newChatNameController.text.isNotEmpty && addPeopleYesOrNo.contains(true)){
-                 addItemToList();
-                 List<String> receiverids = [];
-                 for(int i = 0; i < addPeopleYesOrNo.length; i++)
-                   {
-                     if(addPeopleYesOrNo[i])
-                       {
-                         receiverids.add(peopleinGroupIDs[i]);
-                       }
-                   }
-                 createGroupChat(receiverids, _newChatNameController.text);
-                 Navigator.of(context).pop();
-                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage(receiverUserEmail: "dummyEmail@gmail.com", receiverUserID: "dum1234", groupChatID: "Requires New ID.",)),);
-               }
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Okay"),
+              onPressed: () {
+                // If text input is empty or not valid or no group members are selected, don't let it proceed.
+                // Switch over to ChatPage.
+                if (formKey.currentState!.validate() &&
+                    _newChatNameController.text.isNotEmpty &&
+                    addPeopleYesOrNo.contains(true)) {
+                  addItemToList();
+                  List<String> receiverids = [];
+                  for (int i = 0; i < addPeopleYesOrNo.length; i++) {
+                    if (addPeopleYesOrNo[i]) {
+                      receiverids.add(peopleinGroupIDs[i]);
+                    }
+                  }
+                  createGroupChat(receiverids, _newChatNameController.text);
+                  Navigator.of(context).pop();
+                  Navigator.push(context, MaterialPageRoute(builder: (
+                      context) => const ChatPage(
+                    receiverUserEmail: "dummyEmail@gmail.com",
+                    receiverUserID: "dum1234",
+                    groupChatID: "Requires New ID.",)),);
+                }
 
-               // TODO: Need some way to warn user that at least one checkbox needs to be checked.
-               
-             },
-           ),
-         ],
-       );
+                // TODO: Need some way to warn user that at least one checkbox needs to be checked.
+
+              },
+            ),
+          ],
+        );
       });
     });
   }
 
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(future: buildGroupChatTitles(),
+        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+          if (!snapshot.hasData) return Container();
+          late List<String> groupchatTitles = snapshot.data!;
 
-    buildGroupChatTitles();
-    buildGroupChatList();
-
-
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.orange[700],
-          title: const Text("Messaging"),
-      ),
-      backgroundColor:  const Color.fromARGB(255, 227, 227, 227),
-
-      body: ListView.separated(
-        // Let the ListView know how many items it needs to build.
-        itemCount: groupchatTitles.length,
-        // Provide a builder function. This is where the magic happens.
-        // Convert each item into a widget based on the type of item it is.
-        itemBuilder: (context, index) {
-          return ListTile(
-
-            // If you click on a tile, it will send you to the ChatPage.
-            onTap: () {
-
-              // Delete later.
-              // This is how each group's ID will be determined and sent.
-              print(groupChatUniqueIDs[index]);
-
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(receiverUserEmail: "dummyEmail@gmail.com", receiverUserID: "dum1234", groupChatID: groupChatUniqueIDs[index],)));
-            },
-
-            //tileColor: Colors.orange,
-            leading: CircleAvatar(
-              // TODO: Let color be a choice when creating a new chat?
-              // Might be too hard... make the color random?
-              backgroundColor: const Color(0xff764abc),
-              child: Text(groupchatTitles[index][0]),
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.orange[700],
+              title: const Text("Messaging"),
             ),
-            title: Text(groupchatTitles[index]),
-            subtitle: Text(groupchatLastMessage[index]),
-            //trailing: const Icon(Icons.more_vert),
-            trailing: GestureDetector(
-              onTap: (){
-                // Opens pop-up window asking if you want to delete this chat.
-                // print("Working..."); Works.
+            backgroundColor: const Color.fromARGB(255, 227, 227, 227),
 
-                showDialog(context: context, builder: (context) {
+            body: ListView.separated(
+              // Let the ListView know how many items it needs to build.
+              itemCount: groupchatTitles.length,
+              // Provide a builder function. This is where the magic happens.
+              // Convert each item into a widget based on the type of item it is.
+              itemBuilder: (context, index) {
+                return ListTile(
 
-                  // set up the buttons
-                  Widget continueButton = ElevatedButton(
-                    child: const Text("Delete"),
-                    onPressed:  () {
-                      // print("Need to delete chat...");
-                      deleteItemFromList(index);
-                      Navigator.of(context).pop();
-                    },
-                  );
-                  Widget cancelButton = ElevatedButton(
-                    child: const Text("Cancel"),
-                    onPressed:  () {
-                      Navigator.of(context).pop();
-                    },
-                  );
+                  // If you click on a tile, it will send you to the ChatPage.
+                  onTap: () {
+                    // Delete later.
+                    // This is how each group's ID will be determined and sent.
+                    print(groupChatUniqueIDs[index]);
 
-                  return AlertDialog(
-                    scrollable: true,
-                    title: const Text("Delete Chat?"),
-                    actions: [
-                      continueButton,
-                      cancelButton,
-                    ],
-                  );
-                });
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) =>
+                            ChatPage(receiverUserEmail: "dummyEmail@gmail.com",
+                              receiverUserID: "dum1234",
+                              groupChatID: groupChatUniqueIDs[index],)));
+                  },
 
+                  //tileColor: Colors.orange,
+                  leading: CircleAvatar(
+                    // TODO: Let color be a choice when creating a new chat?
+                    // Might be too hard... make the color random?
+                    backgroundColor: const Color(0xff764abc),
+                    child: Text(groupchatTitles[index][0]),
+                  ),
+                  title: Text(groupchatTitles[index]),
+                  subtitle: Text(groupchatLastMessage[index]),
+                  //trailing: const Icon(Icons.more_vert),
+                  trailing: GestureDetector(
+                      onTap: () {
+                        // Opens pop-up window asking if you want to delete this chat.
+                        // print("Working..."); Works.
+
+                        showDialog(context: context, builder: (context) {
+                          // set up the buttons
+                          Widget continueButton = ElevatedButton(
+                            child: const Text("Delete"),
+                            onPressed: () {
+                              // print("Need to delete chat...");
+                              deleteItemFromList(index);
+                              Navigator.of(context).pop();
+                            },
+                          );
+                          Widget cancelButton = ElevatedButton(
+                            child: const Text("Cancel"),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          );
+
+                          return AlertDialog(
+                            scrollable: true,
+                            title: const Text("Delete Chat?"),
+                            actions: [
+                              continueButton,
+                              cancelButton,
+                            ],
+                          );
+                        });
+                      },
+                      child: const Icon(Icons.more_vert)
+                  ),
+                );
               },
-              child: const Icon(Icons.more_vert)
+
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+
+              separatorBuilder: (context, index) { // <-- SEE HERE
+                return const Divider();
+              },
             ),
+
+            // Button to add a new chat.
+            floatingActionButton: FloatingActionButton(onPressed: () async {
+              // show a dialog for user to input event name
+              await showCreateNewGroupChatAlertDialog(context);
+            }, child: const Icon(Icons.add)),
           );
-        },
-
-        padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-
-        separatorBuilder: (context, index) { // <-- SEE HERE
-          return const Divider();
-        },
-      ),
-
-      // Button to add a new chat.
-      floatingActionButton: FloatingActionButton(onPressed: () async {
-
-        // show a dialog for user to input event name
-        await showCreateNewGroupChatAlertDialog(context);
-
-      }, child: const Icon(Icons.add)),
-    );
+        });
   }
 }
+
+
+
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //         backgroundColor: Colors.orange[700],
+  //         title: const Text("Messaging"),
+  //     ),
+  //     backgroundColor:  const Color.fromARGB(255, 227, 227, 227),
+  //
+  //     body: ListView.separated(
+  //       // Let the ListView know how many items it needs to build.
+  //       itemCount: groupchatTitles.length,
+  //       // Provide a builder function. This is where the magic happens.
+  //       // Convert each item into a widget based on the type of item it is.
+  //       itemBuilder: (context, index) {
+  //         return ListTile(
+  //
+  //           // If you click on a tile, it will send you to the ChatPage.
+  //           onTap: () {
+  //
+  //             // Delete later.
+  //             // This is how each group's ID will be determined and sent.
+  //             print(groupChatUniqueIDs[index]);
+  //
+  //             Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(receiverUserEmail: "dummyEmail@gmail.com", receiverUserID: "dum1234", groupChatID: groupChatUniqueIDs[index],)));
+  //           },
+  //
+  //           //tileColor: Colors.orange,
+  //           leading: CircleAvatar(
+  //             // TODO: Let color be a choice when creating a new chat?
+  //             // Might be too hard... make the color random?
+  //             backgroundColor: const Color(0xff764abc),
+  //             child: Text(groupchatTitles[index][0]),
+  //           ),
+  //           title: Text(groupchatTitles[index]),
+  //           subtitle: Text(groupchatLastMessage[index]),
+  //           //trailing: const Icon(Icons.more_vert),
+  //           trailing: GestureDetector(
+  //             onTap: (){
+  //               // Opens pop-up window asking if you want to delete this chat.
+  //               // print("Working..."); Works.
+  //
+  //               showDialog(context: context, builder: (context) {
+  //
+  //                 // set up the buttons
+  //                 Widget continueButton = ElevatedButton(
+  //                   child: const Text("Delete"),
+  //                   onPressed:  () {
+  //                     // print("Need to delete chat...");
+  //                     deleteItemFromList(index);
+  //                     Navigator.of(context).pop();
+  //                   },
+  //                 );
+  //                 Widget cancelButton = ElevatedButton(
+  //                   child: const Text("Cancel"),
+  //                   onPressed:  () {
+  //                     Navigator.of(context).pop();
+  //                   },
+  //                 );
+  //
+  //                 return AlertDialog(
+  //                   scrollable: true,
+  //                   title: const Text("Delete Chat?"),
+  //                   actions: [
+  //                     continueButton,
+  //                     cancelButton,
+  //                   ],
+  //                 );
+  //               });
+  //
+  //             },
+  //             child: const Icon(Icons.more_vert)
+  //           ),
+  //         );
+  //       },
+  //
+  //       padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+  //
+  //       separatorBuilder: (context, index) { // <-- SEE HERE
+  //         return const Divider();
+  //       },
+  //     ),
+  //
+  //     // Button to add a new chat.
+  //     floatingActionButton: FloatingActionButton(onPressed: () async {
+  //
+  //       // show a dialog for user to input event name
+  //       await showCreateNewGroupChatAlertDialog(context);
+  //
+  //     }, child: const Icon(Icons.add)),
+  //   );
+  // }
+
 
 /// The base class for the different types of items the list can contain.
 abstract class ListItem {
