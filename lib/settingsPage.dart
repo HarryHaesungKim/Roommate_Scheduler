@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/Settings/accountInformation.dart';
+import 'package:roommates/Settings/changeThemePage.dart';
 import 'package:roommates/Settings/helpMenu.dart';
 import 'package:roommates/Settings/mangageBalance.dart';
 import 'package:roommates/User/user_model.dart';
@@ -104,7 +105,10 @@ class _settingsProfileState extends State<settingsProfile> {
                   trailing: Icon(Icons.keyboard_arrow_right),
                   //Undo
                   onTap: (){
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => changeTheme()),
+                    );
                   },
                 ),
                 Container(
