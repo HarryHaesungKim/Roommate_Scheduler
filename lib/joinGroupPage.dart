@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/Task/taskController.dart';
-import 'package:roommates/groceriesPage.dart';
+import 'package:roommates/groceriesPage/groceriesPage.dart';
 import 'package:roommates/homePage/addTask.dart';
 import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/mainPage.dart';

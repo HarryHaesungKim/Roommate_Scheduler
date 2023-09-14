@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 //import 'package:roommates/calendarPage.dart';
-import 'package:roommates/groceriesPage.dart';
+import 'package:roommates/groceriesPage/groceriesPage.dart';
 import 'package:roommates/homePage/homePage.dart';
 import 'package:roommates/notificationPage.dart';
 import 'package:roommates/profilePage.dart';
-import 'calendarPage.dart';
+import 'calendarPage/calendarPage.dart';
 import 'strings.dart';
 
 class mainPage extends StatefulWidget {

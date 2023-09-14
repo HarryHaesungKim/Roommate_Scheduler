@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:roommates/homePage/homePage.dart';
-import 'package:roommates/joinGroupPage.dart';
 import 'package:roommates/forgotPassWordPage.dart';
 import 'package:get/get.dart';
 import 'package:roommates/mainPage.dart';
@@ -15,6 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _obscureText= true;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -23,11 +22,8 @@ class _LoginPageState extends State<LoginPage> {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim());
-      if (Navigator.of(context).pushReplacement(
-          // If you're logging in from an existing account, you should already be in a group
-          // You should be able to change your group in the settings page.
-          MaterialPageRoute(builder: ((context) => mainPage()))) != null) {}
-      ;
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => mainPage()));
     } on FirebaseAuthException catch (e) {
       //Error Message
       showDialog(
@@ -57,12 +53,10 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset("images/logo.png",height: 100,width: 100, ),
-
               // Icon(
               //   widget.icon
               //   size: 100,
               // ),
-
               Text(
                 'Roommates',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
@@ -108,14 +102,24 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.only(left: 12.0),
                     child: TextField(
                       controller: passwordController,
+                      obscureText: _obscureText,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.only(top: 14.0),
                         hintText: 'Password',
                         prefixIcon: Icon(
-                          Icons.lock,
+                          Icons.password,
                           color: Colors.blue,
                         ),
+                        suffixIcon: GestureDetector(
+                          onTap: (){
+                            setState(() {
+                              _obscureText =!_obscureText;
+                            });
+                          },
+                          child: Icon(_obscureText? Icons.visibility:Icons.visibility_off),
+                        )
+
                       ),
                     ),
                   ),
@@ -178,6 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                         "All fields are required.",
                         snackPosition: SnackPosition.TOP,
                       );
+
                     } else {
                       signIn();
                     }
@@ -213,6 +218,7 @@ class _LoginPageState extends State<LoginPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => registrationPage()));
+
                   },
                 ),
               ),

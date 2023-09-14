@@ -18,13 +18,16 @@ class registrationPage extends StatefulWidget {
 
 class _RegPageState extends State<registrationPage> {
   bool showJoinGroup = false;
-
+  bool _password= true;
+  bool _confirmPassword= true;
   //controllers for text entered by user
   final _userName = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-
+  final _balance = "0";
+  final _income = "0";
+  final _expense = "0";
   @override
   void dispose() {
     _emailController.dispose();
@@ -43,12 +46,17 @@ class _RegPageState extends State<registrationPage> {
         );
 
         String? userID = FirebaseAuth.instance.currentUser?.uid;
-        final user = userModel(
+        final user = UserData(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
             username: _userName.text.trim(),
             groupID: "",
             chatRooms: []);
+            username: _userName.text.trim(),
+            balance:_balance,
+            income: _income,
+           expense:  _expense,
+                );
         await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
 
         //More code about database
@@ -174,6 +182,7 @@ class _RegPageState extends State<registrationPage> {
                       padding: const EdgeInsets.only(left: 12.0),
                       child: TextField(
                         controller: _passwordController,
+                        obscureText: _password,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.only(top: 14.0),
@@ -181,7 +190,14 @@ class _RegPageState extends State<registrationPage> {
                           prefixIcon: Icon(
                             Icons.lock,
                             color: Colors.blue,
-                          ),
+                          ), suffixIcon: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  _password =!_password;
+                                });
+                              },
+                              child: Icon(_password? Icons.visibility:Icons.visibility_off),
+                            )
                         ),
                       ),
                     ),
@@ -203,6 +219,7 @@ class _RegPageState extends State<registrationPage> {
                       padding: const EdgeInsets.only(left: 12.0),
                       child: TextField(
                         controller: _confirmPasswordController,
+                        obscureText: _confirmPassword,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.only(top: 14.0),
@@ -211,6 +228,14 @@ class _RegPageState extends State<registrationPage> {
                             Icons.password,
                             color: Colors.blue,
                           ),
+                            suffixIcon: GestureDetector(
+                              onTap: (){
+                                setState(() {
+                                  _confirmPassword =!_confirmPassword;
+                                });
+                              },
+                              child: Icon(_confirmPassword? Icons.visibility:Icons.visibility_off),
+                            )
                         ),
                       ),
                     ),

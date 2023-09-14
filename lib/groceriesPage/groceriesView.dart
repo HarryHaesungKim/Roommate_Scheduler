@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/Task/task.dart';
+import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
 import '../theme.dart';
 
-class taskView extends StatelessWidget {
-  final Task task;
-  taskView(this.task);
+class groceriesView extends StatelessWidget {
+  final Groceries groceries;
+  groceriesView(this.groceries);
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -22,45 +22,29 @@ class taskView extends StatelessWidget {
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: _getBGClr(task.color),
+          color: Colors.black87,
         ),
         child: Row(children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
 
-                  task.title!,
-                  style: GoogleFonts.lato(
-                    textStyle: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.alarm,
-                      color: Colors.grey[200],
-                      size: 18,
-                    ),
-                    SizedBox(width: 4),
                     Text(
-                      "${task.startTime} - ${task.endTime}",
+                      groceries.title!,
                       style: GoogleFonts.lato(
-                        textStyle:
-                        TextStyle(fontSize: 13, color: Colors.grey[100]),
+                        textStyle: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                     ),
-                    SizedBox(width: 12),
+                    SizedBox(width: _mediaQueryData.size.width*0.2),
                     Text(
-                      "${task.date}",
+                      "${groceries.date}",
                       style: GoogleFonts.lato(
                         textStyle:
                         TextStyle(fontSize: 13, color: Colors.grey[100]),
@@ -68,11 +52,27 @@ class taskView extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(width: _mediaQueryData.size.width*0.35),
+                    Text(
+                      "\$${groceries.amount}",
+                      style: GoogleFonts.lato(
+                        textStyle:
+                        TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
                 Text(
-                  task.note!,
+                  groceries.paidName!,
                   style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
+                    textStyle: TextStyle(fontSize: 13, color: Colors.grey[100]),
                   ),
                 ),
               ],
@@ -83,18 +83,6 @@ class taskView extends StatelessWidget {
             height: 60,
             width: 0.5,
             color: Colors.grey[200]!.withOpacity(0.7),
-          ),
-          RotatedBox(
-            quarterTurns: 3,
-            child: Text(
-              task.isCompleted == 1 ? "COMPLETED" : "TODO",
-              style: GoogleFonts.lato(
-                textStyle: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ),
           ),
         ]),
       ),
