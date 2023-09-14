@@ -5,6 +5,7 @@ import 'package:roommates/Settings/accountInformation.dart';
 import 'package:roommates/Settings/changeThemePage.dart';
 import 'package:roommates/Settings/helpMenu.dart';
 import 'package:roommates/Settings/mangageBalance.dart';
+import 'package:roommates/Settings/mangageGroupMember.dart';
 import 'package:roommates/User/user_model.dart';
 class settingsProfile extends StatefulWidget {
   const settingsProfile({Key? key}) : super(key: key);
@@ -75,7 +76,7 @@ class _settingsProfileState extends State<settingsProfile> {
                   onTap: (){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EditProfile()),
+                      MaterialPageRoute(builder: (context) => mangageGroupMember()),
                     );
                   },
                 ),
