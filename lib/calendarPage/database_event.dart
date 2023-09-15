@@ -7,11 +7,11 @@ class DBHelper_event {
   final _db = FirebaseFirestore.instance;
   //static final int _version = 1;
   //static final String _tableName = 'Event';
-  createEvent(Event event) async {
+  createEvent(String groupID, Event event) async {
 
-    await _db.collection("Event").add(event.toJson()).then((value)
+    await _db.collection("Group").doc(groupID).collection("Event").add(event.toJson()).then((value)
     =>
-        _db.collection("Event").doc(value.id).update({"id": value.id.toString()})).whenComplete(() =>
+        _db.collection("Group").doc(groupID).collection("Event").doc(value.id).update({"id": value.id.toString()})).whenComplete(() =>
         Get.snackbar("Success!",
             "Event has been created.")).
     catchError((error, stackTrace) {
@@ -23,9 +23,9 @@ class DBHelper_event {
   ///
   ///  This method returns all the Event currently in the database
   ///
-  getEvents() async {
+  getEvents(String groupID) async {
     List<Map<String, dynamic>> events = [];
-    await _db.collection("Event").get().then(
+    await _db.collection("Group").doc(groupID).collection("Event").get().then(
             (querySnapshot) {
           for (var event in querySnapshot.docs)
           {
@@ -43,8 +43,8 @@ class DBHelper_event {
 
   }
 
-  deleteEvent(Event event) async {
-    _db.collection("Event").doc(event.id).delete().whenComplete(() =>
+  deleteEvent(String groupID, Event event) async {
+    _db.collection("Group").doc(groupID).collection("Event").doc(event.id).delete().whenComplete(() =>
         Get.snackbar("Success!",
             "Event has been deleted.")).
     catchError((error, stackTrace) {

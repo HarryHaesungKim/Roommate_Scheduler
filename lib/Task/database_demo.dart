@@ -33,6 +33,7 @@ class DBHelper {
   ///
   getTasks1(String groupID) async {
     List<Map<String, dynamic>> tasks = [];
+    print("groupID is " + groupID);
     final ref = await _db.collection("Group").doc(groupID).collection("tasks").get().then(
             (querySnapshot) {
               for (var task in querySnapshot.docs) {

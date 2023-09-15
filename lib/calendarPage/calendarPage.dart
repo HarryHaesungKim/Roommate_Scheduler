@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/calendarPage/addEvent.dart';
 import 'package:roommates/calendarPage/eventView.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:get/get.dart';
 import 'package:roommates/calendarPage/event.dart';
+import '../Group/groupController.dart';
 import '../theme.dart';
 import 'eventController.dart';
 import 'package:intl/intl.dart';
@@ -60,6 +62,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final _eventController = Get.put(eventController());
   static late MediaQueryData _mediaQueryData;
   late final ValueNotifier<List<Event>> _selectedEvents;
+  final _groupController = Get.put(groupController());
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+
 
   @override
   void initState() {
@@ -77,7 +82,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     // This is where the calendar will go.
-    _eventController.getEvents();
+    String groupID = _groupController.getGroupIDFromUser(uID!).toString();
+    _eventController.getEvents(groupID);
     _mediaQueryData = MediaQuery.of(context);
     return Scaffold(
       // Button to add event (should be replaced to get tasks info from database).
@@ -122,7 +128,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         //
         // });
         await Get.to(addEvent());
-        _eventController.getEvents();
+        _eventController.getEvents(groupID);
       },child: const Icon(Icons.add)),
 
       body: Column(
@@ -280,7 +286,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           _buildBottomSheetButton(
               label: "Delete Event",
               onTap: () {
-                _eventController.deleteEvent(event);
+                String groupID = _groupController.getGroupIDFromUser(uID!).toString();
+                _eventController.deleteEvent(groupID, event);
                 Get.back();
               },
               clr: Colors.red[300]),
@@ -341,10 +348,14 @@ class _MyStatefulWidgetState2 extends State<MyStatefulWidget> {
   final ScrollController _firstController = ScrollController();
   final _eventController = Get.put(eventController());
   static late MediaQueryData _mediaQueryData;
+  final _groupController = Get.put(groupController());
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+
 
   @override
   Widget build(BuildContext context) {
-    _eventController.getEvents();
+    String groupID = _groupController.getGroupIDFromUser(uID!).toString();
+    _eventController.getEvents(groupID);
     _mediaQueryData = MediaQuery.of(context);
     print( _eventController.eventList.length);
     return LayoutBuilder(
@@ -416,7 +427,8 @@ class _MyStatefulWidgetState2 extends State<MyStatefulWidget> {
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                _eventController.deleteEvent(event);
+                String groupID = _groupController.getGroupIDFromUser(uID!).toString();
+                _eventController.deleteEvent(groupID,event);
                 Get.back();
               },
               clr: Colors.red[300]),

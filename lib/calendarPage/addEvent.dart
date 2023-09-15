@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:roommates/calendarPage/event.dart';
 import 'package:roommates/calendarPage/eventController.dart';
 import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
+import '../Group/groupController.dart';
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
 import '../theme.dart';
@@ -22,6 +24,8 @@ class _AddEventState extends State<addEvent> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+  final _groupController = Get.put(groupController());
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
 
   final _db = Get.put(DBHelper());
 
@@ -29,38 +33,15 @@ class _AddEventState extends State<addEvent> {
   String? _startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
 
   String? _endTime = "9:30 AM";
-  int _selectedColor = 0;
 
-  int _selectedRemind = 5;
-  List<int> remindList = [
-    5,
-    10,
-    15,
-    20,
-  ];
-  String _selectedAssigness = "None";
-  List<String> AssigneesList = [
-    "Harry Kim",
-    "Jianwei Cheng",
-    "Braden Morfin",
-    "Qimeng Chao",
-  ];
-  String _selectedSplit = "None";
-  List<String> splitList = [
-    "Equal"
-  ];
-
-  String? _selectedRepeat = 'None';
-  List<String> repeatList = [
-    'None',
-    'Daily',
-    'Weekly',
-    'Monthly',
-  ];
 
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<List<String>> setAssignees() async {
+    return await _groupController.getUsersInGroup(uID!);
   }
 
   @override
@@ -70,7 +51,7 @@ class _AddEventState extends State<addEvent> {
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
-    //_startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
+
     return Scaffold(
       //backgroundColor: context.theme.backgroundColor,
       appBar: AppBar(
@@ -245,7 +226,8 @@ class _AddEventState extends State<addEvent> {
   }
 
   _addEventToDB() async {
-    await _eventController.addEvent(
+    String groupID = await _groupController.getGroupIDFromUser(uID!);
+    await _eventController.addEvent(groupID,
       event: Event(
         title: _titleController.text.toString(),
         note: _noteController.text.toString(),
