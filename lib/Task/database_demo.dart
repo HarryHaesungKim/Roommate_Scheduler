@@ -97,8 +97,13 @@ class DBHelper {
     Map<String, String> groupInfo = {};
     for(int i = 0; i < array.length; i++)
       {
-        groupInfo.assign(array[i], titles[i]);
+        //groupInfo.assign(array[i], titles[i]);
+        groupInfo[array[i]] = titles[i];
       }
+    print("arr" + array.toString());
+    print("titles" + titles.toString());
+    print("arr leng" + array.length.toString());
+    print("db group info" + groupInfo.toString());
     return groupInfo;
 }
 

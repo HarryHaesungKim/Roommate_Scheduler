@@ -269,6 +269,10 @@ class _messagingPage extends State<GroupChatsListPage> {
                     String title = groupchatTitles[index];
                     String? chatID = groupInfoInv[title];
                     String? uID = FirebaseAuth.instance.currentUser?.uid;
+                    print("groupInfo" + groupInfo.toString());
+                    print("groupInfoInv" + groupInfoInv.toString());
+                    print("uID" + uID.toString());
+                    print("chatID" + chatID.toString());
                     List<String> receiverids = _chatRoomController.getUserInChatID(uID!, chatID!);
                     Navigator.push(context, MaterialPageRoute(
                         builder: (context) =>
