@@ -55,6 +55,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   late DateTime _focusedDay = DateTime(now.year, now.month, now.day);
   DateTime? _selectedDay;
   String? selectedDayString;
+  String groupID = "";
 
   // For Events
   // Map<DateTime, List<Event>> events = {};
@@ -64,6 +65,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   final _groupController = Get.put(groupController());
   String? uID = FirebaseAuth.instance.currentUser?.uid;
+
+  void setGroupID() async {
+    groupID = await _groupController.getGroupIDFromUser(uID!);
+  }
 
 
   @override
@@ -82,7 +87,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     // This is where the calendar will go.
-    String groupID = _groupController.getGroupIDFromUser(uID!).toString();
+    // String groupID = _groupController.getGroupIDFromUser(uID!).toString();
+    setGroupID();
     _eventController.getEvents(groupID);
     _mediaQueryData = MediaQuery.of(context);
     return Scaffold(
@@ -191,7 +197,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                     //Event event = _eventController.eventList[index]
                                     // print("_eventController.eventsMap[_focusedDay]?.length");
                                     print(_eventController.eventsMap[selectedDayString]?.length);
-                                    print(_eventController.eventList[2].date);
                                     int temp = _eventController.eventsMap[selectedDayString]![index];
                                     Event event = _eventController.eventList[temp];
                                     var title = event.title;
