@@ -14,6 +14,38 @@ class DBHelper {
   //static final String _tableName = 'tasks';
 
   ///
+  /// This method adds a task to the database for this group
+  ///
+  Future<void> createTask1(String groupID, Task task) async  {
+    await _db.collection("Group").doc(groupID).collection("tasks").add(task.toJson()).then((value)
+    =>
+        _db.collection("Group").doc(groupID).collection("tasks").doc(value.id).update({"id": value.id.toString()})).whenComplete(() =>
+        Get.snackbar("Success!",
+            "Task has been created.")).
+    catchError((error, stackTrace) {
+      //something went wrong. tell user
+      Get.snackbar("ERROR", "Whoops, something went wrong.");
+    });
+  }
+
+  ///
+  /// This method returns the list of tasks for a group given a groupID
+  ///
+  getTasks1(String groupID) async {
+    List<Map<String, dynamic>> tasks = [];
+    final ref = await _db.collection("Group").doc(groupID).collection("tasks").get().then(
+            (querySnapshot) {
+              for (var task in querySnapshot.docs) {
+                if (!task.data().containsKey("dummy")) {
+                  tasks.add(task.data());
+                }
+              }
+            }
+              );
+    return tasks;
+  }
+
+  ///
   /// Given a uID and chatroomid get all userIDs that are not uID
   ///
   List<String> getUsersInChatID(String uID, String chatID) {
@@ -93,7 +125,7 @@ class DBHelper {
       final userRef = await _db.collection("Users").doc(user).get();
       userNames.add(userRef.data()!['UserName'].toString());
     }
-    print("Usernames are " + userNames.toString());
+    //print("Usernames are " + userNames.toString());
     return userNames;
   }
   ///
@@ -222,22 +254,9 @@ class DBHelper {
     return tasks;
   }
 
-  getUsers() async {
-    List<Map<String, dynamic>> names = [];
-    await _db.collection("Users").get().then(
-            (querySnapshot) {
-          for (var user in querySnapshot.docs)
-          {
-            names.add(user.data());
-          }
-        }
-    );
-    return names;
-  }
 
-
-  markTaskDone(String? taskid) async {
-    final docref = _db.collection("Tasks").doc(taskid.toString());
+  markTaskDone(String groupID, String? taskid) async {
+    final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(taskid);
     docref.update({"isCompleted": 1}).whenComplete(() =>
         Get.snackbar("Completed",
             "Task marked as complete.")).
@@ -247,8 +266,8 @@ class DBHelper {
     });
   }
 
-  deleteTask(Task task) async {
-    _db.collection("Tasks").doc(task.id).delete().whenComplete(() =>
+  deleteTask(String groupID, Task task) async {
+    _db.collection("Group").doc(groupID).collection("tasks").doc(task.id).delete().whenComplete(() =>
         Get.snackbar("Success!",
             "Task has been deleted.")).
     catchError((error, stackTrace) {

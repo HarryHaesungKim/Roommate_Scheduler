@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:roommates/Group/groupController.dart';
 
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
@@ -17,9 +19,13 @@ class addTask extends StatefulWidget {
 
 class _AddTaskPageState extends State<addTask> {
   final taskController _taskController = Get.find<taskController>();
+  final groupController _groupController = Get.put(groupController());
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+  late String groupID = "";
 
   final _db = Get.put(DBHelper());
 
@@ -37,12 +43,7 @@ class _AddTaskPageState extends State<addTask> {
     20,
   ];
   String _selectedAssigness = "None";
-  List<String> AssigneesList =[
-    "Harry Kim",
-    "Jianwei Cheng",
-    "Braden Morfin",
-    "Qimeng Chao",
-  ];
+  List<String> AssigneesList =[];
 
   String? _selectedRepeat = 'None';
   List<String> repeatList = [
@@ -51,6 +52,20 @@ class _AddTaskPageState extends State<addTask> {
     'Weekly',
     'Monthly',
   ];
+
+  ///
+  /// This method sets the groupID to the logged in users groupID
+  ///
+  void setGroupID() async {
+    groupID = await _groupController.getGroupIDFromUser(uID!);
+    print("groupID in setgroupID" + groupID);
+  }
+
+  Future<List<String>> setAssignees() async {
+    return await _groupController.getUsersInGroup(uID!);
+  }
+
+
 
   @override
   void initState() {
@@ -65,9 +80,18 @@ class _AddTaskPageState extends State<addTask> {
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
+    setGroupID();
+    setAssignees();
     print(format.format(dt));
+    print("groupID" + groupID);
     print("add Task date: " + DateFormat.yMd().format(_selectedDate));
-    //_startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
+    print("List of assignees" + AssigneesList.toString());
+    print("user id " + uID.toString());
+    return FutureBuilder(future: setAssignees(),
+        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+          if (!snapshot.hasData) return Container();
+          late List<String> assigneeList = snapshot.data!;
+
     return Scaffold(
       //backgroundColor: context.theme.backgroundColor,
       appBar: AppBar(
@@ -230,8 +254,9 @@ class _AddTaskPageState extends State<addTask> {
                             _selectedAssigness = newValue!;
                           });
                         },
-                        items: AssigneesList
+                        items: assigneeList
                             .map<DropdownMenuItem<String>>((String value) {
+                              print("assingees" + assigneeList.toString());
                           return DropdownMenuItem<String>(
                             value: value.toString(),
                             child: Text(value.toString()),
@@ -268,7 +293,8 @@ class _AddTaskPageState extends State<addTask> {
           ),
         ),
       ),
-    );
+        );
+  });
   }
 
   _validateInputs() {
@@ -287,7 +313,10 @@ class _AddTaskPageState extends State<addTask> {
   }
 
   _addTaskToDB() async {
-    await _taskController.addTask(
+    String? uID = FirebaseAuth.instance.currentUser?.uid;
+    String groupID = await _groupController.getGroupIDFromUser(uID!);
+
+    await _taskController.addTask(groupID,
       task: Task(
         note: _noteController.text.toString(),
         title: _titleController.text.toString(),
@@ -298,7 +327,8 @@ class _AddTaskPageState extends State<addTask> {
         repeat: _selectedRepeat,
         color: _selectedColor,
         isCompleted: 0,
-
+        assignedUserID: uID,
+        assignedUserName: _selectedAssigness
       ),
 
     );

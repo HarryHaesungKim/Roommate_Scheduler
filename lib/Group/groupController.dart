@@ -42,4 +42,8 @@ class groupController extends GetxController {
     return await  _db.getUsersIDsInGroup(uID);
   }
 
+  Future<String> getGroupIDFromUser(String uID) async {
+    return await _db.getGroupID(uID);
+  }
+
 }

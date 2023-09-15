@@ -1,5 +1,7 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/Group/groupController.dart';
 import 'package:roommates/Task/taskController.dart';
 import 'package:roommates/groceriesPage/groceriesView.dart';
 import 'package:roommates/homePage/addTask.dart';
@@ -81,11 +83,19 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final ScrollController _firstController = ScrollController();
   final _taskController = Get.put(taskController());
+  final _groupController = Get.put(groupController());
   static late MediaQueryData _mediaQueryData;
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+  late String groupID = "";
+
+  void setGroupID() async {
+    groupID = await _groupController.getGroupIDFromUser(uID!);
+  }
 
   @override
   Widget build(BuildContext context) {
-    _taskController.getTasks();
+    setGroupID();
+    _taskController.getTasks(groupID);
     _mediaQueryData = MediaQuery.of(context);
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -102,6 +112,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         primary: true,
                         itemCount: _taskController.taskList.length,
                         itemBuilder: (BuildContext context, int index) {
+                          print("tasks " + _taskController.taskList[index].title!);
                           Task task = _taskController.taskList[index];
                           var title = task.title;
                           int? coloDB = task.color;
@@ -232,7 +243,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 //   MaterialPageRoute(builder: (context) => addTask()),
                 // );
               await Get.to(addTask());
-              _taskController.getTasks();
+              _taskController.getTasks(groupID);
               //_taskController = Get.put(taskController());
               },
             style: ButtonStyle(
@@ -266,14 +277,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               : _buildBottomSheetButton(
               label: "Task Completed",
               onTap: () {
-                _taskController.markTaskCompleted(task.id);
+                _taskController.markTaskCompleted(groupID, task.id);
                 Get.back();
               },
               clr: primaryClr),
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                _taskController.deleteTask(task);
+                _taskController.deleteTask(groupID, task);
                 Get.back();
               },
               clr: Colors.red[300]),

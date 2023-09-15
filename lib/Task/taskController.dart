@@ -9,7 +9,7 @@ class taskController extends GetxController {
 
   @override
   void onReady() {
-    getTasks();
+    //getTasks();
     super.onReady();
   }
 
@@ -17,25 +17,25 @@ class taskController extends GetxController {
 
   // add data to table
   //second brackets means they are named optional parameters
-  Future<void> addTask({required Task task}) async {
-    await _db.createTask(task);
+  Future<void> addTask(String groupID, {required Task task}) async {
+    await _db.createTask1(groupID, task);
   }
 
   // get all the data from table
-  void getTasks() async {
-    List<Map<String, dynamic>> tasks = await _db.getTasks();
+  void getTasks(String groupID) async {
+    List<Map<String, dynamic>> tasks = await _db.getTasks1(groupID);
     taskList.assignAll(tasks.map((data) => new Task.fromJson(data)).toList());
   }
 
   // delete data from table
-  void deleteTask(Task task) async {
-     await _db.deleteTask(task);
-     getTasks();
+  void deleteTask(String groupID, Task task) async {
+     await _db.deleteTask(groupID, task);
+     getTasks(groupID);
    }
 
   // update data int table
-  void markTaskCompleted(String? id) async {
-     await _db.markTaskDone(id);
-     getTasks();
+  void markTaskCompleted(String groupID, String? id) async {
+     await _db.markTaskDone(groupID, id);
+     getTasks(groupID);
    }
 }
