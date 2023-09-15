@@ -41,7 +41,7 @@ class eventController extends GetxController {
       }
       else{
         eventsMap.addAll({
-          eventList[i].date!: [i]
+          eventList[i].date: [i]
         });
       }
     }
