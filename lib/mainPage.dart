@@ -122,10 +122,10 @@ class _mainPageState extends State<mainPage> {
                   icon: Icons.money,
                   text: "Groceries",
                 ),
-                GButton(
-                  icon: Icons.notifications,
-                  text: "Notification",
-                ),
+                // GButton(
+                //   icon: Icons.notifications,
+                //   text: "Notification",
+                // ),
                 GButton(
                   icon: Icons.account_circle,
                   text: "Profile",
