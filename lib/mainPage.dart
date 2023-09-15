@@ -23,7 +23,7 @@ class _mainPageState extends State<mainPage> {
     homePage(),
     calendarPage(),
     groceriesPage(),
-    notificationPage(),
+    //notificationPage(),
     ProfilePage(),
   ];
 
@@ -52,13 +52,13 @@ class _mainPageState extends State<mainPage> {
         }
         break;
 
-      case 3:
-        {
-          title = "Notifications";
-        }
-        break;
+      // case 3:
+      //   {
+      //     title = "Notifications";
+      //   }
+      //   break;
 
-      case 4:
+      case 3:
         {
           title = "Profile";
         }
