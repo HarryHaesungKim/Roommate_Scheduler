@@ -147,6 +147,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           );
         });
   }
+
   scrollList() {
     return Container(
         margin: EdgeInsets.only(bottom: 500, left: 20),
@@ -182,6 +183,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         )
     );
   }
+
   addTaskBar() {
     return Container(
       margin: EdgeInsets.only(bottom: 12, top: 10),
@@ -254,6 +256,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       ),
     );
   }
+
   showBottomSheet(BuildContext context, Task task) {
     Get.bottomSheet(
       Container(
@@ -304,6 +307,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       ),
     );
   }
+
   _buildBottomSheetButton(
       {required String label, Function? onTap, Color? clr, bool isClose = false}) {
     return GestureDetector(

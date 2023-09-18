@@ -23,7 +23,7 @@ class _mainPageState extends State<mainPage> {
     homePage(),
     calendarPage(),
     groceriesPage(),
-    //notificationPage(),
+    notificationPage(),
     ProfilePage(),
   ];
 
@@ -52,13 +52,13 @@ class _mainPageState extends State<mainPage> {
         }
         break;
 
-      // case 3:
-      //   {
-      //     title = "Notifications";
-      //   }
-      //   break;
-
       case 3:
+        {
+          title = "Notifications";
+        }
+        break;
+
+      case 4:
         {
           title = "Profile";
         }
@@ -122,10 +122,10 @@ class _mainPageState extends State<mainPage> {
                   icon: Icons.money,
                   text: "Groceries",
                 ),
-                // GButton(
-                //   icon: Icons.notifications,
-                //   text: "Notification",
-                // ),
+                GButton(
+                  icon: Icons.notifications,
+                  text: "Notification",
+                ),
                 GButton(
                   icon: Icons.account_circle,
                   text: "Profile",
