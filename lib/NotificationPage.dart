@@ -14,6 +14,12 @@ class _NotificationPage extends State<NotificationPage> {
   List<DateTime> notificationTimes = [DateTime.now(), DateTime.now(), DateTime.now()];
   List<String> notificationBodies = ["Generic body 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", "Generic body 2", "Generic body 3"];
 
+  // Text controllers for creating a new announcement pop-up.
+  final TextEditingController _newAnnouncementTitleController = TextEditingController();
+  final TextEditingController _newAnnouncementBodyController = TextEditingController();
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   Widget textWithStyle(input){
     return Text(
       textAlign: TextAlign.left,
@@ -29,82 +35,268 @@ class _NotificationPage extends State<NotificationPage> {
     );
   }
 
-  Widget notificationTile(title, time, body){
-    return Container(
+  Widget notificationTile(title, DateTime time, body){
 
-      // Stretch container to fit it's children.
-      constraints: const BoxConstraints(
-      maxHeight: double.infinity,),
+    return InkWell(
 
-      // Making it look pretty.
-      decoration: BoxDecoration(
-          color: Colors.teal[300],
-          borderRadius: const BorderRadius.all(Radius.circular(20))
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
       ),
 
-      // Padding on all sides.
-      padding: const EdgeInsets.all(17),
+      onTap: () {
+        // print("tapped on container");
+        // print(title);
+        showDialog(context: context, builder: (context){
+          return notificationTileDeleteAlertDialogue(context);
+        });
+      },
 
-      child: Column(
-        children: [
+      child: Ink(
 
-          // Text for the title.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                //notificationTitles[index],
-                '$title',
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 23,
-                      color: Colors.white
-                  ),
-                )
+        // Stretch container to fit it's children.
+        //constraints: const BoxConstraints(maxHeight: double.infinity,),
+
+        // Making it look pretty.
+        decoration: BoxDecoration(
+            color: Colors.teal[300],
+            borderRadius: const BorderRadius.all(Radius.circular(20))
+        ),
+
+        // Padding on all sides.
+        padding: const EdgeInsets.all(17),
+
+        child: Column(
+          children: [
+
+            // Text for the title.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  //notificationTitles[index],
+                  '$title',
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 23,
+                        color: Colors.white
+                    ),
+                  )
+              ),
             ),
-          ),
 
-          // Text for the time.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                //notificationTitles[index],
-                '$time',
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
+            // Text for the time.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  //notificationTitles[index],
+                  "@  ${TimeOfDay.fromDateTime(time).format(context)} on ${time.month}/${time.day}/${time.year}",
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                        //fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.white
+                    ),
+                  )
+              ),
+            ),
+
+            // Spacing.
+            const SizedBox(height: 4,),
+
+            // Text for the body.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  //notificationTitles[index],
+                  '$body',
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
                       //fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white
+                        fontSize: 17,
+                        color: Colors.white
+                    ),
+                  )
+              ),
+            ),
+
+          ],
+        ),
+      ),
+
+    );
+  }
+
+  Widget announcementAlertDialogue(BuildContext context){
+
+    _newAnnouncementTitleController.clear();
+    _newAnnouncementBodyController.clear();
+
+    return AlertDialog(
+
+      // Rounding corners of the dialogue.
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15))
+      ),
+
+      title: const Text("Create Announcement"),
+      content: Form(
+          key: formKey,
+          child: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                // Announcement title input.
+                TextFormField(
+                  controller: _newAnnouncementTitleController,
+                  validator: (value) {
+                    return value!.isNotEmpty ? null : "Invalid Field";
+                  },
+                  decoration: const InputDecoration(
+                    hintText: "Enter title",
+                    // isDense: false,
+                    // contentPadding: EdgeInsets.symmetric(horizontal: 11, vertical: 0),
+                    // errorText: "Need a title",
                   ),
-                )
+                ),
+
+                // Padding
+                const SizedBox(height: 30),
+
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: TextFormField(
+                    minLines: 6, // any number you need (It works as the rows for the textarea)
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+
+                    // Controller stuff.
+                    controller: _newAnnouncementBodyController,
+                    validator: (value) {
+                      return value!.isNotEmpty ? null : "Invalid Field";
+                    },
+
+                    // Decorations
+                    decoration: const InputDecoration(
+                        hintText: "Enter message",
+                        border: OutlineInputBorder(),
+                    ),
+
+                  ),
+                ),
+
+                // Padding
+                const SizedBox(height: 30),
+
+                OverflowBar(
+                  alignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 40,
+                      width: 100,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blue,
+                          //padding: const EdgeInsets.all(16.0),
+                          //textStyle: const TextStyle(fontSize: 20),
+                        ),
+                        child: const Text('Okay'),
+                        onPressed: () {
+                          // TODO: Do cool firebase shit
+
+                          if (formKey.currentState!.validate()){
+                            Navigator.pop(context);
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 40,
+                      width: 100,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red.shade600,
+                            //padding: const EdgeInsets.all(16.0),
+                            //textStyle: const TextStyle(fontSize: 20),
+                          ),
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }
+                      ),
+                    ),
+                  ],
+                ),
+
+              ],
+            ),
+          )),
+    );
+  }
+
+  Widget notificationTileDeleteAlertDialogue(BuildContext context){
+
+    return AlertDialog(
+
+      // Rounding corners of the dialogue.
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15))
+      ),
+
+      title: const Text("Delete notification?"),
+      content: OverflowBar(
+        alignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          SizedBox(
+            height: 40,
+            width: 100,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue,
+                //padding: const EdgeInsets.all(16.0),
+                //textStyle: const TextStyle(fontSize: 20),
+              ),
+              child: const Text('Okay'),
+              onPressed: () {
+                // TODO: Do cool firebase shit
+
+                Navigator.pop(context);
+              },
             ),
           ),
-
-          // Spacing.
-          const SizedBox(height: 4,),
-
-          // Text for the body.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                //notificationTitles[index],
-                '$body',
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
-                    //fontWeight: FontWeight.bold,
-                      fontSize: 17,
-                      color: Colors.white
-                  ),
-                )
+          SizedBox(
+            height: 40,
+            width: 100,
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red.shade600,
+                  //padding: const EdgeInsets.all(16.0),
+                  //textStyle: const TextStyle(fontSize: 20),
+                ),
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }
             ),
           ),
-
         ],
       ),
     );
+  }
+
+  String? validatePassword(String value) {
+    if (!(value.length > 5) && value.isNotEmpty) {
+      return "Password should contain more than 5 characters";
+    }
+    return null;
   }
 
   @override
@@ -121,6 +313,10 @@ class _NotificationPage extends State<NotificationPage> {
                 child: GestureDetector(
                   onTap: () {
                     // Pull up an alert dialog that allows Users to make an announcement to everyone in the group.
+                    // print("working");
+                    showDialog(context: context, builder: (context){
+                      return announcementAlertDialogue(context);
+                    });
                   },
                   child: const Icon(
                     Icons.add_alert_outlined,
