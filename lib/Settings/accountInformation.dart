@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:roommates/User/user_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:get/get.dart';
 class EditProfile extends StatefulWidget {
   EditProfile({Key? key}) : super(key: key);
 
@@ -101,6 +101,7 @@ class _editProfilePage extends State<EditProfile> {
     );
   }
   void getUserData() async {
+    try {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if(user !=null) {
       DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
@@ -119,32 +120,68 @@ class _editProfilePage extends State<EditProfile> {
         });
       }
     }
+    } on FirebaseAuthException catch (e) {
+      //Error Message
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(e.message.toString()),
+            );
+          });
+    }
   }
   Future updateUserData() async {
+    try {
     String? userID = FirebaseAuth.instance.currentUser?.uid;
-    final user = UserData(
-      email: _emailController.text.trim(),
-      password: _passWordController.text.trim(),
-      username: _userNameController.text.trim(),
-      balance:balance,
-      income: income,
-      expense: expense,
-      imageURL: imageURL,
+      final user = UserData(
+        email: _emailController.text.trim(),
+        password: _passWordController.text.trim(),
+        username: _userNameController.text.trim(),
+        balance: balance,
+        income: income,
+        expense: expense,
+        imageURL: imageURL,
 
-    );
-    await FirebaseFirestore.instance.collection("Users").doc(userID).update(user.toJson());
+      );
+      await FirebaseFirestore.instance.collection("Users").doc(userID).update(
+          user.toJson());
+    }
+    on FirebaseAuthException catch (e) {
+      //Error Message
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(e.message.toString()),
+            );
+          });
+    }
   }
+
   final TextEditingController _passWordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
   Future updateEmailAndPassWord(String _email, String _newEmail, String _password, String _newPassWord) async {
+    try {
     var user = await FirebaseAuth.instance.currentUser!;
     final cred = await EmailAuthProvider.credential(email: _email, password: _password);
     await user.reauthenticateWithCredential(cred).then((value) async{
       user.updateEmail(_newEmail);
       user.updatePassword(_newPassWord);
       });
+    }
+    on FirebaseAuthException catch (e) {
+      //Error Message
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(e.message.toString()),
+            );
+          });
+    }
   }
 
 
@@ -260,6 +297,7 @@ class _editProfilePage extends State<EditProfile> {
                                 ),
                                 label:Text("Email"),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
+                                enabled: false,
                                 prefixIcon: Icon(Icons.email),
 
                               ),
@@ -286,6 +324,14 @@ class _editProfilePage extends State<EditProfile> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: ()  {
+                                  if (_passWordController.text.isEmpty ||
+                                      _userNameController.text.isEmpty) {
+                                    Get.snackbar(
+                                      "Required",
+                                      "All fields are required.",
+                                      snackPosition: SnackPosition.TOP,
+                                    );
+                                  }
                                   getImageURL();
                                   updateUserData();
                                   updateEmailAndPassWord(email,_emailController.text,password,_passWordController.text);
