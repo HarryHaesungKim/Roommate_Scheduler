@@ -6,6 +6,7 @@ class UserData {
    String? income;
    String? expense;
    String? groupID;
+   String? imageURL;
    List<String>? chatRooms;
 
 
@@ -17,7 +18,8 @@ class UserData {
      this.income,
      this.expense,
      this.groupID,
-     this.chatRooms
+     this.chatRooms,
+     this.imageURL,
   });
    UserData.formJson(Map<String, dynamic> json) {
      email = json['Email'].toString();
@@ -28,6 +30,7 @@ class UserData {
      expense = json['Expense'].toString();
      groupID = json['groupID'].toString();
      chatRooms = json['chatRooms'];
+     imageURL = json['imageURL'].toString();
    }
 
    Map<String, dynamic> toJson() {
@@ -40,6 +43,7 @@ class UserData {
      data['Expense'] = this.expense;
      data['groupID'] = this.groupID;
      data['chatRooms'] = this.chatRooms;
+     data['imageURL'] = this.imageURL;
      return data;
    }
 
