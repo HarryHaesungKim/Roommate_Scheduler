@@ -239,7 +239,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           //                     onTap: () => print(''),
           //
           //                     // Print the values of an event type here.
-          //                     title: Text(value[index].title)
+          //                     title: Text(value[index].title.toString())
           //                 ),
           //               );
           //             });
