@@ -7,6 +7,7 @@ import 'package:roommates/groceriesPage/groceriesPageController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:roommates/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../Group/groupController.dart';
 import 'groceriesView.dart';
 import 'package:roommates/User/user_model.dart';
 // @dart=2.9
@@ -111,6 +112,16 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final ScrollController _firstController = ScrollController();
   final _groceriesPageController = Get.put(GroceriesPageController());
+  String groupID = "";
+  String currentUID = "";
+  final _groupController = Get.put(groupController());
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+  void setGroupID() async {
+    groupID = await _groupController.getGroupIDFromUser(uID!);
+  }
+  void getCurrentUID() async {
+    currentUID = FirebaseAuth.instance.currentUser!.uid;
+  }
   static late MediaQueryData _mediaQueryData;
   String username = "";
   String password = "";
@@ -151,7 +162,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
   @override
   Widget build(BuildContext context) {
-    _groceriesPageController.getGroceries();
+    setGroupID();
+    getCurrentUID();
+    _groceriesPageController.getGroceries(groupID);
     _mediaQueryData = MediaQuery.of(context);
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -167,29 +180,31 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         primary: true,
                         itemCount: _groceriesPageController.groceriesList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          Groceries groceries = _groceriesPageController.groceriesList[index];
-                          var title = groceries.title;
+                          // Groceries groceries = _groceriesPageController.groceriesList[index];
+                          if(_groceriesPageController.groceriesList[index].paidName != currentUID){
+                            return Padding(padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),);
+                          }
+                          else{
+                            Groceries groceries = _groceriesPageController.groceriesList[index];
+                            return Padding(
+                              // Spacing between elements:
+                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
 
-                          return Padding(
-
-                            // Spacing between elements:
-                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-
-                            child: Container(
-                              //color: Color(coloDB!),
-                              // color: index.isEven
-                              //     ? Colors.amberAccent
-                              //     : Colors.blueAccent,
-                                child: InkWell(
-                                  child:
-                                  groceriesView(groceries),
-                                  onTap: () {
-                                    showBottomSheet(context, groceries);
-                                  },
-                                )
-
-                            ),
-                          );
+                              child: Container(
+                                //color: Color(coloDB!),
+                                // color: index.isEven
+                                //     ? Colors.amberAccent
+                                //     : Colors.blueAccent,
+                                  child: InkWell(
+                                    child:
+                                    groceriesView(groceries),
+                                    onTap: () {
+                                      showBottomSheet(context, groceries);
+                                    },
+                                  )
+                              ),
+                            );
+                          }
                         }
 
                     );
@@ -213,7 +228,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             backgroundColor: Colors.orange[700],
             onPressed:  () async {
               await Get.to(addGroceries());
-              _groceriesPageController.getGroceries();
+              _groceriesPageController.getGroceries(groupID);
             },
             child: Icon(
               Icons.add,
@@ -248,8 +263,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 //Undo
                 getCurrentBalance();
                 updateUserData(double.parse(balance) - (groceries.amount as double),groceries.amount as double);
-
-                _groceriesPageController.deleteGroceries(groceries);
+                _groceriesPageController.deleteGroceries(groupID,groceries);
                 Get.back();
               },
               clr: Colors.blue[300]),
@@ -259,7 +273,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           _buildBottomSheetButton(
               label: "Delete Groceries",
               onTap: () {
-                _groceriesPageController.deleteGroceries(groceries);
+                _groceriesPageController.deleteGroceries(groupID,groceries);
                 Get.back();
               },
               clr: Colors.red[300]),

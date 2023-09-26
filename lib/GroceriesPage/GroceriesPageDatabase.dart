@@ -8,10 +8,10 @@ final _db = FirebaseFirestore.instance;
 
 
 //add the groceries to the database
-createGroceries(Groceries groceries) async {
-  await _db.collection("Groceries").add(groceries.toJson()).then((value)
+createGroceries(String groupID, Groceries groceries) async {
+  await _db.collection("Group").doc(groupID).collection("Groceries").add(groceries.toJson()).then((value)
   =>
-      _db.collection("Groceries").doc(value.id).update({"id": value.id.toString()})).whenComplete(() =>
+      _db.collection("Group").doc(groupID).collection("Groceries").doc(value.id).update({"id": value.id.toString()})).whenComplete(() =>
       Get.snackbar("Success!",
           "Groceries has been created.")).
   catchError((error, stackTrace) {
@@ -22,8 +22,8 @@ createGroceries(Groceries groceries) async {
 
 }
 //delete the groceries to the database
-deleteGroceries(Groceries groceries) async {
-  _db.collection("Groceries").doc(groceries.id).delete().whenComplete(() =>
+deleteGroceries(String groupID, Groceries groceries) async {
+  _db.collection("Group").doc(groupID).collection("Groceries").doc(groceries.id).delete().whenComplete(() =>
       Get.snackbar("Success!",
           "Groceries has been deleted.")).
   catchError((error, stackTrace) {
@@ -32,9 +32,9 @@ deleteGroceries(Groceries groceries) async {
   });
 }
 
-getGroceries() async {
+getGroceries(String groupID) async {
   List<Map<String, dynamic>> groceries = [];
-  await _db.collection("Groceries").get().then(
+  await _db.collection("Group").doc(groupID).collection("Groceries").get().then(
           (querySnapshot) {
         for (var Grocerie in querySnapshot.docs)
         {
