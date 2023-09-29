@@ -1,10 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:number_text_input_formatter/number_text_input_formatter.dart';
 import 'package:roommates/groceriesPage/groceriesPage.dart';
 import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
+import '../Group/groupController.dart';
 import '../Task/input_field.dart';
 import '../theme.dart';
 import 'package:roommates/groceriesPage/groceriesPageController.dart';
@@ -19,9 +22,17 @@ class addGroceries extends StatefulWidget {
 
 class _AddGroceriesPageState extends State<addGroceries> {
   final GroceriesPageController _groceriesPageController = Get.find<GroceriesPageController>();
-
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+  final List<TextEditingController> _splitcontrollers = [];
+  final _groupController = Get.put(groupController());
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+  late List<String> peopleInGroup = [];
+  late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
+  late List<String> peopleinGroupIDs = [];
+  List<String> receiverids = [];
+  List<String> receiverNames = [];
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   void dispose() {
     _titleController.dispose();
@@ -40,14 +51,14 @@ class _AddGroceriesPageState extends State<addGroceries> {
     15,
     20,
   ];
-  String _selectedAssigness = "None";
+  String _selectedAssigness = "";
   List<String> AssigneesList = [
     "Harry Kim",
     "Jianwei Cheng",
     "Braden Morfin",
     "Qimeng Chao",
   ];
-  String _selectedSplit = "None";
+  String _selectedSplit = "Equal";
   List<String> splitList = [
     "Equal"
   ];
@@ -56,13 +67,21 @@ class _AddGroceriesPageState extends State<addGroceries> {
   void initState() {
     super.initState();
   }
+  void buildGroupChatList() async {
+    //user id
+    String? uID = FirebaseAuth.instance.currentUser?.uid;
+    peopleInGroup = await _groupController.getUsersInGroup(uID!);
+    peopleinGroupIDs = await _groupController.getUserIDsInGroup(uID!);
+  }
 
   @override
   Widget build(BuildContext context) {
     //Below shows the time like Sep 15, 2021
+    buildGroupChatList();
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
+    _amountController.text = "0";
     return Scaffold(
       //backgroundColor: context.theme.backgroundColor,
       appBar: AppBar(
@@ -130,79 +149,114 @@ class _AddGroceriesPageState extends State<addGroceries> {
                   ],
                 ),
               ),
-              InputField(
-                title: "Paid Name",
-                hint: "$_selectedAssigness",
-                widget: Row(
-                  children: [
-                    DropdownButton<String>(
-                      //value: _selectedRemind.toString(),
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Colors.grey,
-                        ),
-                        iconSize: 32,
-                        elevation: 4,
-                        style: subTitleTextStle,
-                        underline: Container(height: 0),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedAssigness = newValue!;
-                          });
-                        },
-                        items: AssigneesList
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.toString(),
-                            child: Text(value.toString()),
-                          );
-                        }).toList()),
-                    SizedBox(width: 6),
-                  ],
-                ),
-              ),
-              InputField(
-                title: "Split",
-                hint: "$_selectedSplit",
-                widget: Row(
-                  children: [
-                    DropdownButton<String>(
-                      //value: _selectedRemind.toString(),
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Colors.grey,
-                        ),
-                        iconSize: 32,
-                        elevation: 4,
-                        style: subTitleTextStle,
-                        underline: Container(height: 0),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedSplit = newValue!;
-                          });
-                        },
-                        items: splitList
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value.toString(),
-                            child: Text(value.toString()),
-                          );
-                        }).toList()),
-                    SizedBox(width: 6),
-                  ],
-                ),
-              ),
               SizedBox(
                 height: 18.0,
               ),
+              Text(
+                "Paid Name",
+                style: titleTextStle,
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    child: Text('Selects Assigness'),
+                    onPressed: () async{
+                      await selectAssignessDialog(context);
+                      setState(() {});
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                "Split",
+                style: titleTextStle,
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              // InputField(
+              //   title: "Split",
+              //   hint: "$_selectedSplit",
+              //   widget: Row(
+              //     children: [
+              //       DropdownButton<String>(
+              //         //value: _selectedRemind.toString(),
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: Colors.grey,
+              //           ),
+              //           iconSize: 32,
+              //           elevation: 4,
+              //           style: subTitleTextStle,
+              //           underline: Container(height: 0),
+              //           onChanged: (String? newValue) {
+              //             setState(() {
+              //               _selectedSplit = newValue!;
+              //             });
+              //           },
+              //           items: splitList
+              //               .map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value.toString(),
+              //               child: Text(value.toString()),
+              //             );
+              //           }).toList()),
+              //       SizedBox(width: 6),
+              //     ],
+              //   ),
+              // ),
+              Container(
+                color: const Color.fromARGB(255, 227, 227, 227),
+                child: SizedBox(
+                  width: double.maxFinite,
+                  height: 150,
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    thickness: 5,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: receiverNames.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        _splitcontrollers.add(new TextEditingController());
+                        _splitcontrollers[index].text = (double.parse(_amountController.text)/receiverNames.length).toPrecision(2).toString();
+                        return Row(
+                          children: <Widget>[
+                            Expanded(child: Text(receiverNames[index]),),
+                            Expanded(
+                              child:TextField(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  isDense: false,                      // Added this
+                                  contentPadding: EdgeInsets.all(3),
+                                ),
+                                inputFormatters: [PercentageTextInputFormatter()],
+                                keyboardType: TextInputType.number,
+                                controller: _splitcontrollers[index],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  _colorChips(),
-
                   ElevatedButton(
-                    child: Text('Create Grocery'),
+                    child: Text('Create'),
                     onPressed: () {
                       _validateInputs();
                     },
@@ -221,10 +275,100 @@ class _AddGroceriesPageState extends State<addGroceries> {
       ),
     );
   }
+  Future<void> selectAssignessDialog(BuildContext context) async {
+    return await showDialog(context: context, builder: (context) {
+      // Replaced textEditingController with _newChatNameController.
+      // final TextEditingController textEditingController = TextEditingController();
+      bool? isChecked = false;
+      return StatefulBuilder(builder: (context, setState) {
+        return AlertDialog(
+          title: const Text("Select who needs to be assigned"),
+          content: Form(
+              key: formKey,
+              child: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Text
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      // child: Text(
+                      //   "Select Group Members",
+                      //   style: TextStyle(
+                      //     fontWeight: FontWeight.bold,
+                      //     fontSize: 18,
+                      //   ),
+                      // ),
+                    ),
+
+                    // Padding
+                    const SizedBox(height: 20),
+
+                    // Checklist
+                    Container(
+                      // Can change color.
+                      color: const Color.fromARGB(255, 227, 227, 227),
+                      child: SizedBox(
+                        width: double.maxFinite,
+                        height: 150,
+                        child: Scrollbar(
+                          thumbVisibility: true,
+                          thickness: 5,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: peopleInGroup.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return CheckboxListTile(
+                                  value: addPeopleYesOrNo[index],
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      addPeopleYesOrNo[index] = value!;
+                                    });
+                                  },
+                                  title: Text(peopleInGroup[index])
+                              );
+                            },
+                          ),
+                        ),
+
+                      ),
+                    ),
+
+                  ],
+                ),
+              )),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Okay"),
+              onPressed: () async {
+                receiverids = [];
+                receiverNames = [];
+                // If text input is empty or not valid or no group members are selected, don't let it proceed.
+                // Switch over to ChatPage.
+                if (formKey.currentState!.validate() &&
+                    addPeopleYesOrNo.contains(true)) {
+                  for (int i = 0; i < addPeopleYesOrNo.length; i++) {
+                    if (addPeopleYesOrNo[i]) {
+                      receiverids.add(peopleinGroupIDs[i]);
+                      receiverNames.add(peopleInGroup[i]);
+                    }
+                  }
+                  Navigator.of(context);
+                  Navigator.pop(context);
+                }
+                // // TODO: Need some way to warn user that at least one checkbox needs to be checked.
+              },
+            ),
+          ],
+        );
+      });
+    });
+  }
 
   _validateInputs() {
     if (_titleController.text.isNotEmpty && _amountController.text.isNotEmpty) {
-      _addGrocerieToDB();
+      _splitBilling();
       Get.back();
     } else if (_titleController.text.isEmpty || _amountController.text.isEmpty) {
       Get.snackbar(
@@ -236,22 +380,29 @@ class _AddGroceriesPageState extends State<addGroceries> {
       print("SOMETHING ERROR");
     }
   }
+  _splitBilling() async{
+    double individualAmount = 0;
+    for(int i = 0; i < receiverids.length; i++){
+      individualAmount =(double.parse(_amountController.text)*double.parse(_splitcontrollers[i].text)*0.01);
+      _addGrocerieToDB(receiverids[i], individualAmount.toPrecision(2), _splitcontrollers[i].text);
+    }
+  }
 
-  _addGrocerieToDB() async {
-    await _groceriesPageController.addGroceries(
+  _addGrocerieToDB(String assigness, double individualAmount, String splitamount) async {
+    String groupID = await _groupController.getGroupIDFromUser(uID!);
+    await _groceriesPageController.addGroceries(groupID,
       groceries: Groceries(
-        amount: double.parse(_amountController.text),
+        // amount: double.parse(_amountController.text),
+        amount: individualAmount,
         title: _titleController.text.toString(),
         date: DateFormat.yMd().format(_selectedDate),
         remind: _selectedRemind,
-        paidName: _selectedAssigness,
-        split: _selectedSplit,
+        paidName: assigness,
+        split: splitamount,
       ),
     );
 
   }
-
-
   _colorChips() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
