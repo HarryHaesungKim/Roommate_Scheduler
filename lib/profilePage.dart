@@ -82,7 +82,7 @@ class _profilePage extends State<ProfilePage> {
                           image: DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(
-                                imageURL),
+                               imageURL),
                           )),
                     ),
                   ],

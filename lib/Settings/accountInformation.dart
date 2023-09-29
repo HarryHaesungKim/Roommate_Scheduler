@@ -11,10 +11,10 @@ class EditProfile extends StatefulWidget {
   EditProfile({Key? key}) : super(key: key);
 
   @override
-  State<EditProfile> createState() => _editProfilePage();
+  State<EditProfile> createState() => _EditProfilePage();
 }
 //Edit profile page
-class _editProfilePage extends State<EditProfile> {
+class _EditProfilePage extends State<EditProfile> {
 
   String userName = "";
   String email = "";
@@ -27,7 +27,8 @@ class _editProfilePage extends State<EditProfile> {
   final picker = ImagePicker();
 
   //Bug still
-  Future getImageURL() async {
+  Future<String> getImageURL() async {
+    String url = "";
     if(_image?.path!=null) {
       Reference referenceDirImages = FirebaseStorage.instance.ref().child(
           'images');
@@ -41,14 +42,14 @@ class _editProfilePage extends State<EditProfile> {
 //Store the file
       //Handle the error
       try {
-       await  referenceImageUpload.putFile(File(_image!.path));
-       imageURL = await referenceImageUpload.getDownloadURL();
-
+       await referenceImageUpload.putFile(File(_image!.path));
+       url = await referenceImageUpload.getDownloadURL();
       }
       catch(error){
-        print("Error!");
+        print("ALSIJLSKDJLKSJDLNSKFLNKNKLQJWLQJPINASLNX!");
       }
     }
+    return url;
   }
 
 
@@ -101,9 +102,8 @@ class _editProfilePage extends State<EditProfile> {
     );
   }
   void getUserData() async {
-    try {
     String? user = FirebaseAuth.instance.currentUser?.uid;
-    if(user !=null) {
+    if (user != null) {
       DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
           .doc(user)
           .get();
@@ -120,20 +120,10 @@ class _editProfilePage extends State<EditProfile> {
         });
       }
     }
-    } on FirebaseAuthException catch (e) {
-      //Error Message
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(e.message.toString()),
-            );
-          });
-    }
   }
   Future updateUserData() async {
-    try {
     String? userID = FirebaseAuth.instance.currentUser?.uid;
+    imageURL = await getImageURL();
       final user = UserData(
         email: _emailController.text.trim(),
         password: _passWordController.text.trim(),
@@ -146,42 +136,23 @@ class _editProfilePage extends State<EditProfile> {
       );
       await FirebaseFirestore.instance.collection("Users").doc(userID).update(
           user.toJson());
-    }
-    on FirebaseAuthException catch (e) {
-      //Error Message
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(e.message.toString()),
-            );
-          });
-    }
+
   }
 
   final TextEditingController _passWordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
-  Future updateEmailAndPassWord(String _email, String _newEmail, String _password, String _newPassWord) async {
-    try {
+  Future <bool> updateEmailAndPassWord(String _email, String _newEmail, String _password, String _newPassWord) async {
+    bool success= false;
     var user = await FirebaseAuth.instance.currentUser!;
     final cred = await EmailAuthProvider.credential(email: _email, password: _password);
     await user.reauthenticateWithCredential(cred).then((value) async{
       user.updateEmail(_newEmail);
       user.updatePassword(_newPassWord);
+      success = true;
       });
-    }
-    on FirebaseAuthException catch (e) {
-      //Error Message
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(e.message.toString()),
-            );
-          });
-    }
+    return success;
   }
 
 
@@ -206,7 +177,7 @@ class _editProfilePage extends State<EditProfile> {
               Center(
                 child: Stack(
                   children: [
-                    _image !=null ?
+                    _image != null?
                         Container(
                           width: 130,
                           height: 130,
@@ -241,7 +212,7 @@ class _editProfilePage extends State<EditProfile> {
                           image: DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(
-                                imageURL),
+                               imageURL),
                           )),
                     ),
                     Positioned(
@@ -297,7 +268,6 @@ class _editProfilePage extends State<EditProfile> {
                                 ),
                                 label:Text("Email"),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                                enabled: false,
                                 prefixIcon: Icon(Icons.email),
 
                               ),
@@ -332,16 +302,29 @@ class _editProfilePage extends State<EditProfile> {
                                       snackPosition: SnackPosition.TOP,
                                     );
                                   }
-                                  getImageURL();
-                                  updateUserData();
-                                  updateEmailAndPassWord(email,_emailController.text,password,_passWordController.text);
-                                  if (mounted) {
-                                    setState(() {
-                                      userName = _userNameController.text.trim();
-                                      password = _passWordController.text.trim();
-                                      email = _emailController.text.trim();
-                                      balance = balance;
-                                    });
+                                  else if (_passWordController.text == password &&
+                                      _userNameController.text == userName) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: Text(
+                                                "Passwords and UserNames are same"),
+                                          );
+                                        });
+                                  }
+                                   else{
+                                    updateUserData();
+                                    updateEmailAndPassWord(email,_emailController.text,password,_passWordController.text);
+                                    if (mounted) {
+                                      setState(() {
+                                        userName = _userNameController.text.trim();
+                                        password = _passWordController.text.trim();
+                                        email = _emailController.text.trim();
+                                        balance = balance;
+                                        imageURL = imageURL;
+                                      });
+                                    }
                                   }
                                 },
                                 style:ElevatedButton.styleFrom(
