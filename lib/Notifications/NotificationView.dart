@@ -79,7 +79,6 @@ class NotificationView extends StatelessWidget {
                 // Spacing
                 const SizedBox(height: 12),
 
-
                 Text(
                   notification.note!,
                   style: GoogleFonts.lato(
@@ -97,19 +96,6 @@ class NotificationView extends StatelessWidget {
             width: 0.5,
             color: Colors.grey[200]!.withOpacity(0.7),
           ),
-
-          // RotatedBox(
-          //   quarterTurns: 3,
-          //   child: Text(
-          //     notification.isCompleted == 1 ? "COMPLETED" : "TODO",
-          //     style: GoogleFonts.lato(
-          //       textStyle: TextStyle(
-          //           fontSize: 10,
-          //           fontWeight: FontWeight.bold,
-          //           color: Colors.white),
-          //     ),
-          //   ),
-          // ),
 
         ]),
       ),

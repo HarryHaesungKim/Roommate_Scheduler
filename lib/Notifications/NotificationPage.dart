@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'NotificationObject.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -38,7 +37,16 @@ class _NotificationPage extends State<NotificationPage> {
     );
   }
 
-  Widget notificationTile(title, DateTime time, body){
+  Widget notificationTile(title, DateTime time, body, type, id){
+
+    var tileColor = Colors.teal[300];
+
+    if(type == "announcement"){
+      tileColor = Colors.redAccent[200];
+    }
+    else if (type == "task"){
+      tileColor = Colors.orangeAccent[200];
+    }
 
     return InkWell(
 
@@ -50,7 +58,7 @@ class _NotificationPage extends State<NotificationPage> {
         // print("tapped on container");
         // print(title);
         showDialog(context: context, builder: (context){
-          return notificationTileDeleteAlertDialogue(context);
+          return notificationTileDeleteAlertDialogue(context, id);
         });
       },
 
@@ -61,7 +69,7 @@ class _NotificationPage extends State<NotificationPage> {
 
         // Making it look pretty.
         decoration: BoxDecoration(
-            color: Colors.teal[300],
+            color: tileColor,
             borderRadius: const BorderRadius.all(Radius.circular(20))
         ),
 
@@ -94,7 +102,7 @@ class _NotificationPage extends State<NotificationPage> {
               child: Text(
                   textAlign: TextAlign.left,
                   //notificationTitles[index],
-                  "@  ${TimeOfDay.fromDateTime(time).format(context)} on ${time.month}/${time.day}/${time.year}",
+                  "@ ${TimeOfDay.fromDateTime(time).format(context)} on ${time.month}/${time.day}/${time.year}",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
                         //fontWeight: FontWeight.bold,
@@ -210,11 +218,8 @@ class _NotificationPage extends State<NotificationPage> {
                         ),
                         child: const Text('Okay'),
                         onPressed: () {
-                          // TODO: Do cool firebase shit
-
-                          createNotification(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text);
-
                           if (formKey.currentState!.validate()){
+                            createNotification(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text);
                             Navigator.pop(context);
                           }
                         },
@@ -245,7 +250,7 @@ class _NotificationPage extends State<NotificationPage> {
     );
   }
 
-  Widget notificationTileDeleteAlertDialogue(BuildContext context){
+  Widget notificationTileDeleteAlertDialogue(BuildContext context, notificationId){
 
     return AlertDialog(
 
@@ -270,8 +275,18 @@ class _NotificationPage extends State<NotificationPage> {
               ),
               child: const Text('Okay'),
               onPressed: () {
-                // TODO: Do cool firebase shit
+                // As of this moment, all announcements are shared, and if one user
+                // deletes a notification, it deletes it from firebase and
+                // no one can see it.
 
+                // TODO: Make deleting notifications unique to all users.
+
+                final docUser = FirebaseFirestore.instance
+                .collection('Notifications')
+                .doc(notificationId);
+                docUser.delete();
+
+                // Exit the alert dialog.
                 Navigator.pop(context);
               },
             ),
@@ -297,24 +312,22 @@ class _NotificationPage extends State<NotificationPage> {
     );
   }
 
-  String? validatePassword(String value) {
-    if (!(value.length > 5) && value.isNotEmpty) {
-      return "Password should contain more than 5 characters";
-    }
-    return null;
-  }
-
   Future createNotification({required String title, required String body}) async {
     // Reference to Document.
 
     final notification = FirebaseFirestore.instance.collection('Notifications').doc();
+
+    // As of right now, groupID is all the same.
+    // TODO: Make groupID unique per user.
+    // TODO: Have the notification object save the creator user's ID.
 
     final announcement = NotificationObject(
         id: notification.id,
         title: _newAnnouncementTitleController.text,
         body: _newAnnouncementBodyController.text,
         time: DateTime.now(),
-        type: "announcement"
+        type: "announcement",
+        groupID: "12345"
     );
 
     // Create document and write data to firebase.
@@ -381,11 +394,10 @@ class _NotificationPage extends State<NotificationPage> {
                             padding: const EdgeInsets.all(8),
 
                             primary: true,
-                            //itemCount: _notificationsController.notificationsList.length,
                             itemCount: notifications.length,
 
                             itemBuilder: (context, index) {
-                              return notificationTile(notifications[index].title, notifications[index].time, notifications[index].body);
+                              return notificationTile(notifications[index].title, notifications[index].time, notifications[index].body, notifications[index].type, notifications[index].id);
                             },
 
                             // Separates the items. Invisible with a sized box rather than a divider.
@@ -397,9 +409,9 @@ class _NotificationPage extends State<NotificationPage> {
                     );
                   })
               );
-
             }
 
+            // Loading.
             else{
               return const Center(
                 child: CircularProgressIndicator(),
@@ -411,16 +423,5 @@ class _NotificationPage extends State<NotificationPage> {
       ),
     );
 
-    // return Scaffold(
-    //   backgroundColor:  Color.fromARGB(255, 227, 227, 227),
-    //   body: Padding(
-    //     padding: const EdgeInsets.only(bottom: 25),
-    //     child: Align(
-    //       alignment: Alignment.bottomCenter,
-    //       child: Text('Notification Page',
-    //         style: optionStyle,),
-    //     ),
-    //   ),
-    // );
   }
 }
