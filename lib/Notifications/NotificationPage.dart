@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'NotificationObject.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -209,6 +212,8 @@ class _NotificationPage extends State<NotificationPage> {
                         onPressed: () {
                           // TODO: Do cool firebase shit
 
+                          createNotification(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text);
+
                           if (formKey.currentState!.validate()){
                             Navigator.pop(context);
                           }
@@ -299,6 +304,30 @@ class _NotificationPage extends State<NotificationPage> {
     return null;
   }
 
+  Future createNotification({required String title, required String body}) async {
+    // Reference to Document.
+
+    final notification = FirebaseFirestore.instance.collection('Notifications').doc();
+
+    final announcement = NotificationObject(
+        id: notification.id,
+        title: _newAnnouncementTitleController.text,
+        body: _newAnnouncementBodyController.text,
+        time: DateTime.now(),
+        type: "announcement"
+    );
+
+    // Create document and write data to firebase.
+    await notification.set(announcement.toJson());
+
+  }
+
+  Stream<List<NotificationObject>> readNotifications() => FirebaseFirestore.instance
+      .collection('Notifications')
+      .snapshots()
+      .map((snapshot) =>
+      snapshot.docs.map((doc) => NotificationObject.fromJson(doc.data())).toList());
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -327,36 +356,58 @@ class _NotificationPage extends State<NotificationPage> {
           ],
         ),
 
-        body: Center(
-            child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-              return Column(
-                children: [
+        body: StreamBuilder<List<NotificationObject>>(
+          stream: readNotifications(),
+          builder: (context, snapshot){
+            if (snapshot.hasError){
+              return Text('Something went wrong! ${snapshot.data}');
+            }
+            else if (snapshot.hasData){
+              final notifications = snapshot.data!;
 
-                  SizedBox(
-                    width: constraints.maxWidth,
-                    height: constraints.maxHeight,
+              // Sorting by time.
+              notifications.sort((a, b) => a.time.compareTo(b.time));
 
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(8),
+              return Center(
+                  child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                    return Column(
+                      children: [
 
-                      primary: true,
-                      //itemCount: _notificationsController.notificationsList.length,
-                      itemCount: notificationTitles.length,
+                        SizedBox(
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
 
-                      itemBuilder: (context, index) {
-                        return notificationTile(notificationTitles[index], notificationTimes[index], notificationBodies[index]);
-                      },
+                          child: ListView.separated(
+                            padding: const EdgeInsets.all(8),
 
-                      // Separates the items. Invisible with a sized box rather than a divider.
-                      separatorBuilder: (BuildContext context, int index) => const SizedBox ( height : 10),
+                            primary: true,
+                            //itemCount: _notificationsController.notificationsList.length,
+                            itemCount: notifications.length,
 
-                    ),
-                  ),
-                ],
+                            itemBuilder: (context, index) {
+                              return notificationTile(notifications[index].title, notifications[index].time, notifications[index].body);
+                            },
+
+                            // Separates the items. Invisible with a sized box rather than a divider.
+                            separatorBuilder: (BuildContext context, int index) => const SizedBox ( height : 10),
+
+                          ),
+                        ),
+                      ],
+                    );
+                  })
               );
-            })
-        ),
 
+            }
+
+            else{
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+          },
+        )
       ),
     );
 

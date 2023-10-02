@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 //import 'package:roommates/calendarPage.dart';
 import 'package:roommates/groceriesPage/groceriesPage.dart';
 import 'package:roommates/homePage/homePage.dart';
-import 'package:roommates/NotificationPage.dart';
+import 'package:roommates/Notifications/NotificationPage.dart';
 import 'package:roommates/profilePage.dart';
 import 'calendarPage/calendarPage.dart';
 import 'strings.dart';
