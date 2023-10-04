@@ -7,6 +7,7 @@ class NotificationObject {
   final DateTime time;
   final String type;
   final String groupID;
+  String creator;
 
   NotificationObject({
     required this.id,
@@ -14,7 +15,8 @@ class NotificationObject {
     required this.body,
     required this.time,
     required this.type,
-    required this.groupID
+    required this.groupID,
+    required this.creator,
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,6 +26,7 @@ class NotificationObject {
     'time': time,
     'type': type,
     'groupID': groupID,
+    'creator': creator,
   };
 
   static NotificationObject fromJson(Map<String, dynamic> json) => NotificationObject(
@@ -32,7 +35,8 @@ class NotificationObject {
     body: json['body'],
     time: json['time'].toDate(),
     type: json['type'],
-    groupID: json['groupID']
+    groupID: json['groupID'],
+    creator: json['creator'],
   );
 
 }

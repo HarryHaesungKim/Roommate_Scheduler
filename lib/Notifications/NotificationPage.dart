@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'NotificationObject.dart';
@@ -15,6 +16,11 @@ class _NotificationPage extends State<NotificationPage> {
   List<String> notificationTitles = ["Generic title 1", "Generic title 2", "Generic title 3"];
   List<DateTime> notificationTimes = [DateTime.now(), DateTime.now(), DateTime.now()];
   List<String> notificationBodies = ["Generic body 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", "Generic body 2", "Generic body 3"];
+
+  // Current user information.
+  String userName = "";
+  String email = "";
+  String groupID = "";
 
   // Text controllers for creating a new announcement pop-up.
   final TextEditingController _newAnnouncementTitleController = TextEditingController();
@@ -219,7 +225,7 @@ class _NotificationPage extends State<NotificationPage> {
                         child: const Text('Okay'),
                         onPressed: () {
                           if (formKey.currentState!.validate()){
-                            createNotification(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text);
+                            createAnnouncement(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text);
                             Navigator.pop(context);
                           }
                         },
@@ -312,9 +318,25 @@ class _NotificationPage extends State<NotificationPage> {
     );
   }
 
-  Future createNotification({required String title, required String body}) async {
-    // Reference to Document.
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if(user !=null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          userName = list['UserName'];
+          email = list['Email'];
+          groupID = list['groupID'];
+        });
+      }
+    }
+  }
 
+  Future createAnnouncement({required String title, required String body}) async {
+    // Reference to Document.
     final notification = FirebaseFirestore.instance.collection('Notifications').doc();
 
     // As of right now, groupID is all the same.
@@ -327,7 +349,8 @@ class _NotificationPage extends State<NotificationPage> {
         body: _newAnnouncementBodyController.text,
         time: DateTime.now(),
         type: "announcement",
-        groupID: "12345"
+        groupID: groupID,
+        creator: email,
     );
 
     // Create document and write data to firebase.
@@ -335,14 +358,19 @@ class _NotificationPage extends State<NotificationPage> {
 
   }
 
+  // Getting the notifications from firebase.
   Stream<List<NotificationObject>> readNotifications() => FirebaseFirestore.instance
-      .collection('Notifications')
+      .collection('Notifications').where("groupID", isEqualTo: groupID)
       .snapshots()
       .map((snapshot) =>
       snapshot.docs.map((doc) => NotificationObject.fromJson(doc.data())).toList());
 
   @override
   Widget build(BuildContext context) {
+
+    // Getting user and group ID.
+    getUserData();
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
