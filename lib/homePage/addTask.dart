@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:roommates/Group/groupController.dart';
 
+import '../Notifications/NotificationController.dart';
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
 import '../Task/task.dart';
@@ -52,6 +53,9 @@ class _AddTaskPageState extends State<addTask> {
     'Weekly',
     'Monthly',
   ];
+
+  // Controller
+  final NotificationController notifCon = NotificationController();
 
   ///
   /// This method sets the groupID to the logged in users groupID
@@ -281,8 +285,9 @@ class _AddTaskPageState extends State<addTask> {
                       _validateInputs();
 
                       // Adding a notification of task creation.
-
-
+                      String notifTitle = "New task: ${_titleController.text}";
+                      String notifBody = "Task Description: ${_noteController.text}\nTo-do Date: ${_selectedDate.month}/${_selectedDate.day}/${_selectedDate.year}\nRepeat: $_selectedRepeat\nAssigned to: $_selectedAssigness";
+                      notifCon.createNotification(title: notifTitle, body: notifBody, type: "task");
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),

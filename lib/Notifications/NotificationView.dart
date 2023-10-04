@@ -18,11 +18,6 @@ class _NotificationPage extends State<NotificationView> {
   List<DateTime> notificationTimes = [DateTime.now(), DateTime.now(), DateTime.now()];
   List<String> notificationBodies = ["Generic body 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", "Generic body 2", "Generic body 3"];
 
-  // Current user information.
-  String userName = "";
-  String email = "";
-  String groupID = "";
-
   // Controller
   final NotificationController notifCon = NotificationController();
 
@@ -231,7 +226,7 @@ class _NotificationPage extends State<NotificationView> {
                         child: const Text('Okay'),
                         onPressed: () {
                           if (formKey.currentState!.validate()){
-                            notifCon.createNotification(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text, type: "announcement", groupID: groupID, email: email);
+                            notifCon.createNotification(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text, type: "announcement");
                             Navigator.pop(context);
                           }
                         },
@@ -325,36 +320,15 @@ class _NotificationPage extends State<NotificationView> {
     );
   }
 
-  // Gets the data of the current user.
-  void getUserData() async {
-    String? user = FirebaseAuth.instance.currentUser?.uid;
-    if(user !=null) {
-      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
-          .doc(user)
-          .get();
-      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-      if (mounted) {
-        setState(() {
-          userName = list['UserName'];
-          email = list['Email'];
-          groupID = list['groupID'];
-        });
-      }
-    }
-  }
-
   // Getting the notifications from firebase.
   Stream<List<NotificationObject>> readNotifications() => FirebaseFirestore.instance
-      .collection('Notifications').where("groupID", isEqualTo: groupID)
+      .collection('Notifications').where("groupID", isEqualTo: notifCon.groupID)
       .snapshots()
       .map((snapshot) =>
       snapshot.docs.map((doc) => NotificationObject.fromJson(doc.data())).toList());
 
   @override
   Widget build(BuildContext context) {
-
-    // Getting user and group ID.
-    getUserData();
 
     return MaterialApp(
       home: Scaffold(
