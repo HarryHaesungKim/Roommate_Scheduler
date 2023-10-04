@@ -1,117 +1,439 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/Task/task.dart';
+import 'NotificationObject.dart';
+import 'NotificationController.dart';
 
-import '../theme.dart';
-
-class NotificationView extends StatelessWidget {
-  final Task notification;
-  const NotificationView(this.notification, {super.key});
-  static late MediaQueryData _mediaQueryData;
+class NotificationView extends StatefulWidget {
+  const NotificationView({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    _mediaQueryData = MediaQuery.of(context);
-    return Container(
-      padding:
-      EdgeInsets.symmetric(horizontal: (20 / 375.0) * _mediaQueryData.size.width),
-      width: _mediaQueryData.size.width,
-      margin: EdgeInsets.only(bottom: (12 / 375.0) * _mediaQueryData.size.width),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        //  width: SizeConfig.screenWidth * 0.78,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: _getBGClr(notification.color),
-        ),
-        child: Row(children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+  State<NotificationView> createState() => _NotificationPage();
+}
 
-                Text(
-                  notification.title!,
+class _NotificationPage extends State<NotificationView> {
+
+  List<String> notificationTitles = ["Generic title 1", "Generic title 2", "Generic title 3"];
+  List<DateTime> notificationTimes = [DateTime.now(), DateTime.now(), DateTime.now()];
+  List<String> notificationBodies = ["Generic body 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", "Generic body 2", "Generic body 3"];
+
+  // Current user information.
+  String userName = "";
+  String email = "";
+  String groupID = "";
+
+  // Controller
+  final NotificationController notifCon = NotificationController();
+
+  // Text controllers for creating a new announcement pop-up.
+  final TextEditingController _newAnnouncementTitleController = TextEditingController();
+  final TextEditingController _newAnnouncementBodyController = TextEditingController();
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  Widget textWithStyle(input){
+    return Text(
+      textAlign: TextAlign.left,
+      //notificationTitles[index],
+      '$input',
+      style: GoogleFonts.lato(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 30,
+            color: Colors.grey[100]
+        ),
+      )
+    );
+  }
+
+
+  Widget notificationTile(title, DateTime time, body, type, id){
+
+    var tileColor = Colors.teal[300];
+
+    if(type == "announcement"){
+      tileColor = Colors.redAccent[200];
+    }
+    else if (type == "task"){
+      tileColor = Colors.orangeAccent[200];
+    }
+
+    return InkWell(
+
+      customBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+
+      onTap: () {
+        // print("tapped on container");
+        // print(title);
+        showDialog(context: context, builder: (context){
+          return notificationTileDeleteAlertDialogue(context, id);
+        });
+      },
+
+      child: Ink(
+
+        // Stretch container to fit it's children.
+        //constraints: const BoxConstraints(maxHeight: double.infinity,),
+
+        // Making it look pretty.
+        decoration: BoxDecoration(
+            color: tileColor,
+            borderRadius: const BorderRadius.all(Radius.circular(20))
+        ),
+
+        // Padding on all sides.
+        padding: const EdgeInsets.all(17),
+
+        child: Column(
+          children: [
+
+            // Text for the title.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  //notificationTitles[index],
+                  '$title',
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
-                        fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                        fontSize: 23,
+                        color: Colors.white
+                    ),
+                  )
+              ),
+            ),
+
+            // Text for the time.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  //notificationTitles[index],
+                  "@ ${TimeOfDay.fromDateTime(time).format(context)} on ${time.month}/${time.day}/${time.year}",
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                        //fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.white
+                    ),
+                  )
+              ),
+            ),
+
+            // Spacing.
+            const SizedBox(height: 4,),
+
+            // Text for the body.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  //notificationTitles[index],
+                  '$body',
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                      //fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: Colors.white
+                    ),
+                  )
+              ),
+            ),
+
+          ],
+        ),
+      ),
+
+    );
+  }
+
+  // Pulls up an alert dialog to create an announcement.
+  Widget announcementAlertDialogue(BuildContext context){
+
+    _newAnnouncementTitleController.clear();
+    _newAnnouncementBodyController.clear();
+
+    return AlertDialog(
+
+      // Rounding corners of the dialogue.
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15))
+      ),
+
+      title: const Text("Create Announcement"),
+      content: Form(
+          key: formKey,
+          child: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                // Announcement title input.
+                TextFormField(
+                  controller: _newAnnouncementTitleController,
+                  validator: (value) {
+                    return value!.isNotEmpty ? null : "Invalid Field";
+                  },
+                  decoration: const InputDecoration(
+                    hintText: "Enter title",
+                    // isDense: false,
+                    // contentPadding: EdgeInsets.symmetric(horizontal: 11, vertical: 0),
+                    // errorText: "Need a title",
                   ),
                 ),
 
-                const SizedBox(
-                  height: 12,
+                // Padding
+                const SizedBox(height: 30),
+
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: TextFormField(
+                    minLines: 6, // any number you need (It works as the rows for the textarea)
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+
+                    // Controller stuff.
+                    controller: _newAnnouncementBodyController,
+                    validator: (value) {
+                      return value!.isNotEmpty ? null : "Invalid Field";
+                    },
+
+                    // Decorations
+                    decoration: const InputDecoration(
+                        hintText: "Enter message",
+                        border: OutlineInputBorder(),
+                    ),
+
+                  ),
                 ),
 
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.alarm,
-                      color: Colors.grey[200],
-                      size: 18,
-                    ),
-                    const SizedBox(width: 4),
+                // Padding
+                const SizedBox(height: 30),
 
-                    // Text(
-                    //   "${notification.startTime} - ${notification.endTime}",
-                    //   style: GoogleFonts.lato(
-                    //     textStyle:
-                    //     TextStyle(fontSize: 13, color: Colors.grey[100]),
-                    //   ),
-                    // ),
-
-                    // Spacing
-                    const SizedBox(width: 12),
-
-                    Text(
-                      "${notification.date}",
-                      style: GoogleFonts.lato(
-                        textStyle:
-                        TextStyle(fontSize: 13, color: Colors.grey[100]),
+                OverflowBar(
+                  alignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 40,
+                      width: 100,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blue,
+                          //padding: const EdgeInsets.all(16.0),
+                          //textStyle: const TextStyle(fontSize: 20),
+                        ),
+                        child: const Text('Okay'),
+                        onPressed: () {
+                          if (formKey.currentState!.validate()){
+                            notifCon.createNotification(title: _newAnnouncementTitleController.text, body: _newAnnouncementBodyController.text, type: "announcement", groupID: groupID, email: email);
+                            Navigator.pop(context);
+                          }
+                        },
                       ),
                     ),
-
+                    SizedBox(
+                      height: 40,
+                      width: 100,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red.shade600,
+                            //padding: const EdgeInsets.all(16.0),
+                            //textStyle: const TextStyle(fontSize: 20),
+                          ),
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }
+                      ),
+                    ),
                   ],
                 ),
 
-                // Spacing
-                const SizedBox(height: 12),
-
-                Text(
-                  notification.note!,
-                  style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
-                  ),
-                ),
-
-
               ],
             ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10),
-            height: 60,
-            width: 0.5,
-            color: Colors.grey[200]!.withOpacity(0.7),
-          ),
+          )),
+    );
+  }
 
-        ]),
+  // Pulls up an alert dialog to delete an announcement.
+  Widget notificationTileDeleteAlertDialogue(BuildContext context, notificationId){
+
+    return AlertDialog(
+
+      // Rounding corners of the dialogue.
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15))
+      ),
+
+      title: const Text("Delete notification?"),
+      content: OverflowBar(
+        alignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          SizedBox(
+            height: 40,
+            width: 100,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue,
+                //padding: const EdgeInsets.all(16.0),
+                //textStyle: const TextStyle(fontSize: 20),
+              ),
+              child: const Text('Okay'),
+              onPressed: () {
+                // As of this moment, all announcements are shared, and if one user
+                // deletes a notification, it deletes it from firebase and
+                // no one can see it.
+
+                // TODO: Make deleting notifications unique to all users.
+
+                final docUser = FirebaseFirestore.instance
+                .collection('Notifications')
+                .doc(notificationId);
+                docUser.delete();
+
+                // Exit the alert dialog.
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          SizedBox(
+            height: 40,
+            width: 100,
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red.shade600,
+                  //padding: const EdgeInsets.all(16.0),
+                  //textStyle: const TextStyle(fontSize: 20),
+                ),
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  _getBGClr(int? no) {
-    switch (no) {
-      case 0:
-        return bluishClr;
-      case 1:
-        return pinkClr;
-      case 2:
-        return yellowClr;
-      default:
-        return bluishClr;
+  // Gets the data of the current user.
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if(user !=null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          userName = list['UserName'];
+          email = list['Email'];
+          groupID = list['groupID'];
+        });
+      }
     }
+  }
+
+  // Getting the notifications from firebase.
+  Stream<List<NotificationObject>> readNotifications() => FirebaseFirestore.instance
+      .collection('Notifications').where("groupID", isEqualTo: groupID)
+      .snapshots()
+      .map((snapshot) =>
+      snapshot.docs.map((doc) => NotificationObject.fromJson(doc.data())).toList());
+
+  @override
+  Widget build(BuildContext context) {
+
+    // Getting user and group ID.
+    getUserData();
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.orange[700],
+          title: const Text("Notifications"),
+
+          actions: <Widget>[
+            Padding(
+                padding: const EdgeInsets.only(right: 20.0),
+                child: GestureDetector(
+                  onTap: () {
+                    // Pull up an alert dialog that allows Users to make an announcement to everyone in the group.
+                    // print("working");
+                    showDialog(context: context, builder: (context){
+                      return announcementAlertDialogue(context);
+                    });
+                  },
+                  child: const Icon(
+                    Icons.add_alert_outlined,
+                    //size: 25,
+                  ),
+                )
+            ),
+          ],
+        ),
+
+        body: StreamBuilder<List<NotificationObject>>(
+          stream: readNotifications(),
+          builder: (context, snapshot){
+            if (snapshot.hasError){
+              return Text('Something went wrong! ${snapshot.data}');
+            }
+            else if (snapshot.hasData){
+              final notifications = snapshot.data!;
+
+              // Sorting by time.
+              notifications.sort((a, b) => a.time.compareTo(b.time));
+
+              return Center(
+                  child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                    return Column(
+                      children: [
+
+                        SizedBox(
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.all(8),
+
+                            primary: true,
+                            itemCount: notifications.length,
+
+                            itemBuilder: (context, index) {
+                              return notificationTile(notifications[index].title, notifications[index].time, notifications[index].body, notifications[index].type, notifications[index].id);
+                            },
+
+                            // Separates the items. Invisible with a sized box rather than a divider.
+                            separatorBuilder: (BuildContext context, int index) => const SizedBox ( height : 10),
+
+                          ),
+                        ),
+                      ],
+                    );
+                  })
+              );
+            }
+
+            // Loading.
+            else{
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+          },
+        )
+      ),
+    );
+
   }
 }
