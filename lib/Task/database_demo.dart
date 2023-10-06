@@ -28,6 +28,30 @@ class DBHelper {
     });
   }
 
+  /// This method sets the groups parentUsers to the list of parennt users given
+  /// for the groupID given
+  ///
+  ///
+  Future<void> addParentUsers(List<String> pUsers, String groupID) async {
+    final groupRef = await _db.collection("Group").doc(groupID);
+    for(int i = 0; i < pUsers.length; i++)
+      {
+        groupRef.update({'parentUsers': FieldValue.arrayUnion(pUsers)});
+      }
+  }
+
+  ///This method returns whether a group is in parent mode
+  /// or not
+  ///
+  ///
+  Future<bool> isInParentMode(String groupID) async {
+    final groupref = await _db.collection("Group").doc(groupID).get();
+    bool isParentMode = groupref.data()!['parentMode'];
+    return isParentMode;
+  }
+
+
+
   ///
   /// This method returns the list of tasks for a group given a groupID
   ///
@@ -44,6 +68,11 @@ class DBHelper {
             }
               );
     return tasks;
+  }
+
+  removeUserFromGroup(String uID) async{
+    String groupID = await getGroupID(uID);
+    final groupRef = await _db.collection("Group").doc(groupID).collection("users").doc(uID).delete();
   }
 
   ///
@@ -281,6 +310,8 @@ class DBHelper {
       Get.snackbar("ERROR", "Whoops, something went wrong.");
     });
   }
+
+
 
   // static Future<void> initDb() async {
   //   if (_db != null) {

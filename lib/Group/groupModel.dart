@@ -10,16 +10,19 @@ class GroupModel {
   bool? parentMode;
   List<String>? tasks;  //list of task ids for this group
   List<String>? users;  //list of UsersIDs in this group
+  List<String>? parentUsers;
 
 
   GroupModel({
     this.id,
     this.parentMode,
     this.tasks,
-    this.users
+    this.users,
+    this.parentUsers
   });
 
   GroupModel.fromJson(Map<String, dynamic> json) {
+    parentUsers = json['parentUsers'];
     id = json['id'].toString();
     parentMode = json['parentMode'];
     tasks = json['tasks'];
@@ -32,6 +35,7 @@ class GroupModel {
     data['parentMode'] = this.parentMode;
     data['tasks'] = this.tasks;
     data['users'] = this.users;
+    data['parentUsers'] = this.parentUsers;
     return data;
   }
 

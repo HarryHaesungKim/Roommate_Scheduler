@@ -15,6 +15,7 @@ class _profilePage extends State<ProfilePage> {
     String userName = "";
     String email = "";
     String password = "";
+    String groupID = "";
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -33,6 +34,7 @@ class _profilePage extends State<ProfilePage> {
           userName = list['UserName'];
           email = list['Email'];
           password = list['Password'];
+          groupID = list['groupID'];
         });
       }
     }
@@ -117,6 +119,7 @@ class _profilePage extends State<ProfilePage> {
 
               buildUserInformation("Username", userName),
               buildUserInformation("Email", email),
+              buildUserInformation("Group ID", groupID),
            //   buildUserInformation("Password", password),
               SizedBox(height: 15),
             ],
