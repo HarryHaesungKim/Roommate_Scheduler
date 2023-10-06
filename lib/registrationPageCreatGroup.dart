@@ -28,7 +28,8 @@ class _RegPageState extends State<registrationPage> {
   final _balance = "0";
   final _income = "0";
   final _expense = "0";
-  String _imageURL = "https://cdn.pixabay.com/photo/2016/08/31/11/54/icon-1633249_960_720.png";
+  String _imageURL = "";
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -57,6 +58,8 @@ class _RegPageState extends State<registrationPage> {
             income: _income,
             expense:  _expense,
             imageURL: _imageURL,//default picture
+            themeBrightness: "Light",
+            themeColor: "",
         );
         await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
 

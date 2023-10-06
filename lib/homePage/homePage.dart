@@ -1,4 +1,5 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/Group/groupController.dart';
@@ -9,6 +10,7 @@ import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:roommates/homePage/VotingPage.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../Task/task.dart';
@@ -34,8 +36,10 @@ class _homePage extends State<homePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Tasks",
+
       home: Scaffold(
         appBar: AppBar(
+
             backgroundColor: Colors.orange[700],
             title: const Text("Home"),
             actions: <Widget>[
@@ -281,6 +285,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 Get.back();
               },
               clr: primaryClr),
+          //Have a issue what happens if task is not completed, but user votes.
+          _buildBottomSheetButton(
+              label: "Voting Task",
+              onTap: () {
+             //  Get.to(VotingPage());
+              },
+              clr: Colors.yellow[300]),
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {

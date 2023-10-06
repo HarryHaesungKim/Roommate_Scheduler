@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class UserData {
    String? username;
    String? password;
@@ -8,6 +10,8 @@ class UserData {
    String? groupID;
    String? imageURL;
    List<String>? chatRooms;
+   String? themeBrightness; //light or dark
+   String? themeColor; // colors
 
 
    UserData({
@@ -20,6 +24,8 @@ class UserData {
      this.groupID,
      this.chatRooms,
      this.imageURL,
+     this.themeBrightness,
+     this.themeColor,
   });
    UserData.formJson(Map<String, dynamic> json) {
      email = json['Email'].toString();
@@ -31,6 +37,8 @@ class UserData {
      groupID = json['groupID'].toString();
      chatRooms = json['chatRooms'];
      imageURL = json['imageURL'].toString();
+     themeBrightness = json['themeBrightness'].toString();
+     themeColor = json['themeColor'].toString();
    }
 
    Map<String, dynamic> toJson() {
@@ -44,6 +52,9 @@ class UserData {
      data['groupID'] = this.groupID;
      data['chatRooms'] = this.chatRooms;
      data['imageURL'] = this.imageURL;
+     data['themeBrightness'] = this.themeBrightness;
+     data['themeColor'] = this.themeColor;
+
      return data;
    }
 
