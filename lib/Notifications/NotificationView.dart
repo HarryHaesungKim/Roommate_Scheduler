@@ -14,9 +14,8 @@ class NotificationView extends StatefulWidget {
 
 class _NotificationPage extends State<NotificationView> {
 
-  List<String> notificationTitles = ["Generic title 1", "Generic title 2", "Generic title 3"];
-  List<DateTime> notificationTimes = [DateTime.now(), DateTime.now(), DateTime.now()];
-  List<String> notificationBodies = ["Generic body 1 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", "Generic body 2", "Generic body 3"];
+  // The current user
+  String? currUser = FirebaseAuth.instance.currentUser?.uid;
 
   // Controller
   final NotificationController notifCon = NotificationController();
@@ -43,7 +42,7 @@ class _NotificationPage extends State<NotificationView> {
   }
 
 
-  Widget notificationTile(title, DateTime time, body, type, id){
+  Widget notificationTile(title, DateTime time, body, type, id, creator){
 
     var tileColor = Colors.teal[300];
 
@@ -102,6 +101,9 @@ class _NotificationPage extends State<NotificationView> {
               ),
             ),
 
+            // // Spacing.
+            // const SizedBox(height: 4,),
+
             // Text for the time.
             Align(
               alignment: Alignment.centerLeft,
@@ -111,8 +113,28 @@ class _NotificationPage extends State<NotificationView> {
                   "@ ${TimeOfDay.fromDateTime(time).format(context)} on ${time.month}/${time.day}/${time.year}",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
-                        //fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                      //fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.white
+                    ),
+                  )
+              ),
+            ),
+
+            // // Spacing.
+            // const SizedBox(height: 4,),
+
+            // Text for the creator.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  //notificationTitles[index],
+                  "From: $creator",
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                      //fontWeight: FontWeight.bold,
+                        fontSize: 14,
                         color: Colors.white
                     ),
                   )
@@ -120,7 +142,7 @@ class _NotificationPage extends State<NotificationView> {
             ),
 
             // Spacing.
-            const SizedBox(height: 4,),
+            const SizedBox(height: 2,),
 
             // Text for the body.
             Align(
@@ -290,7 +312,9 @@ class _NotificationPage extends State<NotificationView> {
                 // TODO: Make deleting notifications unique to all users.
 
                 final docUser = FirebaseFirestore.instance
-                .collection('Notifications')
+                    .collection('Users')
+                    .doc(currUser)
+                    .collection('Notifications')
                 .doc(notificationId);
                 docUser.delete();
 
@@ -321,11 +345,16 @@ class _NotificationPage extends State<NotificationView> {
   }
 
   // Getting the notifications from firebase.
-  Stream<List<NotificationObject>> readNotifications() => FirebaseFirestore.instance
-      .collection('Notifications').where("groupID", isEqualTo: notifCon.groupID)
-      .snapshots()
-      .map((snapshot) =>
-      snapshot.docs.map((doc) => NotificationObject.fromJson(doc.data())).toList());
+  Stream<List<NotificationObject>> readNotifications() {
+    return FirebaseFirestore.instance
+        .collection('Users')
+        .doc(currUser)
+        .collection('Notifications')
+        .snapshots()
+        .map((snapshot) =>
+        snapshot.docs.map((doc) => NotificationObject.fromJson(doc.data()))
+            .toList());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -383,7 +412,7 @@ class _NotificationPage extends State<NotificationView> {
                             itemCount: notifications.length,
 
                             itemBuilder: (context, index) {
-                              return notificationTile(notifications[index].title, notifications[index].time, notifications[index].body, notifications[index].type, notifications[index].id);
+                              return notificationTile(notifications[index].title, notifications[index].time, notifications[index].body, notifications[index].type, notifications[index].id, notifications[index].creator);
                             },
 
                             // Separates the items. Invisible with a sized box rather than a divider.
@@ -408,6 +437,5 @@ class _NotificationPage extends State<NotificationView> {
         )
       ),
     );
-
   }
 }
