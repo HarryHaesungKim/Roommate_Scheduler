@@ -256,7 +256,7 @@ class _homePage extends State<homePage> {
                 );
               // await Get.to(addTask());
               // taskCon.getTasks(currGroup);
-              // Get.lazyPut(()=>taskController());
+              Get.lazyPut(()=>taskController());
               },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
