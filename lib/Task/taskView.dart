@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/Task/task.dart';
+import 'package:roommates/Task/TaskObject.dart';
 
 import '../theme.dart';
 
 class taskView extends StatelessWidget {
-  final Task task;
+  final TaskObject task;
   taskView(this.task);
   static late MediaQueryData _mediaQueryData;
 
@@ -18,7 +18,7 @@ class taskView extends StatelessWidget {
       width: _mediaQueryData.size.width,
       margin: EdgeInsets.only(bottom: (12 / 375.0) * _mediaQueryData.size.width),
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -33,13 +33,13 @@ class taskView extends StatelessWidget {
 
                   task.title!,
                   style: GoogleFonts.lato(
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Row(
@@ -50,7 +50,7 @@ class taskView extends StatelessWidget {
                       color: Colors.grey[200],
                       size: 18,
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       "${task.startTime} - ${task.endTime}",
                       style: GoogleFonts.lato(
@@ -58,7 +58,7 @@ class taskView extends StatelessWidget {
                         TextStyle(fontSize: 13, color: Colors.grey[100]),
                       ),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Text(
                       "${task.date}",
                       style: GoogleFonts.lato(
@@ -68,7 +68,7 @@ class taskView extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   task.note!,
                   style: GoogleFonts.lato(
@@ -79,7 +79,7 @@ class taskView extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             height: 60,
             width: 0.5,
             color: Colors.grey[200]!.withOpacity(0.7),
@@ -89,7 +89,7 @@ class taskView extends StatelessWidget {
             child: Text(
               task.isCompleted == 1 ? "COMPLETED" : "TODO",
               style: GoogleFonts.lato(
-                textStyle: TextStyle(
+                textStyle: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),

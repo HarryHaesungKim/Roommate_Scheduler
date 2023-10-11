@@ -8,7 +8,7 @@ import 'package:roommates/Group/groupController.dart';
 import '../Notifications/NotificationController.dart';
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
-import '../Task/task.dart';
+import '../Task/TaskObject.dart';
 import '../Task/taskController.dart';
 import '../theme.dart';
 
@@ -104,7 +104,7 @@ class _AddTaskPageState extends State<addTask> {
       ),
       backgroundColor:  Color.fromARGB(255, 227, 227, 227),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +122,7 @@ class _AddTaskPageState extends State<addTask> {
                 title: "Date",
                 hint: DateFormat.yMd().format(_selectedDate),
                 widget: IconButton(
-                  icon: (Icon(
+                  icon: (const Icon(
                     Icons.calendar_month_sharp,
                     color: Colors.grey,
                   )),
@@ -326,7 +326,8 @@ class _AddTaskPageState extends State<addTask> {
     String groupID = await _groupController.getGroupIDFromUser(uID!);
 
     await _taskController.addTask(groupID,
-      task: Task(
+      task: TaskObject(
+        id: '',
         note: _noteController.text.toString(),
         title: _titleController.text.toString(),
         date: DateFormat.yMd().format(_selectedDate),
@@ -337,7 +338,7 @@ class _AddTaskPageState extends State<addTask> {
         color: _selectedColor,
         isCompleted: 0,
         assignedUserID: uID,
-        assignedUserName: _selectedAssigness
+        assignedUserName: _selectedAssigness,
       ),
 
     );
