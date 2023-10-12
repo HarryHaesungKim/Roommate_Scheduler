@@ -365,24 +365,24 @@ class _NotificationPage extends State<NotificationView> {
           backgroundColor: Colors.orange[700],
           title: const Text("Notifications"),
 
-          actions: <Widget>[
-            Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: GestureDetector(
-                  onTap: () {
-                    // Pull up an alert dialog that allows Users to make an announcement to everyone in the group.
-                    // print("working");
-                    showDialog(context: context, builder: (context){
-                      return announcementAlertDialogue(context);
-                    });
-                  },
-                  child: const Icon(
-                    Icons.add_alert_outlined,
-                    //size: 25,
-                  ),
-                )
-            ),
-          ],
+          // actions: <Widget>[
+          //   Padding(
+          //       padding: const EdgeInsets.only(right: 20.0),
+          //       child: GestureDetector(
+          //         onTap: () {
+          //           // Pull up an alert dialog that allows Users to make an announcement to everyone in the group.
+          //           // print("working");
+          //           showDialog(context: context, builder: (context){
+          //             return announcementAlertDialogue(context);
+          //           });
+          //         },
+          //         child: const Icon(
+          //           Icons.add_alert_outlined,
+          //           //size: 25,
+          //         ),
+          //       )
+          //   ),
+          // ],
         ),
 
         body: StreamBuilder<List<NotificationObject>>(
@@ -412,7 +412,59 @@ class _NotificationPage extends State<NotificationView> {
                             itemCount: notifications.length,
 
                             itemBuilder: (context, index) {
-                              return notificationTile(notifications[index].title, notifications[index].time, notifications[index].body, notifications[index].type, notifications[index].id, notifications[index].creator);
+
+                              // Extra padding at the top (for aesthetic purposes).
+                              if (index == 0) {
+                                return Padding(
+
+                                    padding: const EdgeInsets.fromLTRB(
+                                        10, 5, 10, 0),
+
+                                    // The task tiles.
+                                    child: notificationTile(
+                                        notifications[index].title,
+                                        notifications[index].time,
+                                        notifications[index].body,
+                                        notifications[index].type,
+                                        notifications[index].id,
+                                        notifications[index].creator)
+                                );
+                              }
+
+                              // Adding extra padding at the last item for the button (so that it doesn't overlap).
+                              else if (index == notifications.length - 1) {
+                                return Padding(
+
+                                    padding: const EdgeInsets.fromLTRB(
+                                        10, 0, 10, 75),
+
+                                    // The task tiles.
+                                    child: notificationTile(
+                                        notifications[index].title,
+                                        notifications[index].time,
+                                        notifications[index].body,
+                                        notifications[index].type,
+                                        notifications[index].id,
+                                        notifications[index].creator)
+                                );
+                              }
+
+                              else {
+                                return Padding(
+
+                                  // Spacing between elements:
+                                    padding: const EdgeInsets.fromLTRB(
+                                        10, 0, 10, 0),
+
+                                    // The task tiles.
+                                    child: notificationTile(
+                                        notifications[index].title,
+                                        notifications[index].time,
+                                        notifications[index].body,
+                                        notifications[index].type,
+                                        notifications[index].id,
+                                        notifications[index].creator));
+                              }
                             },
 
                             // Separates the items. Invisible with a sized box rather than a divider.
@@ -434,7 +486,17 @@ class _NotificationPage extends State<NotificationView> {
             }
 
           },
-        )
+        ),
+
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.orange[700],
+            onPressed: () async {
+              showDialog(context: context, builder: (context){
+                return announcementAlertDialogue(context);
+              });
+            },child: const Icon(Icons.add_alert_outlined)
+        ),
+
       ),
     );
   }
