@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/Task/task.dart';
+import 'package:roommates/Task/TaskObject.dart';
 
 import '../theme.dart';
 
 class NotificationBubble extends StatelessWidget {
-  final Task notification;
+  final TaskObject notification;
   const NotificationBubble(this.notification, {super.key});
   static late MediaQueryData _mediaQueryData;
 
