@@ -43,12 +43,9 @@ class _profilePage extends State<ProfilePage> {
     getUserData();
     return MaterialApp(
       theme: showOption(themeBrightness),
-      //darkTheme: darkTheme,
       home: Scaffold(
-      //  backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
-          leading: null,
-        //  backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: setAppBarColor(themeColor,themeBrightness), //appbar
           title: const Text("Profile"),
           actions: <Widget>[
             Padding(
@@ -69,7 +66,7 @@ class _profilePage extends State<ProfilePage> {
           padding: EdgeInsets.only(left: 15, top: 20, right: 15),
           child: GestureDetector(
             onTap: () {
-              FocusScope.of(context).unfocus();
+            FocusScope.of(context).unfocus();
             },
             child: ListView(
               children: [
@@ -103,6 +100,12 @@ class _profilePage extends State<ProfilePage> {
                     TextFormField(
                       decoration: InputDecoration(
                         label:Text("Full Name"),
+                        labelStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'OpenSans',
+                          color: Colors.black,
+                        ),
                         hintText: userName,
                         enabled: false,
                         hintStyle: TextStyle(
@@ -112,7 +115,7 @@ class _profilePage extends State<ProfilePage> {
                           color: Colors.black,
                         ),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: Icon(Icons.people),
+                        prefixIcon: Icon(Icons.people,color: Colors.black),
 
                       ),
                     ),
@@ -121,6 +124,12 @@ class _profilePage extends State<ProfilePage> {
                       decoration: InputDecoration(
                         hintText: email,
                         enabled: false,
+                        labelStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'OpenSans',
+                          color: Colors.black,
+                        ),
                         hintStyle: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -129,7 +138,7 @@ class _profilePage extends State<ProfilePage> {
                         ),
                         label:Text("Email"),
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        prefixIcon: Icon(Icons.email),
+                        prefixIcon: Icon(Icons.email,color: Colors.black,),
 
                       ),
                     ),

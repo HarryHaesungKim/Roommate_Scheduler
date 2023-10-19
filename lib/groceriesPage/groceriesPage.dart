@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:roommates/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Group/groupController.dart';
+import '../themeData.dart';
 import 'groceriesView.dart';
 import 'package:roommates/User/user_model.dart';
 // @dart=2.9
@@ -25,6 +26,8 @@ class _groceriesPage extends State<groceriesPage> {
   String balance = "";
   String income = "";
   String expense = "";
+  String themeBrightness = "";
+  String themeColor = "";
   Future getCurrentBalance() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if (user != null) {
@@ -40,6 +43,8 @@ class _groceriesPage extends State<groceriesPage> {
           balance = list['Balance'];
           income = list['Income'];
           expense = list['Expense'];
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
         });
       }
     }
@@ -63,11 +68,15 @@ class _groceriesPage extends State<groceriesPage> {
   Widget build(BuildContext context) {
     getCurrentBalance();
     return MaterialApp(
+      theme: showOption(themeBrightness),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.orange[700],
+          backgroundColor: setAppBarColor(themeColor, themeBrightness),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           title: const Text("Groceries"),
-
         ),
 
         body: Column(
@@ -129,6 +138,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   String balance = "";
   String income = "";
   String expense = "";
+  String themeBrightness = "";
+  String themeColor = "";
   Future updateUserData(double newBanlance,double amount) async {
     String? userID = FirebaseAuth.instance.currentUser?.uid;
     final user = UserData(
@@ -160,10 +171,26 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       }
     }
   }
+  Future getCurrentTheme() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if (user != null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     setGroupID();
     getCurrentUID();
+    getCurrentTheme();
     _groceriesPageController.getGroceries(groupID);
     _mediaQueryData = MediaQuery.of(context);
     return LayoutBuilder(
@@ -225,7 +252,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         children: [
           // Add task button
           FloatingActionButton(
-            backgroundColor: Colors.orange[700],
+            backgroundColor: setAppBarColor(themeColor, themeBrightness),
             onPressed:  () async {
               await Get.to(addGroceries());
               _groceriesPageController.getGroceries(groupID);

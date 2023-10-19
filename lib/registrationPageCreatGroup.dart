@@ -59,7 +59,7 @@ class _RegPageState extends State<registrationPage> {
             expense:  _expense,
             imageURL: _imageURL,//default picture
             themeBrightness: "Light",
-            themeColor: "",
+            themeColor: "Orange",
         );
         await FirebaseFirestore.instance.collection("Users").doc(userID).set(user.toJson());
 
