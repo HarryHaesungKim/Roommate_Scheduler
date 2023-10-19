@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 //import 'package:roommates/calendarPage.dart';
-import 'package:roommates/groceriesPage/groceriesPage.dart';
+import 'package:roommates/CostSplit/CostSplitView.dart';
 import 'package:roommates/homePage/homePage.dart';
 import 'package:roommates/Notifications/NotificationView.dart';
 import 'package:roommates/profilePage.dart';
@@ -22,7 +22,7 @@ class _mainPageState extends State<mainPage> {
   final screens = [
     homePage(),
     calendarPage(),
-    groceriesPage(),
+    CostSplitView(),
     NotificationView(),
     ProfilePage(),
   ];
@@ -48,7 +48,7 @@ class _mainPageState extends State<mainPage> {
 
       case 2:
         {
-          title = "Groceries";
+          title = "Cost Split";
         }
         break;
 
@@ -120,7 +120,7 @@ class _mainPageState extends State<mainPage> {
                 ),
                 GButton(
                   icon: Icons.money,
-                  text: "Groceries",
+                  text: "Cost Split",
                 ),
                 GButton(
                   icon: Icons.notifications,
