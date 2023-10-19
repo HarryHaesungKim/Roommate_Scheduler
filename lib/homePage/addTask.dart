@@ -209,7 +209,6 @@ class _AddTaskPageState extends State<addTask> {
                 widget: Row(
                   children: [
                     Container(
-
                       child: DropdownButton<String>(
                           dropdownColor: Colors.blueGrey,
                           //value: _selectedRemind.toString(),

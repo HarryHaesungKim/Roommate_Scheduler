@@ -1,25 +1,113 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:roommates/User/user_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:get/get.dart';
 
+import '../themeData.dart';
 class EditProfile extends StatefulWidget {
   EditProfile({Key? key}) : super(key: key);
 
   @override
-  State<EditProfile> createState() => _editProfilePage();
+  State<EditProfile> createState() => _EditProfilePage();
 }
 //Edit profile page
-class _editProfilePage extends State<EditProfile> {
+class _EditProfilePage extends State<EditProfile> {
+
   String userName = "";
   String email = "";
   String password = "";
   String balance = "";
   String income ="";
   String expense = "";
+  File? _image;
+  String imageURL = "";
+  String themeBrightness = "";
+  String themeColor = "";
+  final picker = ImagePicker();
+
+  //Bug still
+  Future<String> getImageURL() async {
+    String url = "";
+    if(_image?.path!=null) {
+      Reference referenceDirImages = FirebaseStorage.instance.ref().child(
+          'images');
+//Create a unique name
+      String uniqueFileName = DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString();
+//Create a reference for the image to be stored
+      Reference referenceImageUpload = referenceDirImages.child(uniqueFileName);
+//Store the file
+      //Handle the error
+      try {
+       await referenceImageUpload.putFile(File(_image!.path));
+       url = await referenceImageUpload.getDownloadURL();
+      }
+      catch(error){
+        print("ALSIJLSKDJLKSJDLNSKFLNKNKLQJWLQJPINASLNX!");
+      }
+    }
+    return url;
+  }
+
+
+  //Image Picker function to get image from gallery
+  Future getImageFromGallery() async {
+    final file = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (file != null) {
+        _image = File(file.path);
+
+      }
+    });
+  }
+
+  //Image Picker function to get image from camera
+  Future getImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
+  //Show options to get image from camera or gallery
+  Future showOptions() async {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            child: Text('Photo Gallery'),
+            onPressed: () {
+              // close the options modal
+              Navigator.of(context).pop();
+              // get image from gallery
+              getImageFromGallery();
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: Text('Camera'),
+            onPressed: () {
+              // close the options modal
+              Navigator.of(context).pop();
+              // get image from camera
+              getImageFromCamera();
+            },
+          ),
+        ],
+      ),
+    );
+  }
   void getUserData() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
-    if(user !=null) {
+    if (user != null) {
       DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
           .doc(user)
           .get();
@@ -32,44 +120,61 @@ class _editProfilePage extends State<EditProfile> {
           balance = list['Balance'];
           income = list['Income'];
           expense = list['Expense'];
+          imageURL = list['imageURL'];
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
         });
       }
     }
   }
   Future updateUserData() async {
     String? userID = FirebaseAuth.instance.currentUser?.uid;
-    final user = UserData(
-      email: _emailController.text.trim(),
-      password: _passWordController.text.trim(),
-      username: _userNameController.text.trim(),
-      balance:balance,
-      income: income,
-      expense: expense,
-    );
+    imageURL = await getImageURL();
+      final user = UserData(
+        email: _emailController.text.trim(),
+        password: _passWordController.text.trim(),
+        username: _userNameController.text.trim(),
+        balance: balance,
+        income: income,
+        expense: expense,
+        imageURL: imageURL,
+        themeBrightness: themeBrightness,
+        themeColor: themeColor,
+      );
+      await FirebaseFirestore.instance.collection("Users").doc(userID).update(
+          user.toJson());
 
-    await FirebaseFirestore.instance.collection("Users").doc(userID).update(user.toJson());
   }
+
   final TextEditingController _passWordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
-  Future updateEmailAndPassWord(String _email, String _newEmail, String _password, String _newPassWord) async {
+  Future <bool> updateEmailAndPassWord(String _email, String _newEmail, String _password, String _newPassWord) async {
+    bool success= false;
     var user = await FirebaseAuth.instance.currentUser!;
     final cred = await EmailAuthProvider.credential(email: _email, password: _password);
     await user.reauthenticateWithCredential(cred).then((value) async{
       user.updateEmail(_newEmail);
       user.updatePassword(_newPassWord);
+      success = true;
       });
+    return success;
   }
 
 
   @override
   Widget build(BuildContext context) {
     getUserData();
-    return Scaffold(
+    return MaterialApp(
+        theme: showOption(themeBrightness),
+        home: Scaffold(
     appBar: AppBar(
-      leading: null,
-      backgroundColor: Colors.orange[700],
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      backgroundColor: setAppBarColor(themeColor, themeBrightness),
       title: const Text("Edit Profile"),
 
     ),
@@ -84,6 +189,26 @@ class _editProfilePage extends State<EditProfile> {
               Center(
                 child: Stack(
                   children: [
+                    _image != null?
+                        Container(
+                          width: 130,
+                          height: 130,
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 4, color: Colors.white),
+                              boxShadow: [
+                                BoxShadow(
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    color: Colors.black.withOpacity(0.1))
+                              ],
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image:FileImage(
+                                  _image!
+                                ),
+                              )),
+                        ):
                     Container(
                       width: 130,
                       height: 130,
@@ -99,7 +224,7 @@ class _editProfilePage extends State<EditProfile> {
                           image: DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(
-                                "https://cdn.pixabay.com/photo/2016/08/31/11/54/icon-1633249_960_720.png"),
+                               imageURL),
                           )),
                     ),
                     Positioned(
@@ -115,9 +240,9 @@ class _editProfilePage extends State<EditProfile> {
                                 color: Colors.white,
                               ),
                               color: Colors.blue),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
+                          child: IconButton(
+                            onPressed: showOptions,
+                            icon: Icon(Icons.edit),
                           ),
                         )),
                   ],
@@ -155,7 +280,7 @@ class _editProfilePage extends State<EditProfile> {
                                 ),
                                 label:Text("Email"),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                                prefixIcon: Icon(Icons.email),
+                                prefixIcon: Icon(Icons.email,color: Colors.black)
 
                               ),
                             ),
@@ -172,7 +297,7 @@ class _editProfilePage extends State<EditProfile> {
                                   color: Colors.black,
                                 ),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                                prefixIcon: Icon(Icons.password),
+                                prefixIcon: Icon(Icons.password,color: Colors.black),
 
                               ),
                             ),
@@ -181,22 +306,48 @@ class _editProfilePage extends State<EditProfile> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: ()  {
-                                  updateUserData();
-                                  updateEmailAndPassWord(email,_emailController.text,password,_passWordController.text);
-                                  if (mounted) {
-                                    setState(() {
-                                      userName = _userNameController.text.trim();
-                                      password = _passWordController.text.trim();
-                                      email = _emailController.text.trim();
-                                      balance = balance;
-                                    });
+                                  if (_passWordController.text.isEmpty || _image==null||
+                                      _userNameController.text.isEmpty) {
+                                    Get.snackbar(
+                                      "Required",
+                                      "All fields are required.",
+                                      snackPosition: SnackPosition.TOP,
+                                    );
+                                  }
+                                  else if (_passWordController.text == password &&
+                                      _userNameController.text == userName) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: Text(
+                                                "Passwords and UserNames are same"),
+                                          );
+                                        });
+                                  }
+                                   else{
+                                    updateEmailAndPassWord(email,_emailController.text.trim(),password,_passWordController.text.trim());
+                                    updateUserData();
+                                    if (mounted) {
+                                      setState(() {
+                                        userName = _userNameController.text.trim();
+                                        password = _passWordController.text.trim();
+                                        email = _emailController.text.trim();
+                                        balance = balance;
+                                        imageURL = imageURL;
+                                        themeColor = themeColor;
+                                        themeBrightness = themeBrightness;
+                                        income = income;
+                                        expense = expense;
+                                      });
+                                    }
                                   }
                                 },
                                 style:ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.orange,side: BorderSide.none, shape: const StadiumBorder()
+                                    backgroundColor: setAppBarColor(themeColor, themeBrightness),side: BorderSide.none, shape: const StadiumBorder()
                                 ) ,
                                 child: const Text(
-                                  "Edit Profile",style: TextStyle(color:Colors.black),
+                                  "Edit Profile",style: TextStyle(color:Colors.white),
                                 ),
                               ),
                             )
@@ -207,11 +358,9 @@ class _editProfilePage extends State<EditProfile> {
                             ),
         ),
       ),
+        )
     );
 }
-
-
-
 
 }
 
