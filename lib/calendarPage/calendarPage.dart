@@ -96,46 +96,46 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.orange[700],
           onPressed: () async {
-        // show a dialog for user to input event name
-        // showDialog(context: context, builder: (context) {
-        //   return AlertDialog(
-        //     scrollable: true,
-        //     title: const Text("Event Name"),
-        //     content: Padding(
-        //       padding: EdgeInsets.all(8),
-        //       child: TextField(
-        //         controller: _eventController,
-        //       )
-        //     ),
-        //     actions: [
-        //       ElevatedButton(
-        //         onPressed: () async{
-        //           Store the event name into the map
-        //           if (events.containsKey(_selectedDay)) {
-        //             events[_selectedDay]?.add(Event(_eventController.text));
-        //           }
-        //           else{
-        //             events.addAll({
-        //               _selectedDay!: [Event(_eventController.text)]
-        //               //_selectedDay!: [Event("hahahoohee")]
-        //             });
-        //           }
-        //           Navigator.of(context).pop();
-        //           _selectedEvents.value = _getEventsForDay(_selectedDay!);
-        //
-        //           // Need to reload the calendar.
-        //           setState(() {});
-        //
-        //         },
-        //         child: const Text("Submit"),
-        //       )
-        //     ],
-        //   );
-        //
-        // });
-        await Get.to(addEvent());
-        _eventController.getEvents(groupID);
-      },child: const Icon(Icons.add)),
+            // show a dialog for user to input event name
+            // showDialog(context: context, builder: (context) {
+            //   return AlertDialog(
+            //     scrollable: true,
+            //     title: const Text("Event Name"),
+            //     content: Padding(
+            //       padding: EdgeInsets.all(8),
+            //       child: TextField(
+            //         controller: _eventController,
+            //       )
+            //     ),
+            //     actions: [
+            //       ElevatedButton(
+            //         onPressed: () async{
+            //           Store the event name into the map
+            //           if (events.containsKey(_selectedDay)) {
+            //             events[_selectedDay]?.add(Event(_eventController.text));
+            //           }
+            //           else{
+            //             events.addAll({
+            //               _selectedDay!: [Event(_eventController.text)]
+            //               //_selectedDay!: [Event("hahahoohee")]
+            //             });
+            //           }
+            //           Navigator.of(context).pop();
+            //           _selectedEvents.value = _getEventsForDay(_selectedDay!);
+            //
+            //           // Need to reload the calendar.
+            //           setState(() {});
+            //
+            //         },
+            //         child: const Text("Submit"),
+            //       )
+            //     ],
+            //   );
+            //
+            // });
+            await Get.to(addEvent());
+            _eventController.getEvents(groupID);
+          },child: const Icon(Icons.add)),
 
       body: Column(
         children: [
@@ -170,7 +170,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             },
             // Allows users to keep their selected dates between closing/reopening the app.
             // Currently commented out because I want it to reset to the current date. We can change this if we wanted to.
-           onPageChanged: (focusedDay) {
+            onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
 
@@ -180,49 +180,49 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           const SizedBox(height: 8.0),
 
           Expanded(
-              child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints){
-                    return Column(
-                      children:[
-                        SizedBox(
-                            width: constraints.maxWidth - constraints.maxWidth * 0.05,
-                            height: constraints.maxHeight - constraints.maxHeight * 0.2,
-                            child: Obx(() {
-                              //thumbVisibility: true,
-                              //thickness: 10,
-                              return ListView.builder(
-                                  primary: true,
-                                  itemCount: _eventController.eventsMap[selectedDayString]?.length ?? 0,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    //Event event = _eventController.eventList[index]
-                                    // print("_eventController.eventsMap[_focusedDay]?.length");
-                                    print(_eventController.eventsMap[selectedDayString]?.length);
-                                    int temp = _eventController.eventsMap[selectedDayString]![index];
-                                    Event event = _eventController.eventList[temp];
-                                    var title = event.title;
-                                    return Padding(
-                                      // Spacing between elements:
-                                      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+            child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints){
+                  return Column(
+                    children:[
+                      SizedBox(
+                          width: constraints.maxWidth - constraints.maxWidth * 0.05,
+                          height: constraints.maxHeight - constraints.maxHeight * 0.2,
+                          child: Obx(() {
+                            //thumbVisibility: true,
+                            //thickness: 10,
+                            return ListView.builder(
+                                primary: true,
+                                itemCount: _eventController.eventsMap[selectedDayString]?.length ?? 0,
+                                itemBuilder: (BuildContext context, int index) {
+                                  //Event event = _eventController.eventList[index]
+                                  // print("_eventController.eventsMap[_focusedDay]?.length");
+                                  print(_eventController.eventsMap[selectedDayString]?.length);
+                                  int temp = _eventController.eventsMap[selectedDayString]![index];
+                                  Event event = _eventController.eventList[temp];
+                                  var title = event.title;
+                                  return Padding(
+                                    // Spacing between elements:
+                                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
 
-                                      child: Container(
-                                          child: InkWell(
-                                            child:
-                                            eventView(event),
-                                            onTap: () {
-                                              showBottomSheet(context, event);
-                                            },
-                                          )
-                                      ),
-                                    );
-                                  }
+                                    child: Container(
+                                        child: InkWell(
+                                          child:
+                                          eventView(event),
+                                          onTap: () {
+                                            showBottomSheet(context, event);
+                                          },
+                                        )
+                                    ),
+                                  );
+                                }
 
-                              );
-                            })
-                        ),
-                      ],
-                    );
-                  }
-              ),
+                            );
+                          })
+                      ),
+                    ],
+                  );
+                }
+            ),
           )
 
 
@@ -265,7 +265,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
         selectedDayString = DateFormat('M/d/yyyy').format(_selectedDay!);
-       //_selectedEvents.value = _getEventsForDay(selectedDay!);
+        //_selectedEvents.value = _getEventsForDay(selectedDay!);
       });
     }
   }

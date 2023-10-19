@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/Location/currentLocation.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/Settings/accountInformation.dart';
 import 'package:roommates/Settings/changeThemePage.dart';
@@ -7,6 +9,7 @@ import 'package:roommates/Settings/helpMenu.dart';
 import 'package:roommates/Settings/mangageBalance.dart';
 import 'package:roommates/Settings/mangageGroupMember.dart';
 import 'package:roommates/User/user_model.dart';
+import 'package:roommates/themeData.dart';
 class settingsProfile extends StatefulWidget {
   const settingsProfile({Key? key}) : super(key: key);
 
@@ -15,17 +18,41 @@ class settingsProfile extends StatefulWidget {
 }
 
 class _settingsProfileState extends State<settingsProfile> {
+  String themeBrightness = "";
+  String themeColor = "";
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: ((context) => LoginPage())));
   }
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if(user !=null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    getUserData();
+    return MaterialApp(
+      theme: showOption(themeBrightness),
+       home: Scaffold(
         appBar: AppBar(
-        backgroundColor: Colors.orange[700],
-        title: const Text("Settings"),
+        backgroundColor: setAppBarColor(themeColor, themeBrightness),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: const Text("Settings"),
     ),
     body: SingleChildScrollView(
       child: Column(
@@ -36,7 +63,7 @@ class _settingsProfileState extends State<settingsProfile> {
             children: [
               Icon(
                 Icons.person,
-                color: Colors.orange,
+                color: setAppBarColor(themeColor, themeBrightness),
               ),
               SizedBox(width: 10,),
               Text("Account",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
@@ -49,7 +76,7 @@ class _settingsProfileState extends State<settingsProfile> {
               children:  <Widget>[
                 //Manage Account Information
                 ListTile(
-                  leading: Icon(Icons.password,color: Colors.orange,),
+                  leading: Icon(Icons.password,color:setAppBarColor(themeColor, themeBrightness),),
                   title: Text("Manage Account Information"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   //Undo
@@ -69,7 +96,7 @@ class _settingsProfileState extends State<settingsProfile> {
 
                 //Mangage Group member
                 ListTile(
-                  leading: Icon(Icons.password_outlined,color: Colors.orange,),
+                  leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
                   title: Text("Mangage Group Member"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                  //Undo
@@ -82,7 +109,7 @@ class _settingsProfileState extends State<settingsProfile> {
                 ),
                 //Mangage balance
                 ListTile(
-                  leading: Icon(Icons.password_outlined,color: Colors.orange,),
+                  leading: Icon(Icons.password_outlined,color:setAppBarColor(themeColor, themeBrightness),),
                   title: Text("Mangage Balance"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   //Undo
@@ -101,7 +128,7 @@ class _settingsProfileState extends State<settingsProfile> {
 
                 //Change theme
                 ListTile(
-                  leading: Icon(Icons.password_outlined,color: Colors.orange,),
+                  leading: Icon(Icons.password_outlined,color:setAppBarColor(themeColor, themeBrightness),),
                   title: Text("Change Theme"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   //Undo
@@ -120,13 +147,32 @@ class _settingsProfileState extends State<settingsProfile> {
 
                 //Help menu
                 ListTile(
-                  leading: Icon(Icons.password_outlined,color: Colors.orange,),
+                  leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
                   title: Text("Help Menu"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: (){
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                           return HelpMenuPage();
+                        }));
+                  },
+
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 1.0,
+                  color: Colors.grey.shade300,
+                ),
+
+                //Help menu
+                ListTile(
+                  leading: Icon(Icons.map,color: Colors.orange,),
+                  title: Text("User Current Location"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: (){
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return const CurrentLocation();
                         }));
                   },
 
@@ -139,7 +185,7 @@ class _settingsProfileState extends State<settingsProfile> {
             children: [
               Icon(
                 Icons.volume_up,
-                color: Colors.orange,
+                color: setAppBarColor(themeColor, themeBrightness),
               ),
               SizedBox(width: 10),
               Text("Notifications",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
@@ -152,7 +198,7 @@ class _settingsProfileState extends State<settingsProfile> {
             child: Column(
                 children:  <Widget>[
                   SwitchListTile(
-                    activeColor: Colors.orange,
+                    activeColor: setAppBarColor(themeColor, themeBrightness),
                     value: true,
                     title: Text("Receive Chat Messages",),
                     onChanged: (val){
@@ -160,7 +206,7 @@ class _settingsProfileState extends State<settingsProfile> {
                     },
                   ),
                   SwitchListTile(
-                    activeColor: Colors.orange,
+                    activeColor: setAppBarColor(themeColor, themeBrightness),
                     value: true,
                     title: Text("Receive Notification Messages"),
                     onChanged: (val){
@@ -177,7 +223,7 @@ class _settingsProfileState extends State<settingsProfile> {
           child: Text(
             'Sign out',
             style: TextStyle(
-              color: Colors.orange,
+              color: setAppBarColor(themeColor, themeBrightness),
               letterSpacing: 2,
               fontSize: 15.0,
 
@@ -197,6 +243,7 @@ class _settingsProfileState extends State<settingsProfile> {
         ],
       ),
     ),
+       )
     );
   }
 }

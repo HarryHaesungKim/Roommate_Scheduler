@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:roommates/Task/input_field.dart';
 import 'package:roommates/User/user_model.dart';
+
+import '../themeData.dart';
 class mangageBalance extends StatefulWidget {
   const mangageBalance({Key? key}) : super(key: key);
 
@@ -19,6 +21,8 @@ class _mangageBalance extends State<mangageBalance> {
   String email = "";
   String income ="";
   String expense = "";
+  String themeBrightness = "";
+  String themeColor = "";
   final TextEditingController _balanceController = TextEditingController();
   Future getCurrentBalance() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
@@ -35,6 +39,8 @@ class _mangageBalance extends State<mangageBalance> {
           balance = list['Balance'];
           income = list['Income'];
           expense = list['Expense'];
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
         });
       }
     }
@@ -56,9 +62,15 @@ class _mangageBalance extends State<mangageBalance> {
   @override
   Widget build(BuildContext context) {
     getCurrentBalance();
-    return Scaffold(
+    return MaterialApp(
+        theme: showOption(themeBrightness),
+        home: Scaffold(
         appBar: AppBar(
-        backgroundColor: Colors.orange[700],
+        backgroundColor: setAppBarColor(themeColor, themeBrightness),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         title: const Text("Balance"),
         ),
         body: Container(
@@ -81,7 +93,7 @@ class _mangageBalance extends State<mangageBalance> {
                    });
                     },
                     style:ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,side: BorderSide.none, shape: const StadiumBorder()
+                        backgroundColor: setAppBarColor(themeColor, themeBrightness),side: BorderSide.none, shape: const StadiumBorder()
                     ) ,
                     child: const Text(
                       "Add Balance",style: TextStyle(color:Colors.white),
@@ -93,7 +105,7 @@ class _mangageBalance extends State<mangageBalance> {
           ),
     ),
 
-
+        )
     );
   }
 
