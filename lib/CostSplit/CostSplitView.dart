@@ -85,7 +85,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.orange[700],
-          title: const Text("Cost Split"),
+          title: const Text("Split Pay"),
         ),
 
         body: FutureBuilder(
@@ -512,13 +512,11 @@ class _CostSplitViewPage extends State<CostSplitView> {
     if(payment.creator == uID && payment.whoNeedsToPay.length == payment.whoHasPaid.length){
       tileColor = Colors.green[400];
     }
-
-    if(payment.creator != uID){
-      tileColor = Colors.red[400];
-    }
-
-    if(payment.whoHasPaid.contains(uID)){
+    else if(payment.creator != uID && payment.whoHasPaid.contains(uID)){
       tileColor = Colors.green[400];
+    }
+    else if(payment.creator != uID){
+      tileColor = Colors.red[400];
     }
 
     String? creatorName = 'You';
