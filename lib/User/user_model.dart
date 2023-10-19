@@ -1,3 +1,8 @@
+
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserData {
    String? username;
    String? password;
@@ -6,7 +11,9 @@ class UserData {
    String? income;
    String? expense;
    String? groupID;
+   String? imageURL;
    List<String>? chatRooms;
+   GeoPoint? location;
 
 
    UserData({
@@ -17,7 +24,9 @@ class UserData {
      this.income,
      this.expense,
      this.groupID,
-     this.chatRooms
+     this.chatRooms,
+     this.imageURL,
+     this.location,
   });
    UserData.formJson(Map<String, dynamic> json) {
      email = json['Email'].toString();
@@ -28,6 +37,8 @@ class UserData {
      expense = json['Expense'].toString();
      groupID = json['groupID'].toString();
      chatRooms = json['chatRooms'];
+     imageURL = json['imageURL'].toString();
+     location = json['location'];
    }
 
    Map<String, dynamic> toJson() {
@@ -40,8 +51,11 @@ class UserData {
      data['Expense'] = this.expense;
      data['groupID'] = this.groupID;
      data['chatRooms'] = this.chatRooms;
+     data['imageURL'] = this.imageURL;
+     data['location'] = this.location;
      return data;
    }
 
 
 }
+

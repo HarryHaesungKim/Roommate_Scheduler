@@ -1,26 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:roommates/LoginPage.dart';
+import 'package:roommates/User/user_model.dart';
 import 'package:roommates/settingsPage.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
+
   @override
   State<ProfilePage> createState() => _profilePage();
 }
+//Edit profile page
 class _profilePage extends State<ProfilePage> {
-    bool _password = true;
-    String userName = "";
-    String email = "";
-    String password = "";
-
-  Future<void> _signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: ((context) => LoginPage())));
-  }
+  String userName = "";
+  String email = "";
+  String imageURL = "";
   void getUserData() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if(user !=null) {
@@ -32,14 +26,12 @@ class _profilePage extends State<ProfilePage> {
         setState(() {
           userName = list['UserName'];
           email = list['Email'];
-          password = list['Password'];
+          imageURL = list['imageURL'];
         });
       }
     }
   }
 
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +54,7 @@ class _profilePage extends State<ProfilePage> {
                 child: Icon(Icons.settings),
               )),
         ],
+
       ),
       body: Container(
         padding: EdgeInsets.only(left: 15, top: 20, right: 15),
@@ -89,36 +82,52 @@ class _profilePage extends State<ProfilePage> {
                           image: DecorationImage(
                             fit: BoxFit.cover,
                             image: NetworkImage(
-                                "https://cdn.pixabay.com/photo/2016/08/31/11/54/icon-1633249_960_720.png"),
+                               imageURL),
                           )),
                     ),
-                    Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 4,
-                                color: Colors.white,
-                              ),
-                              color: Colors.blue),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          ),
-                        )),
                   ],
                 ),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 50),
+              Form(child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                      label:Text("Full Name"),
+                      hintText: userName,
+                      enabled: false,
+                      hintStyle: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                        color: Colors.black,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      prefixIcon: Icon(Icons.people),
 
-              buildUserInformation("Username", userName),
-              buildUserInformation("Email", email),
-           //   buildUserInformation("Password", password),
-              SizedBox(height: 15),
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: email,
+                      enabled: false,
+                      hintStyle: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                        color: Colors.black,
+                      ),
+                      label:Text("Email"),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      prefixIcon: Icon(Icons.email),
+
+                    ),
+                  ),
+                  SizedBox(height: 20,),
+                ],
+              ),
+              ),
             ],
           ),
         ),
@@ -126,25 +135,10 @@ class _profilePage extends State<ProfilePage> {
     );
   }
 
-  Widget buildUserInformation(String label, String text) {
-      return Padding(
-      padding: EdgeInsets.only(bottom: 30),
-      child: TextField (
-        enabled: false,
-        decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(bottom: 5),
-            labelText: label,
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintText: text,
-            hintStyle: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'OpenSans',
-              color: Colors.black,
 
-            )),
-      ),
 
-    );
-  }
+
 }
+
+
+

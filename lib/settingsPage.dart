@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/Location/currentLocation.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/Settings/accountInformation.dart';
 import 'package:roommates/Settings/changeThemePage.dart';
@@ -127,6 +128,25 @@ class _settingsProfileState extends State<settingsProfile> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                           return HelpMenuPage();
+                        }));
+                  },
+
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 1.0,
+                  color: Colors.grey.shade300,
+                ),
+
+                //Help menu
+                ListTile(
+                  leading: Icon(Icons.map,color: Colors.orange,),
+                  title: Text("User Current Location"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: (){
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return const CurrentLocation();
                         }));
                   },
 

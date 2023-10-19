@@ -25,6 +25,8 @@ class _groceriesPage extends State<groceriesPage> {
   String balance = "";
   String income = "";
   String expense = "";
+  List<String>? chatRooms;
+  String imageURL = "";
   Future getCurrentBalance() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if (user != null) {
@@ -40,6 +42,8 @@ class _groceriesPage extends State<groceriesPage> {
           balance = list['Balance'];
           income = list['Income'];
           expense = list['Expense'];
+          chatRooms = list['chatRooms'];
+          imageURL = list['imageURL'];
         });
       }
     }
@@ -324,3 +328,4 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
 }
+

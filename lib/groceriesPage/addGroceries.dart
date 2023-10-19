@@ -213,44 +213,44 @@ class _AddGroceriesPageState extends State<addGroceries> {
               //     ],
               //   ),
               // ),
-          Container(
-            color: const Color.fromARGB(255, 227, 227, 227),
-            child: SizedBox(
-              width: double.maxFinite,
-              height: 150,
-              child: Scrollbar(
-                thumbVisibility: true,
-                thickness: 5,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: receiverNames.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    _splitcontrollers.add(new TextEditingController());
-                    _splitcontrollers[index].text = (double.parse(_amountController.text)/receiverNames.length).toPrecision(2).toString();
-                    return Row(
-                      children: <Widget>[
-                        Expanded(child: Text(receiverNames[index]),),
-                        Expanded(
-                          child:TextField(
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
+              Container(
+                color: const Color.fromARGB(255, 227, 227, 227),
+                child: SizedBox(
+                  width: double.maxFinite,
+                  height: 150,
+                  child: Scrollbar(
+                    thumbVisibility: true,
+                    thickness: 5,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: receiverNames.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        _splitcontrollers.add(new TextEditingController());
+                        _splitcontrollers[index].text = (double.parse(_amountController.text)/receiverNames.length).toPrecision(2).toString();
+                        return Row(
+                          children: <Widget>[
+                            Expanded(child: Text(receiverNames[index]),),
+                            Expanded(
+                              child:TextField(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  isDense: false,                      // Added this
+                                  contentPadding: EdgeInsets.all(3),
+                                ),
+                                inputFormatters: [PercentageTextInputFormatter()],
+                                keyboardType: TextInputType.number,
+                                controller: _splitcontrollers[index],
                               ),
-                              isDense: false,                      // Added this
-                              contentPadding: EdgeInsets.all(3),
                             ),
-                            inputFormatters: [PercentageTextInputFormatter()],
-                            keyboardType: TextInputType.number,
-                            controller: _splitcontrollers[index],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
