@@ -1,4 +1,5 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/Group/groupController.dart';
@@ -9,6 +10,8 @@ import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:roommates/homePage/VotingPage.dart';
+import 'package:roommates/themeData.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../Task/task.dart';
@@ -29,14 +32,31 @@ class _homePage extends State<homePage> {
   void initState() {
     super.initState();
   }
-
+  String themeBrightness = "";
+  String themeColor = "";
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if(user !=null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    getUserData();
     return MaterialApp(
       title: "Tasks",
       home: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.orange[700],
+            backgroundColor: setAppBarColor(themeColor, themeBrightness),
             title: const Text("Home"),
             actions: <Widget>[
               Padding(
@@ -281,6 +301,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 Get.back();
               },
               clr: primaryClr),
+          //Have a issue what happens if task is not completed, but user votes.
+          _buildBottomSheetButton(
+              label: "Voting Task",
+              onTap: () {
+             //  Get.to(VotingPage());
+              },
+              clr: Colors.yellow[300]),
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {

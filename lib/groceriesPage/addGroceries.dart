@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import '../Task/input_field.dart';
 import '../theme.dart';
 import 'package:roommates/groceriesPage/groceriesPageController.dart';
 
+import '../themeData.dart';
 import 'GroceriesPageDatabase.dart';
 
 class addGroceries extends StatefulWidget {
@@ -73,20 +75,44 @@ class _AddGroceriesPageState extends State<addGroceries> {
     peopleInGroup = await _groupController.getUsersInGroup(uID!);
     peopleinGroupIDs = await _groupController.getUserIDsInGroup(uID!);
   }
+  String themeBrightness = "";
+  String themeColor = "";
+  void getCurrentTheme() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if(user !=null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      setState(() {
+        themeBrightness = list['themeBrightness'];
+        themeColor = list['themeColor'];
+      });
+        };
+      }
 
   @override
   Widget build(BuildContext context) {
     //Below shows the time like Sep 15, 2021
+    //getCurrentTheme(); Widget Rebuild error
     buildGroupChatList();
+
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
     _amountController.text = "0";
-    return Scaffold(
-      //backgroundColor: context.theme.backgroundColor,
+    return MaterialApp(
+        theme: showOption(themeBrightness),
+
+        home: Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orange[700],
-        title: const Text("Add Groceries"),
+        backgroundColor: setAppBarColor(themeColor, themeBrightness),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+          onPressed: () => Navigator.of(context).pop(),
+
+        ),
+          title: const Text("Add Groceries"),
       ),
       backgroundColor:  Color.fromARGB(255, 227, 227, 227),
       body: Container(
@@ -170,7 +196,7 @@ class _AddGroceriesPageState extends State<addGroceries> {
                       setState(() {});
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
+                      backgroundColor: MaterialStateProperty.all<Color>(setAppBarColor(themeColor, themeBrightness)!),
                     ),
                   ),
                 ],
@@ -261,7 +287,7 @@ class _AddGroceriesPageState extends State<addGroceries> {
                       _validateInputs();
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
+                      backgroundColor: MaterialStateProperty.all<Color>(setAppBarColor(themeColor, themeBrightness)!),
                     ),
                   ),
                 ],
@@ -273,6 +299,7 @@ class _AddGroceriesPageState extends State<addGroceries> {
           ),
         ),
       ),
+    )
     );
   }
   Future<void> selectAssignessDialog(BuildContext context) async {

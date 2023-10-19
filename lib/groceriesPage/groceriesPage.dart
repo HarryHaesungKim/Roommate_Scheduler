@@ -27,6 +27,8 @@ class _groceriesPage extends State<groceriesPage> {
   String expense = "";
   List<String>? chatRooms;
   String imageURL = "";
+  String themeBrightness = "";
+  String themeColor = "";
   Future getCurrentBalance() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if (user != null) {
@@ -42,6 +44,8 @@ class _groceriesPage extends State<groceriesPage> {
           balance = list['Balance'];
           income = list['Income'];
           expense = list['Expense'];
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
           chatRooms = list['chatRooms'];
           imageURL = list['imageURL'];
         });
@@ -67,9 +71,14 @@ class _groceriesPage extends State<groceriesPage> {
   Widget build(BuildContext context) {
     getCurrentBalance();
     return MaterialApp(
+      theme: showOption(themeBrightness),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.orange[700],
+          backgroundColor: setAppBarColor(themeColor, themeBrightness),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           title: const Text("Groceries"),
 
         ),
@@ -164,10 +173,26 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       }
     }
   }
+  Future getCurrentTheme() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if (user != null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     setGroupID();
     getCurrentUID();
+    getCurrentTheme();
     _groceriesPageController.getGroceries(groupID);
     _mediaQueryData = MediaQuery.of(context);
     return LayoutBuilder(

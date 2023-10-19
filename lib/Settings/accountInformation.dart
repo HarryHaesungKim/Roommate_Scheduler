@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:roommates/User/user_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
+
+import '../themeData.dart';
 class EditProfile extends StatefulWidget {
   EditProfile({Key? key}) : super(key: key);
 
@@ -24,6 +26,8 @@ class _EditProfilePage extends State<EditProfile> {
   String expense = "";
   File? _image;
   String imageURL = "";
+  String themeBrightness = "";
+  String themeColor = "";
   final picker = ImagePicker();
 
   //Bug still
@@ -117,6 +121,8 @@ class _EditProfilePage extends State<EditProfile> {
           income = list['Income'];
           expense = list['Expense'];
           imageURL = list['imageURL'];
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
         });
       }
     }
@@ -132,7 +138,8 @@ class _EditProfilePage extends State<EditProfile> {
         income: income,
         expense: expense,
         imageURL: imageURL,
-
+        themeBrightness: themeBrightness,
+        themeColor: themeColor,
       );
       await FirebaseFirestore.instance.collection("Users").doc(userID).update(
           user.toJson());
@@ -159,10 +166,15 @@ class _EditProfilePage extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     getUserData();
-    return Scaffold(
+    return MaterialApp(
+        theme: showOption(themeBrightness),
+        home: Scaffold(
     appBar: AppBar(
-      leading: null,
-      backgroundColor: Colors.orange[700],
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      backgroundColor: setAppBarColor(themeColor, themeBrightness),
       title: const Text("Edit Profile"),
 
     ),
@@ -268,7 +280,7 @@ class _EditProfilePage extends State<EditProfile> {
                                 ),
                                 label:Text("Email"),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                                prefixIcon: Icon(Icons.email),
+                                prefixIcon: Icon(Icons.email,color: Colors.black)
 
                               ),
                             ),
@@ -285,7 +297,7 @@ class _EditProfilePage extends State<EditProfile> {
                                   color: Colors.black,
                                 ),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                                prefixIcon: Icon(Icons.password),
+                                prefixIcon: Icon(Icons.password,color: Colors.black),
 
                               ),
                             ),
@@ -294,7 +306,7 @@ class _EditProfilePage extends State<EditProfile> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: ()  {
-                                  if (_passWordController.text.isEmpty ||
+                                  if (_passWordController.text.isEmpty || _image==null||
                                       _userNameController.text.isEmpty) {
                                     Get.snackbar(
                                       "Required",
@@ -314,8 +326,8 @@ class _EditProfilePage extends State<EditProfile> {
                                         });
                                   }
                                    else{
+                                    updateEmailAndPassWord(email,_emailController.text.trim(),password,_passWordController.text.trim());
                                     updateUserData();
-                                    updateEmailAndPassWord(email,_emailController.text,password,_passWordController.text);
                                     if (mounted) {
                                       setState(() {
                                         userName = _userNameController.text.trim();
@@ -323,15 +335,19 @@ class _EditProfilePage extends State<EditProfile> {
                                         email = _emailController.text.trim();
                                         balance = balance;
                                         imageURL = imageURL;
+                                        themeColor = themeColor;
+                                        themeBrightness = themeBrightness;
+                                        income = income;
+                                        expense = expense;
                                       });
                                     }
                                   }
                                 },
                                 style:ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.orange,side: BorderSide.none, shape: const StadiumBorder()
+                                    backgroundColor: setAppBarColor(themeColor, themeBrightness),side: BorderSide.none, shape: const StadiumBorder()
                                 ) ,
                                 child: const Text(
-                                  "Edit Profile",style: TextStyle(color:Colors.black),
+                                  "Edit Profile",style: TextStyle(color:Colors.white),
                                 ),
                               ),
                             )
@@ -342,6 +358,7 @@ class _EditProfilePage extends State<EditProfile> {
                             ),
         ),
       ),
+        )
     );
 }
 
