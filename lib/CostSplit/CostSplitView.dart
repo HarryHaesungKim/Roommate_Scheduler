@@ -111,8 +111,8 @@ class _CostSplitViewPage extends State<CostSplitView> {
                   iDNameMap[peopleInGroupIDs[i]] = peopleInGroup[i];
                 }
 
-                peopleInGroup.remove(iDNameMap[uID]);
-                peopleInGroupIDs.remove(uID);
+                // peopleInGroup.remove(iDNameMap[uID]);
+                // peopleInGroupIDs.remove(uID);
 
                 //print(iDNameMap);
 
@@ -653,7 +653,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
         return Text(
             textAlign: TextAlign.center,
             //notificationTitles[index],
-            "You are\nowed\n\$${(double.parse(payment.amount) - (double.parse(payment.howMuchDoesEachPersonOwe) * (payment.whoHasPaid.length + 1))).toStringAsFixed(2)}",
+            "You are\nowed\n\$${(double.parse(payment.amount) - (double.parse(payment.howMuchDoesEachPersonOwe) * (payment.whoHasPaid.length))).toStringAsFixed(2)}",
             style: GoogleFonts.lato(
               textStyle: const TextStyle(
                   fontWeight: FontWeight.bold,

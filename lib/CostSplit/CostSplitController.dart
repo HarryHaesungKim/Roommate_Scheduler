@@ -37,8 +37,9 @@ class CostSplitController {
     // // Getting the User Data.
     // await getUserData();
 
-    // Math for how much each person owes. +1 for the creator.
-    var splitAmount = double.parse(amount) / (whoNeedsToPay.length + 1);
+    // Math for how much each person owes.
+    var splitAmount = double.parse(amount) / (whoNeedsToPay.length);
+
 
     // Get list of users in the same group. Waits until we have the data.
     final futureData = await Future.wait([getUserData()]);
@@ -50,6 +51,11 @@ class CostSplitController {
     //
     //
     // }
+
+    List<String> whoHasPaid = [];
+    if(whoNeedsToPay.contains(futureData[0][0])){
+      whoHasPaid.add(futureData[0][0]);
+    }
 
     // Reference to Document.
     final payment = FirebaseFirestore.instance.collection('Group').doc(futureData[0][2]).collection('Payments').doc();
@@ -64,7 +70,7 @@ class CostSplitController {
       creator: futureData[0][0],
       howMuchDoesEachPersonOwe: splitAmount.toString(),
       whoNeedsToPay: whoNeedsToPay,
-      whoHasPaid: [],
+      whoHasPaid: whoHasPaid,
     );
 
     // Create document and write data to firebase.
