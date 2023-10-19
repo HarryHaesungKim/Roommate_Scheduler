@@ -31,29 +31,14 @@ class CostSplitController {
 
   }
 
-  // Future<List<String>> getGroupMembers() async {
-  //
-  //   // Get the user IDs via groupID
-  //
-  //   final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection("Users")
-  //       .where('groupID', isEqualTo: '84461')
-  //       .get();
-  //
-  //   final allMembersInGroupData = querySnapshot.docs.map((doc) => doc.id).toList();
-  //
-  //   print(allMembersInGroupData);
-  //
-  //   return allMembersInGroupData;
-  // }
-
   // Creates the notification object and sends it to firebase.
   Future createPayment({required String title, required String description, required String amount, required List<String> whoNeedsToPay}) async {
 
     // // Getting the User Data.
     // await getUserData();
 
-    // Math for how much each person owes.
-    var splitAmount = double.parse(amount) / whoNeedsToPay.length;
+    // Math for how much each person owes. +1 for the creator.
+    var splitAmount = double.parse(amount) / (whoNeedsToPay.length + 1);
 
     // Get list of users in the same group. Waits until we have the data.
     final futureData = await Future.wait([getUserData()]);
@@ -67,25 +52,53 @@ class CostSplitController {
     // }
 
     // Reference to Document.
-    final notification = FirebaseFirestore.instance.collection('Group').doc(futureData[0][2]).collection('Payments').doc();
+    final payment = FirebaseFirestore.instance.collection('Group').doc(futureData[0][2]).collection('Payments').doc();
 
     // Create the notification object.
     final announcement = CostSplitObject(
-      id: notification.id,
+      id: payment.id,
       title: title,
       description: description,
       time: DateTime.now(),
       amount: amount,
-      creator: futureData[0][3],
+      creator: futureData[0][0],
       howMuchDoesEachPersonOwe: splitAmount.toString(),
       whoNeedsToPay: whoNeedsToPay,
-      whoHasPayed: [],
+      whoHasPaid: [],
     );
 
     // Create document and write data to firebase.
-    await notification.set(announcement.toJson());
+    await payment.set(announcement.toJson());
 
     // All done :)
 
   }
+
+  Future<void> settlePayment(CostSplitObject payment) async {
+
+    //https://stackoverflow.com/questions/64934102/firestore-add-or-remove-elements-to-existing-array-with-flutter
+
+    final futureData = await Future.wait([getUserData()]);
+
+    FirebaseFirestore.instance.collection('Group').doc(futureData[0][2]).collection('Payments').doc(payment.id)
+        .update({'whoHasPaid': FieldValue.arrayUnion([futureData[0][0]]),});
+  }
+
+  Future<void> unsettlePayment(CostSplitObject payment) async {
+
+    //https://stackoverflow.com/questions/64934102/firestore-add-or-remove-elements-to-existing-array-with-flutter
+
+    final futureData = await Future.wait([getUserData()]);
+
+    FirebaseFirestore.instance.collection('Group').doc(futureData[0][2]).collection('Payments').doc(payment.id)
+        .update({'whoHasPaid': FieldValue.arrayRemove([futureData[0][0]]),});
+  }
+
+  Future<void> deletePayment(CostSplitObject payment) async {
+
+    final futureData = await Future.wait([getUserData()]);
+
+    FirebaseFirestore.instance.collection('Group').doc(futureData[0][2]).collection('Payments').doc(payment.id).delete();
+  }
+
 }

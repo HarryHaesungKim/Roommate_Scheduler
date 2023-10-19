@@ -9,7 +9,7 @@ class CostSplitObject {
   final String creator;
   final String howMuchDoesEachPersonOwe;
   final List<String> whoNeedsToPay;
-  final List<String> whoHasPayed;
+  final List<String> whoHasPaid;
 
   CostSplitObject({
     required this.id,
@@ -20,7 +20,7 @@ class CostSplitObject {
     required this.creator,
     required this.howMuchDoesEachPersonOwe,
     required this.whoNeedsToPay,
-    required this.whoHasPayed,
+    required this.whoHasPaid,
   });
 
   Map<String, dynamic> toJson() => {
@@ -32,7 +32,7 @@ class CostSplitObject {
     'creator': creator,
     'howMuchDoesEachPersonOwe': howMuchDoesEachPersonOwe,
     'whoNeedsToPay' : whoNeedsToPay,
-    'whoHasPayed' : whoHasPayed,
+    'whoHasPaid' : whoHasPaid,
   };
 
   static CostSplitObject fromJson(Map<String, dynamic> json) => CostSplitObject(
@@ -44,7 +44,7 @@ class CostSplitObject {
     creator: json['creator'],
     howMuchDoesEachPersonOwe: json['howMuchDoesEachPersonOwe'],
     whoNeedsToPay: json['whoNeedsToPay'].cast<String>(),
-    whoHasPayed: json['whoHasPayed'].cast<String>(),
+    whoHasPaid: json['whoHasPaid'].cast<String>(),
   );
 
 }
