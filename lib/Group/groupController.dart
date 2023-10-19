@@ -65,4 +65,27 @@ class groupController extends GetxController {
   Future<void> removeUser(String uID) async {
     return await _db.removeUserFromGroup(uID);
   }
+
+  /// Returns whether not user [uID] is in a group or not
+  ///
+  ///
+  Future<bool> isUserInGroup(String uID) async {
+    return await _db.isUserInGroup(uID);
+  }
+
+  /// Returns whether user [uID] is an admin user in their group
+  Future<bool> isUserAdmin(String uID) async {
+    return await _db.isUserAdmin(uID);
+  }
+
+  /// Returns list of all members in user [uID] who are not admins
+  Future<List<String>> getNonAdminUserNames(String uID) async {
+    return await _db.getNonAdminUsers(uID);
+  }
+
+  /// Returns list of all admin users in user [uID]'s group
+  Future<List<String>> getAdminUsers(String uID) async {
+    return await _db.getAdminUsers(uID);
+  }
+
 }

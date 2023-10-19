@@ -242,9 +242,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 //   context,
                 //   MaterialPageRoute(builder: (context) => addTask()),
                 // );
-              await Get.to(addTask());
-              _taskController.getTasks(groupID);
-              //_taskController = Get.put(taskController());
+
+
+              // check if the current user is an admin user
+              if(await _groupController.isUserAdmin(uID!))
+                {
+                  showNotAdminUser(context);
+                }
+              else
+              {
+                await Get.to(addTask());
+                _taskController.getTasks(groupID);
+                //_taskController = Get.put(taskController());
+              }
               },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
@@ -276,16 +286,30 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               ? Container()
               : _buildBottomSheetButton(
               label: "Task Completed",
-              onTap: () {
-                _taskController.markTaskCompleted(groupID, task.id);
-                Get.back();
+              onTap: () async {
+                if(await _groupController.isUserAdmin(uID!))
+                  {
+                    _taskController.markTaskCompleted(groupID, task.id);
+                  }
+                else
+                  {
+                    Get.back();
+                    Get.snackbar("Not Admin!", "Not an admin user, cannot mark tasks as complete");
+                  }
               },
               clr: primaryClr),
           _buildBottomSheetButton(
               label: "Delete Task",
-              onTap: () {
-                _taskController.deleteTask(groupID, task);
+              onTap: () async {
+                if(await _groupController.isUserAdmin(uID!))
+                {
+                  _taskController.deleteTask(groupID, task);
+                }
+                else
+                {
                 Get.back();
+                Get.snackbar("Not Admin!", "Not an admin user, cannot delete tasks");
+                }
               },
               clr: Colors.red[300]),
           SizedBox(
@@ -304,6 +328,59 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       ),
     );
   }
+
+  showNotAdminUser (BuildContext context)
+  {
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed:  () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Not Admin!"),
+      content: const Text("You are not an admin user, cannot create tasks!"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showNotAdminUserComplete (BuildContext context)
+  {
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed:  () {
+        Get.back();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Not Admin!"),
+      content: const Text("You are not an admin user, cannot complete task!"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   _buildBottomSheetButton(
       {required String label, Function? onTap, Color? clr, bool isClose = false}) {
     return GestureDetector(

@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/settingsPage.dart';
 
+import 'Group/groupController.dart';
+
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
   @override
@@ -16,8 +18,12 @@ class _profilePage extends State<ProfilePage> {
     String email = "";
     String password = "";
     String groupID = "";
+    String isAdmin ="";
 
-  Future<void> _signOut() async {
+    final groupController _groupController = Get.put(groupController());
+    final _uID = FirebaseAuth.instance.currentUser?.uid;
+
+    Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: ((context) => LoginPage())));
@@ -36,6 +42,14 @@ class _profilePage extends State<ProfilePage> {
           password = list['Password'];
           groupID = list['groupID'];
         });
+
+        if(await _groupController.isUserAdmin(_uID!))
+          {
+            isAdmin = "True";
+          }
+        else{
+          isAdmin = "False";
+        }
       }
     }
   }
@@ -120,6 +134,7 @@ class _profilePage extends State<ProfilePage> {
               buildUserInformation("Username", userName),
               buildUserInformation("Email", email),
               buildUserInformation("Group ID", groupID),
+              buildUserInformation("Admin User", isAdmin),
            //   buildUserInformation("Password", password),
               SizedBox(height: 15),
             ],
