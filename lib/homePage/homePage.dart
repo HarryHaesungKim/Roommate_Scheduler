@@ -14,7 +14,7 @@ import 'package:roommates/homePage/VotingPage.dart';
 import 'package:roommates/themeData.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../Task/task.dart';
+import '../Task/TaskObject.dart';
 import '../Task/taskView.dart';
 
 class homePage extends StatefulWidget {
@@ -28,9 +28,37 @@ class _homePage extends State<homePage> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
 
+  // The current user and group
+  String? currUser = FirebaseAuth.instance.currentUser?.uid;
+  late Future<String> futureCurrGroup;
+  String currGroup = '';
+
+  // Controllers
+  final taskController taskCon = taskController();
+  final groupController groupCon = groupController();
+
+  // Media query stuff?
+  static late MediaQueryData _mediaQueryData;
+
+  // Getting the tasks from firebase.
+  Stream<List<TaskObject>> readTasks() {
+
+    // // Get list of users in the same group. Waits until we have the data.
+    // final futureData = await Future.wait([groupCon.getGroupIDFromUser(currUser!)]);
+
+    return FirebaseFirestore.instance
+        .collection('Group').doc(currGroup).collection('tasks')
+        .snapshots()
+        .map((snapshot) =>
+        snapshot.docs.map((doc) => TaskObject.fromJson(doc.data()))
+            .toList());
+  }
+
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+    futureCurrGroup = groupCon.getGroupIDFromUser(currUser!);
   }
   String themeBrightness = "";
   String themeColor = "";
@@ -51,7 +79,9 @@ class _homePage extends State<homePage> {
   }
   @override
   Widget build(BuildContext context) {
-    getUserData();
+
+    _mediaQueryData = MediaQuery.of(context);
+
     return MaterialApp(
       title: "Tasks",
       home: Scaffold(
@@ -67,7 +97,7 @@ class _homePage extends State<homePage> {
                         context,
                         MaterialPageRoute(builder: (context) => GroupChatsListPage()),
                       );                    },
-                    child: Icon(
+                    child: const Icon(
                         Icons.send
                     ),
                   )
@@ -76,152 +106,175 @@ class _homePage extends State<homePage> {
 
         ),
 
-        body: const Center(
-          child: MyStatefulWidget()
+        body: FutureBuilder(
+          
+          future: futureCurrGroup,
+
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+
+            // If there's an error.
+            if(snapshot.hasError){
+              return Text("Something went wrong! ${snapshot.error}");
+            }
+
+            // If there's no error and the snapshot has data.
+            else if(snapshot.hasData){
+
+              //return Text("GroupCode: ${snapshot.data}");=
+
+              // Setting the groupID.
+              currGroup = snapshot.data;
+
+              return StreamBuilder<List<TaskObject>>(
+                    stream: readTasks(),
+                    builder: (context, snapshot){
+
+                      // If there's an error.
+                      if (snapshot.hasError){
+                        return Text('Something went wrong! ${snapshot.data}');
+                      }
+
+                      // If there's no error and the snapshot has data.
+                      else if (snapshot.hasData){
+
+                        // Setting the task data.
+                        final tasksData = snapshot.data!;
+
+                        // Building the widget.
+                        return LayoutBuilder(
+                            builder: (BuildContext context, BoxConstraints constraints) {
+
+                              return Column(
+                                children:[
+
+                                  addTaskBar(),
+                                  SizedBox(
+                                      width: constraints.maxWidth,
+                                      height: constraints.maxHeight - 85, // 85 pixels is the height of the bottom bar.
+                                      child: ListView.builder(
+                                            primary: true,
+                                            itemCount: tasksData.length,
+                                            itemBuilder: (BuildContext context, int index) {
+                                              //print("tasks ${_taskController.taskList[index].title!}");
+                                              TaskObject task = tasksData[index];
+                                              var title = task.title;
+                                              int? coloDB = task.color;
+
+                                              // Adding extra padding at the last item for the button (so that it doesn't overlap).
+                                              if(index == tasksData.length - 1){
+                                                return Padding(
+
+                                                  // Spacing between elements:
+                                                  padding: const EdgeInsets.fromLTRB(10, 5, 10, 70),
+
+                                                  // The task tiles.
+                                                  child: InkWell(
+                                                    child: taskView(task),
+                                                    onTap: () {
+                                                      showBottomSheet(context, task);
+                                                    },
+                                                  ),
+                                                );
+                                              }
+
+                                              return Padding(
+
+                                                // Spacing between elements:
+                                                padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+
+                                                // The task tiles.
+                                                child: InkWell(
+                                                  child: taskView(task),
+                                                  onTap: () {
+                                                    showBottomSheet(context, task);
+                                                  },
+                                                ),
+                                              );
+
+
+
+                                            }
+
+                                        ),
+
+
+                                  ),
+
+                                ],
+                              );
+                            });
+
+                      }
+                      // Loading.
+                      else{
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+
+                    //child: MyStatefulWidget()
+                  );
+
+
+            }
+            // Loading.
+            else{
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+
         ),
+
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.orange[700],
+            onPressed: () async {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => addTask()),
+              );
+              Get.lazyPut(()=>taskController());
+
+              // Add task.
+            },child: const Icon(Icons.add)
+        ),
+
       ),
     );
   }
-}
 
-// Copy and pasted code from https://api.flutter.dev/flutter/material/Scrollbar-class.html
-// Slightly modified.
+  // Widgets
 
-// Worth viewing: https://flutterforyou.com/how-to-add-space-between-listview-items-in-flutter/
-
-// Need to implement list tile: https://api.flutter.dev/flutter/material/ListTile-class.html
-
-// Might be fun for messagingPage: https://docs.flutter.dev/cookbook/animation/page-route-animation
-
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({super.key});
-
-  @override
-  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
-}
-
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-  final ScrollController _firstController = ScrollController();
-  final _taskController = Get.put(taskController());
-  final _groupController = Get.put(groupController());
-  static late MediaQueryData _mediaQueryData;
-  String? uID = FirebaseAuth.instance.currentUser?.uid;
-  late String groupID = "";
-
-  void setGroupID() async {
-    groupID = await _groupController.getGroupIDFromUser(uID!);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    setGroupID();
-    _taskController.getTasks(groupID);
-    _mediaQueryData = MediaQuery.of(context);
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Column(
-            children:[
-              addTaskBar(),
-              SizedBox(
-                  width: constraints.maxWidth - constraints.maxWidth * 0.05,
-                  height: constraints.maxHeight - constraints.maxHeight * 0.2,
-                  child: Obx(() {
-                    //thumbVisibility: true,
-                    //thickness: 10,
-                    return ListView.builder(
-                        primary: true,
-                        itemCount: _taskController.taskList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          print("tasks " + _taskController.taskList[index].title!);
-                          Task task = _taskController.taskList[index];
-                          var title = task.title;
-                          int? coloDB = task.color;
-
-                          return Padding(
-
-                            // Spacing between elements:
-                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-
-                            child: Container(
-                                //color: Color(coloDB!),
-                              // color: index.isEven
-                              //     ? Colors.amberAccent
-                              //     : Colors.blueAccent,
-                                child: InkWell(
-                                  child: taskView(task),
-                                  onTap: () {
-                                    showBottomSheet(context, task);
-                                  },
-                                )
-
-                              ),
-                            );
-                        }
-
-                    );
-                  })
-
-              ),
-
-            ],
-          );
-        });
-  }
-  scrollList() {
-    return Container(
-        margin: EdgeInsets.only(bottom: 500, left: 20),
-        child: Scrollbar(
-          // This vertical scroll view has primary set to true, so it is
-          // using the PrimaryScrollController. On mobile platforms, the
-          // PrimaryScrollController automatically attaches to vertical
-          // ScrollViews, unlike on Desktop platforms, where the primary
-          // parameter is required.
-          //thumbVisibility: true,
-          thickness: 10,
-          child: ListView.builder(
-              primary: true,
-              itemCount: 5,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  // Spacing between elements:
-                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    child: Container(
-                        height: 100,
-                        //padding: const EdgeInsets.all(2),
-
-                        color: index.isEven
-                            ? Colors.amberAccent
-                            : Colors.blueAccent,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('Random task $index'),
-                        )
-                    ));
-
-              }),
-        )
-    );
-  }
+  /// The top of the widget that shows the date, 'Upcoming Tasks', and the 'Add task' button.
   addTaskBar() {
     return Container(
-      margin: EdgeInsets.only(bottom: 12, top: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(bottom: 12, top: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                DateFormat.yMMMMd().format(DateTime.now()),
-                style: subHeadingTextStyle,
-              ),
-              SizedBox(height: 10,),
-              Text(
-                "Upcoming Tasks",
-                style: headingTextStyle,
-              ),
-            ],
+          // Column(
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   children: [
+          //     Text(
+          //       DateFormat.yMMMMd().format(DateTime.now()),
+          //       style: subHeadingTextStyle,
+          //     ),
+          //     const SizedBox(height: 10,),
+          //     Text(
+          //       "Upcoming Tasks",
+          //       style: headingTextStyle,
+          //     ),
+          //   ],
+          // ),
+          Text(
+            "Upcoming Tasks",
+            style: headingTextStyle,
+          ),
+          Text(
+            DateFormat.yMMMMd().format(DateTime.now()),
+            style: subHeadingTextStyle,
           ),
 
           // Refresh button
@@ -240,44 +293,45 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           //     label: const Text(''),
           // ),
 
-          Container(
-            height: 37.0,
-            width: 40.0,
-            color: Colors.orange[700],
-            child: TextButton(
-              child: Icon(Icons.refresh, color: Colors.white,),
-              onPressed: () {
-                build(context);
-              },
-            ),
-          ),
+          // Container(
+          //   height: 37.0,
+          //   width: 40.0,
+          //   color: Colors.orange[700],
+          //   child: TextButton(
+          //     child: const Icon(Icons.refresh, color: Colors.white,),
+          //     onPressed: () {
+          //       build(context);
+          //     },
+          //   ),
+          // ),
 
           // Add task button
-          ElevatedButton(
-            child: Text('+ Add Task',),
-
-            onPressed:  () async {
-                //await Get.to(addTask());
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => addTask()),
-                // );
-              await Get.to(addTask());
-              _taskController.getTasks(groupID);
-              //_taskController = Get.put(taskController());
-              },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
-            ),
-          ),
+          // ElevatedButton(
+          //   onPressed:  () async {
+          //       // await Get.to(addTask());
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) => addTask()),
+          //       );
+          //     // await Get.to(addTask());
+          //     // taskCon.getTasks(currGroup);
+          //     Get.lazyPut(()=>taskController());
+          //     },
+          //   style: ButtonStyle(
+          //     backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
+          //   ),
+          //   child: const Text('+ Add Task',),
+          // ),
         ],
       ),
     );
   }
-  showBottomSheet(BuildContext context, Task task) {
+
+  /// Shows the options when a task is clicked on.
+  showBottomSheet(BuildContext context, TaskObject task) {
     Get.bottomSheet(
       Container(
-        padding: EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: 4),
         height: task.isCompleted == 1
             ? _mediaQueryData.size.height * 0.24
             : _mediaQueryData.size.height * 0.32,
@@ -291,13 +345,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 borderRadius: BorderRadius.circular(10),
                 color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
           ),
-          Spacer(),
+          const Spacer(),
           task.isCompleted == 1
               ? Container()
               : _buildBottomSheetButton(
               label: "Task Completed",
               onTap: () {
-                _taskController.markTaskCompleted(groupID, task.id);
+                taskCon.markTaskCompleted(currGroup, task.id);
                 Get.back();
               },
               clr: primaryClr),
@@ -311,11 +365,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {
-                _taskController.deleteTask(groupID, task);
+                taskCon.deleteTask(currGroup, task);
                 Get.back();
               },
               clr: Colors.red[300]),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _buildBottomSheetButton(
@@ -324,21 +378,22 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 Get.back();
               },
               isClose: true),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ]),
       ),
     );
   }
+
   _buildBottomSheetButton(
       {required String label, Function? onTap, Color? clr, bool isClose = false}) {
     return GestureDetector(
       onTap: onTap as void Function()?,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 4),
+        margin: const EdgeInsets.symmetric(vertical: 4),
         height: 55,
-        width: _mediaQueryData.size.width! * 0.9,
+        width: _mediaQueryData.size.width * 0.9,
         decoration: BoxDecoration(
           border: Border.all(
             width: 2,
@@ -361,4 +416,5 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       ),
     );
   }
+
 }

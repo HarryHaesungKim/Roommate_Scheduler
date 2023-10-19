@@ -5,9 +5,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:roommates/Group/groupController.dart';
 
+import '../Notifications/NotificationController.dart';
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
-import '../Task/task.dart';
+import '../Task/TaskObject.dart';
 import '../Task/taskController.dart';
 import '../theme.dart';
 
@@ -52,6 +53,9 @@ class _AddTaskPageState extends State<addTask> {
     'Weekly',
     'Monthly',
   ];
+
+  // Controller
+  final NotificationController notifCon = NotificationController();
 
   ///
   /// This method sets the groupID to the logged in users groupID
@@ -100,7 +104,7 @@ class _AddTaskPageState extends State<addTask> {
       ),
       backgroundColor:  Color.fromARGB(255, 227, 227, 227),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +122,7 @@ class _AddTaskPageState extends State<addTask> {
                 title: "Date",
                 hint: DateFormat.yMd().format(_selectedDate),
                 widget: IconButton(
-                  icon: (Icon(
+                  icon: (const Icon(
                     Icons.calendar_month_sharp,
                     color: Colors.grey,
                   )),
@@ -278,6 +282,11 @@ class _AddTaskPageState extends State<addTask> {
                     child: Text('Create Task'),
                     onPressed: () {
                       _validateInputs();
+
+                      // Adding a notification of task creation.
+                      String notifTitle = "New task: ${_titleController.text}";
+                      String notifBody = "Task Description: ${_noteController.text}\nTo-do Date: ${_selectedDate.month}/${_selectedDate.day}/${_selectedDate.year}\nRepeat: $_selectedRepeat\nAssigned to: $_selectedAssigness";
+                      notifCon.createNotification(title: notifTitle, body: notifBody, type: "task");
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
@@ -316,7 +325,8 @@ class _AddTaskPageState extends State<addTask> {
     String groupID = await _groupController.getGroupIDFromUser(uID!);
 
     await _taskController.addTask(groupID,
-      task: Task(
+      task: TaskObject(
+        id: '',
         note: _noteController.text.toString(),
         title: _titleController.text.toString(),
         date: DateFormat.yMd().format(_selectedDate),
@@ -327,7 +337,7 @@ class _AddTaskPageState extends State<addTask> {
         color: _selectedColor,
         isCompleted: 0,
         assignedUserID: uID,
-        assignedUserName: _selectedAssigness
+        assignedUserName: _selectedAssigness,
       ),
 
     );

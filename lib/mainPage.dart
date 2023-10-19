@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 //import 'package:roommates/calendarPage.dart';
-import 'package:roommates/groceriesPage/groceriesPage.dart';
+import 'package:roommates/CostSplit/CostSplitView.dart';
 import 'package:roommates/homePage/homePage.dart';
-import 'package:roommates/notificationPage.dart';
+import 'package:roommates/Notifications/NotificationView.dart';
 import 'package:roommates/profilePage.dart';
 import 'package:roommates/themeData.dart';
 import 'calendarPage/calendarPage.dart';
@@ -28,8 +28,8 @@ class _mainPageState extends State<mainPage> {
   final screens = [
     homePage(),
     calendarPage(),
-    groceriesPage(),
-    //notificationPage(),
+    CostSplitView(),
+    NotificationView(),
     ProfilePage(),
   ];
 
@@ -71,17 +71,17 @@ class _mainPageState extends State<mainPage> {
 
       case 2:
         {
-          title = "Groceries";
+          title = "Cost Split";
         }
         break;
 
-      // case 3:
-      //   {
-      //     title = "Notifications";
-      //   }
-      //   break;
-
       case 3:
+        {
+          title = "Notifications";
+        }
+        break;
+
+      case 4:
         {
           title = "Profile";
         }
@@ -144,12 +144,12 @@ class _mainPageState extends State<mainPage> {
                 ),
                 GButton(
                   icon: Icons.money,
-                  text: "Groceries",
+                  text: "Cost Split",
                 ),
-                // GButton(
-                //   icon: Icons.notifications,
-                //   text: "Notification",
-                // ),
+                GButton(
+                  icon: Icons.notifications,
+                  text: "Notification",
+                ),
                 GButton(
                   icon: Icons.account_circle,
                   text: "Profile",

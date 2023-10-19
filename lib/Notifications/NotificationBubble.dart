@@ -4,9 +4,9 @@ import 'package:roommates/Task/TaskObject.dart';
 
 import '../theme.dart';
 
-class taskView extends StatelessWidget {
-  final TaskObject task;
-  taskView(this.task);
+class NotificationBubble extends StatelessWidget {
+  final TaskObject notification;
+  const NotificationBubble(this.notification, {super.key});
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -22,16 +22,16 @@ class taskView extends StatelessWidget {
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: _getBGClr(task.color),
+          color: _getBGClr(notification.color),
         ),
         child: Row(children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
 
-                  task.title!,
+                Text(
+                  notification.title!,
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
                         fontSize: 20,
@@ -39,9 +39,11 @@ class taskView extends StatelessWidget {
                         color: Colors.white),
                   ),
                 ),
+
                 const SizedBox(
                   height: 12,
                 ),
+
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -51,30 +53,40 @@ class taskView extends StatelessWidget {
                       size: 18,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      "${task.startTime} - ${task.endTime}",
-                      style: GoogleFonts.lato(
-                        textStyle:
-                        TextStyle(fontSize: 13, color: Colors.grey[100]),
-                      ),
-                    ),
+
+                    // Text(
+                    //   "${notification.startTime} - ${notification.endTime}",
+                    //   style: GoogleFonts.lato(
+                    //     textStyle:
+                    //     TextStyle(fontSize: 13, color: Colors.grey[100]),
+                    //   ),
+                    // ),
+
+                    // Spacing
                     const SizedBox(width: 12),
+
                     Text(
-                      "${task.date}",
+                      "${notification.date}",
                       style: GoogleFonts.lato(
                         textStyle:
                         TextStyle(fontSize: 13, color: Colors.grey[100]),
                       ),
                     ),
+
                   ],
                 ),
+
+                // Spacing
                 const SizedBox(height: 12),
+
                 Text(
-                  task.note!,
+                  notification.note!,
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
                   ),
                 ),
+
+
               ],
             ),
           ),
@@ -84,18 +96,7 @@ class taskView extends StatelessWidget {
             width: 0.5,
             color: Colors.grey[200]!.withOpacity(0.7),
           ),
-          RotatedBox(
-            quarterTurns: 3,
-            child: Text(
-              task.isCompleted == 1 ? "COMPLETED" : "TODO",
-              style: GoogleFonts.lato(
-                textStyle: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ),
-          ),
+
         ]),
       ),
     );
