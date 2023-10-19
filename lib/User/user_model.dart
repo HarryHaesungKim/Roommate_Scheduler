@@ -11,6 +11,9 @@ class UserData {
    String? imageURL;
    List<String>? chatRooms;
    GeoPoint? location;
+   String? themeBrightness; //light or dark
+   String? themeColor; // colors
+
 
 
    UserData({
@@ -24,7 +27,10 @@ class UserData {
      this.chatRooms,
      this.imageURL,
      this.location,
-  });
+     this.themeBrightness,
+     this.themeColor,
+
+   });
    UserData.formJson(Map<String, dynamic> json) {
      email = json['Email'].toString();
      password = json['Password'].toString();
@@ -36,6 +42,9 @@ class UserData {
      chatRooms = json['chatRooms'];
      imageURL = json['imageURL'].toString();
      location = json['location'];
+     themeBrightness = json['themeBrightness'].toString();
+     themeColor = json['themeColor'].toString();
+
    }
 
    Map<String, dynamic> toJson() {
@@ -50,6 +59,8 @@ class UserData {
      data['chatRooms'] = this.chatRooms;
      data['imageURL'] = this.imageURL;
      data['location'] = this.location;
+     data['themeBrightness'] = this.themeBrightness;
+     data['themeColor'] = this.themeColor;
      return data;
    }
 

@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:roommates/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Group/groupController.dart';
+import '../themeData.dart';
 import 'groceriesView.dart';
 import 'package:roommates/User/user_model.dart';
 // @dart=2.9
@@ -25,8 +26,6 @@ class _groceriesPage extends State<groceriesPage> {
   String balance = "";
   String income = "";
   String expense = "";
-  List<String>? chatRooms;
-  String imageURL = "";
   String themeBrightness = "";
   String themeColor = "";
   Future getCurrentBalance() async {
@@ -46,8 +45,6 @@ class _groceriesPage extends State<groceriesPage> {
           expense = list['Expense'];
           themeBrightness = list['themeBrightness'];
           themeColor = list['themeColor'];
-          chatRooms = list['chatRooms'];
-          imageURL = list['imageURL'];
         });
       }
     }
@@ -80,7 +77,6 @@ class _groceriesPage extends State<groceriesPage> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: const Text("Groceries"),
-
         ),
 
         body: Column(
@@ -142,6 +138,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   String balance = "";
   String income = "";
   String expense = "";
+  String themeBrightness = "";
+  String themeColor = "";
   Future updateUserData(double newBanlance,double amount) async {
     String? userID = FirebaseAuth.instance.currentUser?.uid;
     final user = UserData(
@@ -254,7 +252,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         children: [
           // Add task button
           FloatingActionButton(
-            backgroundColor: Colors.orange[700],
+            backgroundColor: setAppBarColor(themeColor, themeBrightness),
             onPressed:  () async {
               await Get.to(addGroceries());
               _groceriesPageController.getGroceries(groupID);
@@ -353,4 +351,3 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
 }
-
