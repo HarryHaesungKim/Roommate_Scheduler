@@ -2,15 +2,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:roommates/Group/groupController.dart';
 import 'package:roommates/Task/taskController.dart';
-import 'package:roommates/groceriesPage/groceriesView.dart';
 import 'package:roommates/homePage/addTask.dart';
 import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
-import 'package:roommates/homePage/VotingPage.dart';
 import 'package:roommates/themeData.dart';
 //import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -159,6 +158,7 @@ class _homePage extends State<homePage> {
                                               TaskObject task = tasksData[index];
                                               var title = task.title;
                                               int? coloDB = task.color;
+
 
                                               // Adding extra padding at the last item for the button (so that it doesn't overlap).
                                               if(index == tasksData.length - 1){
@@ -326,6 +326,143 @@ class _homePage extends State<homePage> {
       ),
     );
   }
+  Widget VoteTaskInfo(){
+    // You are the creator of this payment and thus cannot settle it.
+    return AlertDialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+      ),
+
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Text for the title.
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+                textAlign: TextAlign.left,
+                "Description: ",
+             //   task.title!,
+                style: GoogleFonts.lato(
+                  textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                      color: Colors.white
+                  ),
+                )
+            ),
+          ),
+
+          // Spacing.
+          const SizedBox(height: 4,),
+
+          // Text for the time.
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+                textAlign: TextAlign.left,
+                "Description: ",
+                style: GoogleFonts.lato(
+                  textStyle: const TextStyle(
+                    //fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white
+                  ),
+                )
+            ),
+          ),
+
+          // Spacing.
+          const SizedBox(height: 4,),
+
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+                textAlign: TextAlign.left,
+                //notificationTitles[index],
+                "Description: ",
+                style: GoogleFonts.lato(
+                  textStyle: const TextStyle(
+                    //fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white
+                  ),
+                )
+            ),
+          ),
+
+          // Spacing.
+          const SizedBox(height: 4,),
+
+          // Text for the body.
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+                textAlign: TextAlign.left,
+                "Description: ",
+                style: GoogleFonts.lato(
+                  textStyle: const TextStyle(
+                    //fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white
+                  ),
+                )
+            ),
+          ),
+
+          // Spacing.
+          const SizedBox(height: 4,),
+
+          // Text for the body.
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+                textAlign: TextAlign.left,
+                "Description: ",
+                style: GoogleFonts.lato(
+                  textStyle: const TextStyle(
+                    //fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.white
+                  ),
+                )
+            ),
+          ),
+
+          // Spacing.
+          const SizedBox(height: 4,),
+
+          // People apart of payment.
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  textAlign: TextAlign.left,
+                  "Description: ",
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                      //fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white
+                    ),
+                  )
+              )
+          ),
+
+          const SizedBox(height: 4,),
+
+          // Text for the body.
+          Align(
+            alignment: Alignment.centerLeft,
+         //   child: whoHasPaidText(payment),
+          ),
+
+          // Spacing.
+          const SizedBox(height: 16,),
+
+        ],
+      ),
+    );
+  }
 
   /// Shows the options when a task is clicked on.
   showBottomSheet(BuildContext context, TaskObject task) {
@@ -333,21 +470,28 @@ class _homePage extends State<homePage> {
       Container(
         padding: const EdgeInsets.only(top: 4),
         height: task.isCompleted == 1
-            ? _mediaQueryData.size.height * 0.24
+            ? _mediaQueryData.size.height * 0.32
             : _mediaQueryData.size.height * 0.32,
         width: _mediaQueryData.size.width,
         color: Get.isDarkMode ? darkHeaderClr : Colors.white,
         child: Column(children: [
           Container(
-            height: 6,
+            height: 9,
             width: 120,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
                 color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
           ),
           const Spacer(),
           task.isCompleted == 1
-              ? Container()
+              ? _buildBottomSheetButton(
+              label: "Vote task",
+              onTap: () {
+showDialog(context: context, builder: (context){
+       return VoteTaskInfo();
+});
+              },
+              clr: Colors.yellow[300])
               : _buildBottomSheetButton(
               label: "Task Completed",
               onTap: () {
@@ -355,13 +499,6 @@ class _homePage extends State<homePage> {
                 Get.back();
               },
               clr: primaryClr),
-          //Have a issue what happens if task is not completed, but user votes.
-          _buildBottomSheetButton(
-              label: "Voting Task",
-              onTap: () {
-             //  Get.to(VotingPage());
-              },
-              clr: Colors.yellow[300]),
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {

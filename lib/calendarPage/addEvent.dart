@@ -1,18 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:roommates/calendarPage/event.dart';
 import 'package:roommates/calendarPage/eventController.dart';
-import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
 import '../Group/groupController.dart';
 import '../Notifications/NotificationController.dart';
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
-import '../theme.dart';
-import 'package:roommates/groceriesPage/groceriesPageController.dart';
+
+
 
 class addEvent extends StatefulWidget {
   @override
