@@ -5,6 +5,8 @@ import 'package:roommates/User/user_model.dart';
 import 'package:roommates/themeData.dart';
 import 'package:roommates/settingsPage.dart';
 
+import 'Group/groupController.dart';
+
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
 
@@ -13,11 +15,22 @@ class ProfilePage extends StatefulWidget {
 }
 //Edit profile page
 class _profilePage extends State<ProfilePage> {
-  String userName = "";
-  String email = "";
-  String imageURL = "";
-  String themeBrightness = "";
-  String themeColor = "";
+    bool _password = true;
+    String userName = "";
+    String email = "";
+    String password = "";
+    String groupID = "";
+    String isAdmin ="";
+    String adminMode ="";
+
+    final groupController _groupController = Get.put(groupController());
+    final _uID = FirebaseAuth.instance.currentUser?.uid;
+
+    Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: ((context) => LoginPage())));
+  }
   void getUserData() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
     if(user !=null) {
@@ -29,10 +42,26 @@ class _profilePage extends State<ProfilePage> {
         setState(() {
           userName = list['UserName'];
           email = list['Email'];
-          imageURL = list['imageURL'];
-          themeBrightness = list['themeBrightness'];
-          themeColor = list['themeColor'];
+          password = list['Password'];
+          groupID = list['groupID'];
         });
+
+        if(await _groupController.isUserAdmin(_uID!))
+          {
+            isAdmin = "True";
+          }
+        else{
+          isAdmin = "False";
+        }
+
+        if(await _groupController.isGroupAdminMode(groupID))
+        {
+          adminMode = "True";
+        }
+        else
+        {
+            adminMode = "False";
+        }
       }
     }
   }
@@ -224,29 +253,13 @@ class _profilePage extends State<ProfilePage> {
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       prefixIcon: Icon(Icons.people),
 
-                    ),
-                  ),
-                  SizedBox(height: 20,),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: email,
-                      enabled: false,
-                      hintStyle: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                        color: Colors.black,
-                      ),
-                      label:Text("Email"),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                      prefixIcon: Icon(Icons.email),
-
-                    ),
-                  ),
-                  SizedBox(height: 20,),
-                ],
-              ),
-              ),
+              buildUserInformation("Username", userName),
+              buildUserInformation("Email", email),
+              buildUserInformation("Group ID", groupID),
+              buildUserInformation("Admin User", isAdmin),
+              buildUserInformation("Admin Mode", adminMode),
+           //   buildUserInformation("Password", password),
+              SizedBox(height: 15),
             ],
           ),
         ),
