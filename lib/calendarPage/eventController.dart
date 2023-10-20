@@ -32,9 +32,11 @@ class eventController extends GetxController {
 
   // get all the data from table
   void getEvents(String groupID) async {
+
     List<Map<String, dynamic>> events = await _db.getEvents(groupID);
-    eventList.assignAll(events.map((data) => new Event.fromJson(data)).toList());
+    eventList.assignAll(events.map((data) => Event.fromJson(data)).toList());
     eventsMap.clear();
+
     for(int i = 0; i < eventList.length; i++){
       if (eventsMap.containsKey(eventList[i].date)) {
         // if(eventsMap[eventList[i].date]! .contains(eventList[i])==true){

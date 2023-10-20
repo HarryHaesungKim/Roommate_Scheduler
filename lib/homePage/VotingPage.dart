@@ -1,8 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:roommates/Task/task.dart';
 
-import '../Task/input_field.dart';
 class VotingPage extends StatefulWidget {
   const VotingPage({Key? key}) : super(key: key);
 
