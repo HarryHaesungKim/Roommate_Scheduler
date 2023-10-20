@@ -128,12 +128,12 @@ class _joinGroupPage extends State<joinGroupPage> {
                     borderRadius: BorderRadius.circular(18.0),
                     //side: BorderSide(color: Colors.white)
                   ))),
-                  onPressed: () {
+                  onPressed: () async {
                     // TODO: Database implementation
                     // Need to connect to database. Link code to an existing group and tasks that belong to that group.
                     if(isGIDFormatted(_groupIDController.text.trim()))
                       {
-                        joinGroup(_groupIDController.text.trim(), _uID!);
+                        await joinGroup(_groupIDController.text.trim(), _uID!);
                       }
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => mainPage()));
