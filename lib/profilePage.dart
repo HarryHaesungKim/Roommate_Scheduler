@@ -19,6 +19,7 @@ class _profilePage extends State<ProfilePage> {
     String password = "";
     String groupID = "";
     String isAdmin ="";
+    String adminMode ="";
 
     final groupController _groupController = Get.put(groupController());
     final _uID = FirebaseAuth.instance.currentUser?.uid;
@@ -49,6 +50,15 @@ class _profilePage extends State<ProfilePage> {
           }
         else{
           isAdmin = "False";
+        }
+
+        if(await _groupController.isGroupAdminMode(groupID))
+        {
+          adminMode = "True";
+        }
+        else
+        {
+            adminMode = "False";
         }
       }
     }
@@ -135,6 +145,7 @@ class _profilePage extends State<ProfilePage> {
               buildUserInformation("Email", email),
               buildUserInformation("Group ID", groupID),
               buildUserInformation("Admin User", isAdmin),
+              buildUserInformation("Admin Mode", adminMode),
            //   buildUserInformation("Password", password),
               SizedBox(height: 15),
             ],

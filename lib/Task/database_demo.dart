@@ -37,7 +37,7 @@ class DBHelper {
     return adminUsers.contains(uID);
   }
 
-  /// This method returns the list of users in the group
+  /// This method returns the list of usersNames in the group
   /// user [uID] is in that are not admins
   Future<List<String>> getNonAdminUsers(String uID) async {
     // create empty list and get groupID of user
@@ -66,6 +66,26 @@ class DBHelper {
 
     return nonAdminUserNames;
   }
+
+  Future<List<String>> getNonAdminUserIDs(String uID) async {
+    List<String> nonAdminUsers = [];
+    String gID = await getGroupID(uID);
+    final groupRef = await _db.collection("Group").doc(gID).get();
+    var arr = groupRef.data()?["users"];
+    var arr1 = groupRef.data()?["parentUsers"];
+
+    //get list of all admin users and and then all users, take the
+    // union - intersection of the two sets and get all non admin users
+    List<String> users = List<String>.from(arr);
+    List<String> pUsers  = List<String>.from(arr1);
+
+    List<String> dif = users.toSet().difference(pUsers.toSet()).toList();
+
+    return dif;
+
+  }
+
+
 
   ///
   Future<List<String>> getAdminUsers(String uID) async

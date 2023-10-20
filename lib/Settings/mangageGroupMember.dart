@@ -22,8 +22,10 @@ class _mangageGroupMember extends State<mangageGroupMember> {
 
   final _uID = FirebaseAuth.instance.currentUser?.uid;
 
-  late List<String> peopleInGroup = [];
+  late List<String> peopleInGroup;
+  late List<String> peopleInGroupID;
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
+  late String groupID;
 
   late bool isuseringroup;
   late bool isUserAdmin;
@@ -42,6 +44,8 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   }
   void buildNonAdminUsers() async {
     peopleInGroup = await _groupController.getNonAdminUserNames(_uID!);
+    peopleInGroupID = await _groupController.getNonAdminUserIDs(_uID!);
+    groupID = await _groupController.getGroupIDFromUser(_uID!);
   }
 
   void showNotAdminUserDialog(BuildContext context) {
@@ -152,12 +156,16 @@ class _mangageGroupMember extends State<mangageGroupMember> {
               child: const Text("Add"),
               onPressed: () {
                 // If text input is empty or not valid or no group members are
-                if (formKey.currentState!.validate() && addPeopleYesOrNo.contains(true))
-                {
-
+                if (addPeopleYesOrNo.contains(true)) {
+                  List<String> newAdminIDS = [];
+                  for (int i = 0; i < addPeopleYesOrNo.length; i++) {
+                    if (addPeopleYesOrNo[i]) {
+                      newAdminIDS.add(peopleInGroupID[i]);
+                    }
+                  }
+                  _groupController.addAdminUsers(newAdminIDS, groupID);
                 }
-
-                }
+              }
             ),
           ],
         );
@@ -404,7 +412,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
 
                     buildIsUserAdmin(_uID!);
                     //check if the current user is an admin user
-                    if(!isUserAdmin)
+                    if(isUserAdmin)
                       {
                         showAddAdminDialog(context);
                       }

@@ -87,9 +87,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static late MediaQueryData _mediaQueryData;
   String? uID = FirebaseAuth.instance.currentUser?.uid;
   late String groupID = "";
+  late bool isGroupAdmin;
 
   void setGroupID() async {
     groupID = await _groupController.getGroupIDFromUser(uID!);
+    isGroupAdmin = await _groupController.isGroupAdminMode(groupID);
   }
 
   @override
@@ -244,17 +246,34 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 // );
 
 
-              // check if the current user is an admin user
-              if(await _groupController.isUserAdmin(uID!))
+              if(isGroupAdmin) {
+                if(!await _groupController.isUserAdmin(uID!))
                 {
                   showNotAdminUser(context);
                 }
-              else
-              {
-                await Get.to(addTask());
-                _taskController.getTasks(groupID);
-                //_taskController = Get.put(taskController());
+                else
+                {
+                  await Get.to(addTask());
+                  _taskController.getTasks(groupID);
+                  //_taskController = Get.put(taskController());
+                }
               }
+              else
+                {
+                  await Get.to(addTask());
+                  _taskController.getTasks(groupID);
+                }
+              // check if the current user is an admin user
+              // if(!await _groupController.isUserAdmin(uID!))
+              //   {
+              //     showNotAdminUser(context);
+              //   }
+              // else
+              // {
+              //   await Get.to(addTask());
+              //   _taskController.getTasks(groupID);
+              //   //_taskController = Get.put(taskController());
+              // }
               },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
@@ -287,29 +306,67 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               : _buildBottomSheetButton(
               label: "Task Completed",
               onTap: () async {
-                if(await _groupController.isUserAdmin(uID!))
+                if(isGroupAdmin)
                   {
-                    _taskController.markTaskCompleted(groupID, task.id);
+                    if(await _groupController.isUserAdmin(uID!))
+                    {
+                      _taskController.markTaskCompleted(groupID, task.id);
+                      Get.back();
+                    }
+                    else
+                    {
+                      Get.back();
+                      Get.snackbar("Not Admin!", "Not an admin user, cannot mark tasks as complete");
+                    }
                   }
                 else
                   {
+                    _taskController.markTaskCompleted(groupID, task.id);
                     Get.back();
-                    Get.snackbar("Not Admin!", "Not an admin user, cannot mark tasks as complete");
                   }
+                // if(await _groupController.isUserAdmin(uID!))
+                //   {
+                //     _taskController.markTaskCompleted(groupID, task.id);
+                //   }
+                // else
+                //   {
+                //     Get.back();
+                //     Get.snackbar("Not Admin!", "Not an admin user, cannot mark tasks as complete");
+                //   }
               },
               clr: primaryClr),
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () async {
-                if(await _groupController.isUserAdmin(uID!))
-                {
-                  _taskController.deleteTask(groupID, task);
-                }
+
+                if(isGroupAdmin)
+                  {
+                    if(await _groupController.isUserAdmin(uID!))
+                    {
+                      _taskController.deleteTask(groupID, task);
+                      Get.back();
+                    }
+                    else
+                    {
+                      Get.back();
+                      Get.snackbar("Not Admin!", "Not an admin user, cannot delete tasks");
+                    }
+                  }
                 else
-                {
-                Get.back();
-                Get.snackbar("Not Admin!", "Not an admin user, cannot delete tasks");
-                }
+                  {
+                    _taskController.deleteTask(groupID, task);
+                    Get.back();
+                  }
+                // if(await _groupController.isUserAdmin(uID!))
+                // {
+                //   _taskController.deleteTask(groupID, task);
+                //   Get.back();
+                // }
+                // else
+                // {
+                //   Get.back();
+                //   Get.snackbar("Not Admin!", "Not an admin user, cannot delete tasks");
+                // }
               },
               clr: Colors.red[300]),
           SizedBox(
