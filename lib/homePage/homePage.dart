@@ -113,13 +113,9 @@ class _homePage extends State<homePage> {
         body: FutureBuilder(
           future: Future.wait([futureCurrGroup, isGroupAdmin]),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-            // If there's an error.
-            if (snapshot.hasError) {
-              return Text("Something went wrong! ${snapshot.error}");
-            }
 
             // If there's no error and the snapshot has data.
-            else if (snapshot.hasData) {
+            if (snapshot.hasData) {
               //return Text("GroupCode: ${snapshot.data}");=
 
               // Setting the groupID.
@@ -205,6 +201,12 @@ class _homePage extends State<homePage> {
                 //child: MyStatefulWidget()
               );
             }
+
+            // If there's an error.
+            else if (snapshot.hasError) {
+              return Text("Something went wrong! ${snapshot.error}");
+            }
+
             // Loading.
             else {
               return const Center(

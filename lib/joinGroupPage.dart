@@ -66,6 +66,7 @@ class _joinGroupPage extends State<joinGroupPage> {
 
   }
 
+  @override
   Widget build(BuildContext context)  {
     return Scaffold(
         backgroundColor: Colors.white,
@@ -79,7 +80,7 @@ class _joinGroupPage extends State<joinGroupPage> {
                 height: 100,
                 width: 100,
               ),
-              Text(
+              const Text(
                 'Join/Create Group',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
@@ -99,7 +100,7 @@ class _joinGroupPage extends State<joinGroupPage> {
                     padding: const EdgeInsets.only(left: 12.0),
                     child: TextField(
                       controller: _groupIDController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(
                           Icons.onetwothree_outlined,
                           color: Colors.blue,
@@ -115,22 +116,12 @@ class _joinGroupPage extends State<joinGroupPage> {
 
               // Join Group button
               SizedBox(height: 50),
-              Container(
+              SizedBox(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
                 height: 40.0,
 
                 child: ElevatedButton(
-                  child: Text(
-                    'Join group',
-                    style: TextStyle(
-                      color: Colors.white,
-                      letterSpacing: 1.5,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'OpenSans',
-                    ),
-                  ),
                   style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -147,6 +138,16 @@ class _joinGroupPage extends State<joinGroupPage> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => mainPage()));
                   },
+                  child: const Text(
+                    'Join group',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
+                    ),
+                  ),
                 ),
               ),
 
@@ -157,16 +158,6 @@ class _joinGroupPage extends State<joinGroupPage> {
                 width: 180.0,
                 height: 40.0,
                 child: ElevatedButton(
-                  child: Text(
-                    'Create group',
-                    style: TextStyle(
-                      color: Colors.white,
-                      letterSpacing: 1.5,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'OpenSans',
-                    ),
-                  ),
                   style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -182,27 +173,38 @@ class _joinGroupPage extends State<joinGroupPage> {
                       tasks: [],
                       parentUsers: [_uID!]);
 
-                    _groupController.createGroup(group, _uID!);
+                    // Need to wait for group to finish creating before taking the user to the main page.
+                    // Else, you get an error.
+                    await _groupController.createGroup(group, _uID!);
 
                     // TODO: Database implementation
                     // Need to connect to database. Link code to a new group and tasks that belong to that group (empty).
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => mainPage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage()));
                   },
+                  child: const Text(
+                    'Create group',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
+                    ),
+                  ),
                 ),
               ),
 
 
-              Container(
+              SizedBox(
                   width: 180.0,
                   height: 40.0,
                   child: CheckboxListTile(
-                    title: Text("Admin Mode"),
+                    title: const Text("Admin Mode"),
                     value: _adminMode,
                     onChanged: (bool? value) {
                       setState(() {
                         _adminMode = value!;
-                        print("ADMIN MODE IS :" + _adminMode.toString());
+                        print("ADMIN MODE IS :$_adminMode");
                       });
                     },
                 )
