@@ -128,10 +128,16 @@ class DBHelper {
     }
   }
 
-  ///This method returns whether a group is in parent mode
-  /// or not
-  ///
-  ///
+  // ///This method returns whether a group is in parent mode
+  // /// or not
+  // ///
+  // ///
+  // Future<bool> isInParentMode(String groupID) async {
+  //   final groupref = await _db.collection("Group").doc(groupID).get();
+  //   bool isParentMode = groupref.data()!['parentMode'];
+  //   return isParentMode;
+  // }
+
   Future<bool> isInParentMode(String groupID) async {
     final groupref = await _db.collection("Group").doc(groupID).get();
     bool isParentMode = groupref.data()!['parentMode'];
@@ -150,7 +156,6 @@ class DBHelper {
   ///
   getTasks1(String groupID) async {
     List<Map<String, dynamic>> tasks = [];
-    print("groupID is " + groupID);
     final ref = await _db
         .collection("Group")
         .doc(groupID)
@@ -183,7 +188,7 @@ class DBHelper {
 
     //set the users groupID to NULL
     final userRef = await _db.collection("Users").doc(uID);
-    userRef.update({'groupID': null});
+    userRef.update({'groupID': ""});
   }
 
   ///
@@ -328,10 +333,13 @@ class DBHelper {
   addUserToGroup(String groupID, String uID) async {
     // add user to a list
     List<String> user = [uID];
+    print(uID);
+    print(groupID);
     // union current list of users in group with user we just made into a list
     // this simply adds the user to the list of users in the group
     final groupref = _db.collection("Group").doc(groupID);
     groupref.update({'users': FieldValue.arrayUnion(user)});
+
 
     //now make sure the groupID of the user matches the group they are now in
     final userRef = _db.collection("Users").doc(uID);
