@@ -65,6 +65,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   final _groupController = Get.put(groupController());
   String? uID = FirebaseAuth.instance.currentUser?.uid;
+  late String groupID;
+  late bool isGroupAdmin;
 
   void setGroupID() async {
     groupID = await _groupController.getGroupIDFromUser(uID!);
@@ -84,11 +86,17 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     //_selectedEvents.dispose();
     super.dispose();
   }
+
+  void setGroupID() async {
+    groupID = await _groupController.getGroupIDFromUser(uID!);
+    isGroupAdmin = await _groupController.isGroupAdminMode(groupID);
+  }
+
   @override
   Widget build(BuildContext context) {
     // This is where the calendar will go.
-    // String groupID = _groupController.getGroupIDFromUser(uID!).toString();
     setGroupID();
+    String groupID = _groupController.getGroupIDFromUser(uID!).toString();
     _eventController.getEvents(groupID);
     _mediaQueryData = MediaQuery.of(context);
     return Scaffold(
@@ -96,46 +104,64 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.orange[700],
           onPressed: () async {
-            // show a dialog for user to input event name
-            // showDialog(context: context, builder: (context) {
-            //   return AlertDialog(
-            //     scrollable: true,
-            //     title: const Text("Event Name"),
-            //     content: Padding(
-            //       padding: EdgeInsets.all(8),
-            //       child: TextField(
-            //         controller: _eventController,
-            //       )
-            //     ),
-            //     actions: [
-            //       ElevatedButton(
-            //         onPressed: () async{
-            //           Store the event name into the map
-            //           if (events.containsKey(_selectedDay)) {
-            //             events[_selectedDay]?.add(Event(_eventController.text));
-            //           }
-            //           else{
-            //             events.addAll({
-            //               _selectedDay!: [Event(_eventController.text)]
-            //               //_selectedDay!: [Event("hahahoohee")]
-            //             });
-            //           }
-            //           Navigator.of(context).pop();
-            //           _selectedEvents.value = _getEventsForDay(_selectedDay!);
-            //
-            //           // Need to reload the calendar.
-            //           setState(() {});
-            //
-            //         },
-            //         child: const Text("Submit"),
-            //       )
-            //     ],
-            //   );
-            //
-            // });
-            await Get.to(addEvent());
-            _eventController.getEvents(groupID);
-          },child: const Icon(Icons.add)),
+        // show a dialog for user to input event name
+        // showDialog(context: context, builder: (context) {
+        //   return AlertDialog(
+        //     scrollable: true,
+        //     title: const Text("Event Name"),
+        //     content: Padding(
+        //       padding: EdgeInsets.all(8),
+        //       child: TextField(
+        //         controller: _eventController,
+        //       )
+        //     ),
+        //     actions: [
+        //       ElevatedButton(
+        //         onPressed: () async{
+        //           Store the event name into the map
+        //           if (events.containsKey(_selectedDay)) {
+        //             events[_selectedDay]?.add(Event(_eventController.text));
+        //           }
+        //           else{
+        //             events.addAll({
+        //               _selectedDay!: [Event(_eventController.text)]
+        //               //_selectedDay!: [Event("hahahoohee")]
+        //             });
+        //           }
+        //           Navigator.of(context).pop();
+        //           _selectedEvents.value = _getEventsForDay(_selectedDay!);
+        //
+        //           // Need to reload the calendar.
+        //           setState(() {});
+        //
+        //         },
+        //         child: const Text("Submit"),
+        //       )
+        //     ],
+        //   );
+        //
+        // });
+
+            if(isGroupAdmin)
+              {
+                if(!await _groupController.isUserAdmin(uID!))
+                  {
+                    showNotAdminUser(context);
+                  }
+                else
+                  {
+                    await Get.to(addEvent());
+                    _eventController.getEvents(groupID);
+                  }
+              }
+            else
+              {
+                await Get.to(addEvent());
+                _eventController.getEvents(groupID);
+              }
+        // await Get.to(addEvent());
+        // _eventController.getEvents(groupID);
+      },child: const Icon(Icons.add)),
 
       body: Column(
         children: [
@@ -244,7 +270,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           //                     onTap: () => print(''),
           //
           //                     // Print the values of an event type here.
-          //                     title: Text(value[index].title)
+          //                     title: Text(value[index].title.toString())
           //                 ),
           //               );
           //             });
@@ -269,6 +295,33 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       });
     }
   }
+
+  showNotAdminUser (BuildContext context)
+  {
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed:  () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Not Admin!"),
+      content: const Text("You are not an admin user, cannot create events!"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   showBottomSheet(BuildContext context,  Event event) {
     Get.bottomSheet(
       Container(

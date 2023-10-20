@@ -13,6 +13,93 @@ class DBHelper {
   //static final int _version = 1;
   //static final String _tableName = 'tasks';
 
+
+  /// returns whether the user [uID] is in a group
+  ///
+  ///
+  Future<bool> isUserInGroup(String uID) async {
+    final userRef = await _db.collection('Users').doc(uID).get();
+    String gID = userRef.data()!['groupID'].toString();
+    return gID.isNumericOnly;
+  }
+
+  /// This method returns whether user [uID] is an admin in their group
+  Future<bool> isUserAdmin(String uID) async {
+    // get the groupID of the user/ see if the user is in a group.
+    String gID = await getGroupID(uID);
+
+    // get the list of the admins in this group
+    final groupRef = await _db.collection("Group").doc(gID).get();
+    var arr = groupRef.data()?['parentUsers'];
+    List<String> adminUsers = List<String>.from(arr);
+
+    //return whether the user in in the list of admin users
+    return adminUsers.contains(uID);
+  }
+
+  /// This method returns the list of usersNames in the group
+  /// user [uID] is in that are not admins
+  Future<List<String>> getNonAdminUsers(String uID) async {
+    // create empty list and get groupID of user
+    List<String> nonAdminUsers = [];
+    String gID = await getGroupID(uID);
+    final groupRef = await _db.collection("Group").doc(gID).get();
+    var arr = groupRef.data()?["users"];
+    var arr1 = groupRef.data()?["parentUsers"];
+
+    //get list of all admin users and and then all users, take the
+    // union - intersection of the two sets and get all non admin users
+    List<String> users = List<String>.from(arr);
+    List<String> pUsers  = List<String>.from(arr1);
+
+    List<String> dif = users.toSet().difference(pUsers.toSet()).toList();
+
+    List<String> nonAdminUserNames = [];
+
+    for(var user in dif)
+      {
+        final userRef = await _db.collection("Users").doc(user).get();
+        nonAdminUserNames.add(userRef.data()!['UserName'].toString());
+      }
+
+    // return the list of non admin users
+
+    return nonAdminUserNames;
+  }
+
+  Future<List<String>> getNonAdminUserIDs(String uID) async {
+    List<String> nonAdminUsers = [];
+    String gID = await getGroupID(uID);
+    final groupRef = await _db.collection("Group").doc(gID).get();
+    var arr = groupRef.data()?["users"];
+    var arr1 = groupRef.data()?["parentUsers"];
+
+    //get list of all admin users and and then all users, take the
+    // union - intersection of the two sets and get all non admin users
+    List<String> users = List<String>.from(arr);
+    List<String> pUsers  = List<String>.from(arr1);
+
+    List<String> dif = users.toSet().difference(pUsers.toSet()).toList();
+
+    return dif;
+
+  }
+
+
+
+  ///
+  Future<List<String>> getAdminUsers(String uID) async
+  {
+    //create the empty list and then get the groupID of the current user
+    List<String> adminUsers = [];
+    String gID = await getGroupID(uID);
+    final groupRef = await _db.collection("Group").doc(gID).get();
+
+    List<String> pUsers  = groupRef.data()?["parentUsers"];
+
+    return pUsers;
+  }
+
   ///
   /// This method adds a task to the database for this group
   ///
@@ -27,6 +114,30 @@ class DBHelper {
       Get.snackbar("ERROR", "Whoops, something went wrong.");
     });
   }
+
+  /// This method sets the groups parentUsers to the list of parennt users given
+  /// for the groupID given
+  ///
+  ///
+  Future<void> addParentUsers(List<String> pUsers, String groupID) async {
+    final groupRef = await _db.collection("Group").doc(groupID);
+    for(int i = 0; i < pUsers.length; i++)
+      {
+        groupRef.update({'parentUsers': FieldValue.arrayUnion(pUsers)});
+      }
+  }
+
+  ///This method returns whether a group is in parent mode
+  /// or not
+  ///
+  ///
+  Future<bool> isInParentMode(String groupID) async {
+    final groupref = await _db.collection("Group").doc(groupID).get();
+    bool isParentMode = groupref.data()!['parentMode'];
+    return isParentMode;
+  }
+
+
 
   ///
   /// This method returns the list of tasks for a group given a groupID
@@ -44,6 +155,22 @@ class DBHelper {
             }
               );
     return tasks;
+  }
+
+  /// removes user [uID] from the current group they are in, also removes them
+  /// from any tasks, events, etc. that they are in. Also sets the users
+  ///  groupID to NULL.
+  removeUserFromGroup(String uID) async{
+    //remove from group
+    String groupID = await getGroupID(uID);
+    final groupRef = await _db.collection("Group").doc(groupID).collection("users").doc(uID).delete();
+
+    //remove them from all events, tasks, etc. from this group
+
+
+    //set the users groupID to NULL
+    final userRef = await _db.collection("Users").doc(uID);
+    userRef.update({'groupID': null});
   }
 
   ///
@@ -281,6 +408,8 @@ class DBHelper {
       Get.snackbar("ERROR", "Whoops, something went wrong.");
     });
   }
+
+
 
   // static Future<void> initDb() async {
   //   if (_db != null) {

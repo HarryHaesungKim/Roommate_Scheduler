@@ -27,6 +27,8 @@ class _joinGroupPage extends State<joinGroupPage> {
 
   final _uID = FirebaseAuth.instance.currentUser?.uid;
 
+  late bool _adminMode = false;
+
   ///
   /// This method returns whether the groupID is formatted correct
   /// returns whether the group id is a 5 digit number
@@ -168,9 +170,10 @@ class _joinGroupPage extends State<joinGroupPage> {
                     //first create an new groupID that is not taken
                     final group = GroupModel(
                       id: await GroupModel.groupGenerator(),
-                      parentMode: false,
+                      parentMode: _adminMode,
                       users: [_uID!],
-                      tasks: []);
+                      tasks: [],
+                      parentUsers: [_uID!]);
 
                     _groupController.createGroup(group, _uID!);
 
@@ -181,6 +184,24 @@ class _joinGroupPage extends State<joinGroupPage> {
                   },
                 ),
               ),
+
+
+              Container(
+                  width: 180.0,
+                  height: 40.0,
+                  child: CheckboxListTile(
+                    title: Text("Admin Mode"),
+                    value: _adminMode,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _adminMode = value!;
+                        print("ADMIN MODE IS :" + _adminMode.toString());
+                      });
+                    },
+                )
+
+              )
+
             ],
           )),
         ));

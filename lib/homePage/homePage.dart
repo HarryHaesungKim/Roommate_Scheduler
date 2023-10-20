@@ -247,7 +247,123 @@ class _homePage extends State<homePage> {
 
   // Widgets
 
-  /// The top of the widget that shows the date, 'Upcoming Tasks', and the 'Add task' button.
+// Worth viewing: https://flutterforyou.com/how-to-add-space-between-listview-items-in-flutter/
+
+// Need to implement list tile: https://api.flutter.dev/flutter/material/ListTile-class.html
+
+// Might be fun for messagingPage: https://docs.flutter.dev/cookbook/animation/page-route-animation
+
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({super.key});
+
+  @override
+  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  final ScrollController _firstController = ScrollController();
+  final _taskController = Get.put(taskController());
+  final _groupController = Get.put(groupController());
+  static late MediaQueryData _mediaQueryData;
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+  late String groupID = "";
+  late bool isGroupAdmin;
+
+  void setGroupID() async {
+    groupID = await _groupController.getGroupIDFromUser(uID!);
+    isGroupAdmin = await _groupController.isGroupAdminMode(groupID);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    setGroupID();
+    _taskController.getTasks(groupID);
+    _mediaQueryData = MediaQuery.of(context);
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Column(
+            children:[
+              addTaskBar(),
+              SizedBox(
+                  width: constraints.maxWidth - constraints.maxWidth * 0.05,
+                  height: constraints.maxHeight - constraints.maxHeight * 0.2,
+                  child: Obx(() {
+                    //thumbVisibility: true,
+                    //thickness: 10,
+                    return ListView.builder(
+                        primary: true,
+                        itemCount: _taskController.taskList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          print("tasks " + _taskController.taskList[index].title!);
+                          Task task = _taskController.taskList[index];
+                          var title = task.title;
+                          int? coloDB = task.color;
+
+                          return Padding(
+
+                            // Spacing between elements:
+                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+
+                            child: Container(
+                                //color: Color(coloDB!),
+                              // color: index.isEven
+                              //     ? Colors.amberAccent
+                              //     : Colors.blueAccent,
+                                child: InkWell(
+                                  child: taskView(task),
+                                  onTap: () {
+                                    showBottomSheet(context, task);
+                                  },
+                                )
+
+                              ),
+                            );
+                        }
+
+                    );
+                  })
+
+              ),
+
+            ],
+          );
+        });
+  }
+  scrollList() {
+    return Container(
+        margin: EdgeInsets.only(bottom: 500, left: 20),
+        child: Scrollbar(
+          // This vertical scroll view has primary set to true, so it is
+          // using the PrimaryScrollController. On mobile platforms, the
+          // PrimaryScrollController automatically attaches to vertical
+          // ScrollViews, unlike on Desktop platforms, where the primary
+          // parameter is required.
+          //thumbVisibility: true,
+          thickness: 10,
+          child: ListView.builder(
+              primary: true,
+              itemCount: 5,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  // Spacing between elements:
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    child: Container(
+                        height: 100,
+                        //padding: const EdgeInsets.all(2),
+
+                        color: index.isEven
+                            ? Colors.amberAccent
+                            : Colors.blueAccent,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('Random task $index'),
+                        )
+                    ));
+
+              }),
+        )
+    );
+  }
   addTaskBar() {
     return Container(
       margin: const EdgeInsets.only(bottom: 12, top: 10),
@@ -307,22 +423,50 @@ class _homePage extends State<homePage> {
           // ),
 
           // Add task button
-          // ElevatedButton(
-          //   onPressed:  () async {
-          //       // await Get.to(addTask());
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(builder: (context) => addTask()),
-          //       );
-          //     // await Get.to(addTask());
-          //     // taskCon.getTasks(currGroup);
-          //     Get.lazyPut(()=>taskController());
-          //     },
-          //   style: ButtonStyle(
-          //     backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
-          //   ),
-          //   child: const Text('+ Add Task',),
-          // ),
+          ElevatedButton(
+            child: Text('+ Add Task',),
+
+            onPressed:  () async {
+                //await Get.to(addTask());
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => addTask()),
+                // );
+
+
+              if(isGroupAdmin) {
+                if(!await _groupController.isUserAdmin(uID!))
+                {
+                  showNotAdminUser(context);
+                }
+                else
+                {
+                  await Get.to(addTask());
+                  _taskController.getTasks(groupID);
+                  //_taskController = Get.put(taskController());
+                }
+              }
+              else
+                {
+                  await Get.to(addTask());
+                  _taskController.getTasks(groupID);
+                }
+              // check if the current user is an admin user
+              // if(!await _groupController.isUserAdmin(uID!))
+              //   {
+              //     showNotAdminUser(context);
+              //   }
+              // else
+              // {
+              //   await Get.to(addTask());
+              //   _taskController.getTasks(groupID);
+              //   //_taskController = Get.put(taskController());
+              // }
+              },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
+            ),
+          ),
         ],
       ),
     );
@@ -369,16 +513,68 @@ class _homePage extends State<homePage> {
               clr: Colors.yellow[300])
               : _buildBottomSheetButton(
               label: "Task Completed",
-              onTap: () {
-                taskCon.markTaskCompleted(currGroup, task.id);
-                Get.back();
+              onTap: () async {
+                if(isGroupAdmin)
+                  {
+                    if(await _groupController.isUserAdmin(uID!))
+                    {
+                      _taskController.markTaskCompleted(groupID, task.id);
+                      Get.back();
+                    }
+                    else
+                    {
+                      Get.back();
+                      Get.snackbar("Not Admin!", "Not an admin user, cannot mark tasks as complete");
+                    }
+                  }
+                else
+                  {
+                    _taskController.markTaskCompleted(groupID, task.id);
+                    Get.back();
+                  }
+                // if(await _groupController.isUserAdmin(uID!))
+                //   {
+                //     _taskController.markTaskCompleted(groupID, task.id);
+                //   }
+                // else
+                //   {
+                //     Get.back();
+                //     Get.snackbar("Not Admin!", "Not an admin user, cannot mark tasks as complete");
+                //   }
               },
               clr: primaryClr),
           _buildBottomSheetButton(
               label: "Delete Task",
-              onTap: () {
-                taskCon.deleteTask(currGroup, task);
-                Get.back();
+              onTap: () async {
+
+                if(isGroupAdmin)
+                  {
+                    if(await _groupController.isUserAdmin(uID!))
+                    {
+                      _taskController.deleteTask(groupID, task);
+                      Get.back();
+                    }
+                    else
+                    {
+                      Get.back();
+                      Get.snackbar("Not Admin!", "Not an admin user, cannot delete tasks");
+                    }
+                  }
+                else
+                  {
+                    _taskController.deleteTask(groupID, task);
+                    Get.back();
+                  }
+                // if(await _groupController.isUserAdmin(uID!))
+                // {
+                //   _taskController.deleteTask(groupID, task);
+                //   Get.back();
+                // }
+                // else
+                // {
+                //   Get.back();
+                //   Get.snackbar("Not Admin!", "Not an admin user, cannot delete tasks");
+                // }
               },
               clr: Colors.red[300]),
           const SizedBox(
@@ -395,6 +591,58 @@ class _homePage extends State<homePage> {
           ),
         ]),
       ),
+    );
+  }
+
+  showNotAdminUser (BuildContext context)
+  {
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed:  () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Not Admin!"),
+      content: const Text("You are not an admin user, cannot create tasks!"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showNotAdminUserComplete (BuildContext context)
+  {
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed:  () {
+        Get.back();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Not Admin!"),
+      content: const Text("You are not an admin user, cannot complete task!"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 
