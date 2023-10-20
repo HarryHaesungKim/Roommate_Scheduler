@@ -320,8 +320,12 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     buildIsUserAdmin(_uID!);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orange[700],
+        backgroundColor: setAppBarColor(themeColor, themeBrightness),
         title: const Text("Group Member"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),
@@ -365,7 +369,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
                     _groupController.addUserToGroup(_uID!, _accessCodeController.text.trim());
                   },
                   style:ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,side: BorderSide.none, shape: const StadiumBorder()
+                      backgroundColor:setAppBarColor(themeColor, themeBrightness),side: BorderSide.none, shape: const StadiumBorder()
                   ) ,
                   child: const Text(
                     "Join Different Group",style: TextStyle(color:Colors.white),
@@ -397,7 +401,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
 
                   },
                   style:ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,side: BorderSide.none, shape: const StadiumBorder()
+                      backgroundColor: setAppBarColor(themeColor, themeBrightness),side: BorderSide.none, shape: const StadiumBorder()
                   ) ,
                   child: const Text(
                     "Leave Group",style: TextStyle(color:Colors.white),

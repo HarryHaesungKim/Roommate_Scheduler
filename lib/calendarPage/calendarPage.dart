@@ -55,6 +55,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   late DateTime _focusedDay = DateTime(now.year, now.month, now.day);
   DateTime? _selectedDay;
   String? selectedDayString;
+  String groupID = "";
 
   // For Events
   // Map<DateTime, List<Event>> events = {};
@@ -66,6 +67,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   String? uID = FirebaseAuth.instance.currentUser?.uid;
   late String groupID;
   late bool isGroupAdmin;
+
+  void setGroupID() async {
+    groupID = await _groupController.getGroupIDFromUser(uID!);
+  }
 
 
   @override
@@ -191,7 +196,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             },
             // Allows users to keep their selected dates between closing/reopening the app.
             // Currently commented out because I want it to reset to the current date. We can change this if we wanted to.
-           onPageChanged: (focusedDay) {
+            onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
 
@@ -201,50 +206,49 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           const SizedBox(height: 8.0),
 
           Expanded(
-              child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints){
-                    return Column(
-                      children:[
-                        SizedBox(
-                            width: constraints.maxWidth - constraints.maxWidth * 0.05,
-                            height: constraints.maxHeight - constraints.maxHeight * 0.2,
-                            child: Obx(() {
-                              //thumbVisibility: true,
-                              //thickness: 10,
-                              return ListView.builder(
-                                  primary: true,
-                                  itemCount: _eventController.eventsMap[selectedDayString]?.length ?? 0,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    //Event event = _eventController.eventList[index]
-                                    // print("_eventController.eventsMap[_focusedDay]?.length");
-                                    print(_eventController.eventsMap[selectedDayString]?.length);
-                                    print(_eventController.eventList[2].date);
-                                    int temp = _eventController.eventsMap[selectedDayString]![index];
-                                    Event event = _eventController.eventList[temp];
-                                    var title = event.title;
-                                    return Padding(
-                                      // Spacing between elements:
-                                      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+            child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints){
+                  return Column(
+                    children:[
+                      SizedBox(
+                          width: constraints.maxWidth - constraints.maxWidth * 0.05,
+                          height: constraints.maxHeight - constraints.maxHeight * 0.2,
+                          child: Obx(() {
+                            //thumbVisibility: true,
+                            //thickness: 10,
+                            return ListView.builder(
+                                primary: true,
+                                itemCount: _eventController.eventsMap[selectedDayString]?.length ?? 0,
+                                itemBuilder: (BuildContext context, int index) {
+                                  //Event event = _eventController.eventList[index]
+                                  // print("_eventController.eventsMap[_focusedDay]?.length");
+                                  print(_eventController.eventsMap[selectedDayString]?.length);
+                                  int temp = _eventController.eventsMap[selectedDayString]![index];
+                                  Event event = _eventController.eventList[temp];
+                                  var title = event.title;
+                                  return Padding(
+                                    // Spacing between elements:
+                                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
 
-                                      child: Container(
-                                          child: InkWell(
-                                            child:
-                                            eventView(event),
-                                            onTap: () {
-                                              showBottomSheet(context, event);
-                                            },
-                                          )
-                                      ),
-                                    );
-                                  }
+                                    child: Container(
+                                        child: InkWell(
+                                          child:
+                                          eventView(event),
+                                          onTap: () {
+                                            showBottomSheet(context, event);
+                                          },
+                                        )
+                                    ),
+                                  );
+                                }
 
-                              );
-                            })
-                        ),
-                      ],
-                    );
-                  }
-              ),
+                            );
+                          })
+                      ),
+                    ],
+                  );
+                }
+            ),
           )
 
 
@@ -287,7 +291,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
         selectedDayString = DateFormat('M/d/yyyy').format(_selectedDay!);
-       //_selectedEvents.value = _getEventsForDay(selectedDay!);
+        //_selectedEvents.value = _getEventsForDay(selectedDay!);
       });
     }
   }

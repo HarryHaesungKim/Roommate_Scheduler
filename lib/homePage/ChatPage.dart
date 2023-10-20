@@ -75,7 +75,7 @@ class _ChatPage extends State<ChatPage> {
 
         children: [
 
-          const SizedBox(height: 10,),
+          //const SizedBox(height: 10,),
 
           // messages
           // REMOVE COMMENTS 81 - 83
@@ -122,28 +122,36 @@ class _ChatPage extends State<ChatPage> {
     // align the messages to the right if the sender is the current user, otherwise to the left.
     var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid) ? Alignment.centerRight : Alignment.centerLeft;
 
-    return Container(
-      alignment: alignment,
-      child: Column(
-        crossAxisAlignment: (data['senderId'] == _firebaseAuth.currentUser!.uid)
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
-        mainAxisAlignment: (data['senderId'] == _firebaseAuth.currentUser!.uid)
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        children: [
-          Text(data['senderUserName']),
-          const SizedBox(height: 5,),
-          ChatBubble(message: data['message']),
-        ]
-      )
+    // Messages from you should be a different color than messages from others.
+    var bubbleColor = (data['senderId'] == _firebaseAuth.currentUser!.uid) ? Colors.blue : Colors.grey.shade400;
+    var textColor = (data['senderId'] == _firebaseAuth.currentUser!.uid) ? 0 : 1;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15,0,15,0),
+      child: Container(
+        alignment: alignment,
+        child: Column(
+          crossAxisAlignment: (data['senderId'] == _firebaseAuth.currentUser!.uid)
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
+          mainAxisAlignment: (data['senderId'] == _firebaseAuth.currentUser!.uid)
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 5,),
+            Text(data['senderUserName']),
+            const SizedBox(height: 3,),
+            ChatBubble(message: data['message'], color: bubbleColor, textColor: textColor),
+          ]
+        )
+      ),
     );
   }
 
   // build message input
   Widget _buildMessageInput(){
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+      padding: const EdgeInsets.fromLTRB(20, 15, 20, 0),
       child: Row(
         children: [
           Expanded(

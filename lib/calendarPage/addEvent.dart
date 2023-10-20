@@ -8,6 +8,7 @@ import 'package:roommates/calendarPage/eventController.dart';
 import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
 import '../Group/groupController.dart';
+import '../Notifications/NotificationController.dart';
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
 import '../theme.dart';
@@ -34,6 +35,8 @@ class _AddEventState extends State<addEvent> {
 
   String? _endTime = "9:30 AM";
 
+  // Controller
+  final NotificationController notifCon = NotificationController();
 
   @override
   void initState() {
@@ -193,6 +196,11 @@ class _AddEventState extends State<addEvent> {
                     child: Text('Create Event'),
                     onPressed: () {
                       _validateInputs();
+
+                      // Adding a notification of event creation.
+                      String notifTitle = "New Event: ${_titleController.text}";
+                      String notifBody = "Event Description: ${_noteController.text}\nEvent Date: ${_selectedDate.month}/${_selectedDate.day}/${_selectedDate.year}";
+                      notifCon.createNotification(title: notifTitle, body: notifBody, type: "event");
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),

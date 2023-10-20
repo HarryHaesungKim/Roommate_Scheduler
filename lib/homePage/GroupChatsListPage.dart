@@ -288,7 +288,7 @@ class _messagingPage extends State<GroupChatsListPage> {
                     child: Text(groupchatTitles[index][0]),
                   ),
                   title: Text(groupchatTitles[index]),
-                  subtitle: Text(groupchatLastMessage[index]),
+                  //subtitle: Text(groupchatLastMessage[index]),
                   //trailing: const Icon(Icons.more_vert),
                   trailing: GestureDetector(
                       onTap: () {

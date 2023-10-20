@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:roommates/Task/task.dart';
+import 'package:roommates/Task/TaskObject.dart';
 
 import '../Group/groupModel.dart';
 
@@ -103,7 +103,7 @@ class DBHelper {
   ///
   /// This method adds a task to the database for this group
   ///
-  Future<void> createTask1(String groupID, Task task) async  {
+  Future<void> createTask1(String groupID, TaskObject task) async  {
     await _db.collection("Group").doc(groupID).collection("tasks").add(task.toJson()).then((value)
     =>
         _db.collection("Group").doc(groupID).collection("tasks").doc(value.id).update({"id": value.id.toString()})).whenComplete(() =>
@@ -354,7 +354,7 @@ class DBHelper {
   ///
   /// This method creates a task in the database given the input Task.
   ///
-  createTask(Task task) async {
+  createTask(TaskObject task) async {
 
     await _db.collection("Tasks").add(task.toJson()).then((value)
     =>
@@ -399,7 +399,7 @@ class DBHelper {
     });
   }
 
-  deleteTask(String groupID, Task task) async {
+  deleteTask(String groupID, TaskObject task) async {
     _db.collection("Group").doc(groupID).collection("tasks").doc(task.id).delete().whenComplete(() =>
         Get.snackbar("Success!",
             "Task has been deleted.")).

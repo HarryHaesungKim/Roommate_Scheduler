@@ -70,7 +70,7 @@ class groceriesView extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  groceries.paidName!,
+                  "${groceries.split}%",
                   style: GoogleFonts.lato(
                     textStyle: TextStyle(fontSize: 13, color: Colors.grey[100]),
                   ),

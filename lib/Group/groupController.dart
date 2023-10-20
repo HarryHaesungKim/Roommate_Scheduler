@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:roommates/Task/database_demo.dart';
-import 'package:roommates/Task/task.dart';
+import 'package:roommates/Task/TaskObject.dart';
 import 'package:roommates/Task/database_demo.dart';
 import 'package:roommates/Group/groupModel.dart';
 
