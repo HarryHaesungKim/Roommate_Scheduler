@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:roommates/Group/groupController.dart';
 import 'package:roommates/Task/taskController.dart';
@@ -333,134 +334,7 @@ class _homePage extends State<homePage> {
         borderRadius: BorderRadius.all(Radius.circular(15)),
       ),
 
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Text for the title.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                "Description: ",
-             //   task.title!,
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                      color: Colors.white
-                  ),
-                )
-            ),
-          ),
 
-          // Spacing.
-          const SizedBox(height: 4,),
-
-          // Text for the time.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                "Description: ",
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
-                    //fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Colors.white
-                  ),
-                )
-            ),
-          ),
-
-          // Spacing.
-          const SizedBox(height: 4,),
-
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                //notificationTitles[index],
-                "Description: ",
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
-                    //fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white
-                  ),
-                )
-            ),
-          ),
-
-          // Spacing.
-          const SizedBox(height: 4,),
-
-          // Text for the body.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                "Description: ",
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
-                    //fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white
-                  ),
-                )
-            ),
-          ),
-
-          // Spacing.
-          const SizedBox(height: 4,),
-
-          // Text for the body.
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-                textAlign: TextAlign.left,
-                "Description: ",
-                style: GoogleFonts.lato(
-                  textStyle: const TextStyle(
-                    //fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white
-                  ),
-                )
-            ),
-          ),
-
-          // Spacing.
-          const SizedBox(height: 4,),
-
-          // People apart of payment.
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                  textAlign: TextAlign.left,
-                  "Description: ",
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                      //fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.white
-                    ),
-                  )
-              )
-          ),
-
-          const SizedBox(height: 4,),
-
-          // Text for the body.
-          Align(
-            alignment: Alignment.centerLeft,
-         //   child: whoHasPaidText(payment),
-          ),
-
-          // Spacing.
-          const SizedBox(height: 16,),
-
-        ],
-      ),
     );
   }
 
@@ -486,10 +360,11 @@ class _homePage extends State<homePage> {
           task.isCompleted == 1
               ? _buildBottomSheetButton(
               label: "Vote task",
-              onTap: () {
-showDialog(context: context, builder: (context){
-       return VoteTaskInfo();
-});
+              onTap: () async {
+                await createVoting(context);
+// showDialog(context: context, builder: (context){
+//
+// });
               },
               clr: Colors.yellow[300])
               : _buildBottomSheetButton(
@@ -552,6 +427,49 @@ showDialog(context: context, builder: (context){
             )),
       ),
     );
+  }
+  Future<void> createVoting(BuildContext context) async {
+
+    return await showDialog(context: context, builder: (context) {
+
+
+      return StatefulBuilder(builder: (context, setState) {
+
+        return AlertDialog(
+          // Rounding corners of the dialogue.
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+          ),
+
+          title: const Text("Add New Payment"),
+          content: SingleChildScrollView(
+            child: Column(
+                children:[
+                  TextFormField(
+                    // controller: _newPaymentTitleController,
+                    decoration: const InputDecoration(
+                        hintText: "Enter payment title"),
+                  ),
+              ]
+
+            )
+          ),
+
+
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Okay"),
+              onPressed: () {
+
+
+              },
+            ),
+          ],
+        );
+
+      });
+
+    });
   }
 
 }
