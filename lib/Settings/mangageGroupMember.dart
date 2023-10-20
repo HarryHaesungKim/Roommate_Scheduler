@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,12 +6,15 @@ import 'package:roommates/User/user_model.dart';
 import 'package:get/get.dart';
 
 import '../Group/groupController.dart';
+import '../themeData.dart';
+
 class mangageGroupMember extends StatefulWidget {
   const mangageGroupMember({Key? key}) : super(key: key);
 
   @override
   State<mangageGroupMember> createState() => _mangageGroupMember();
 }
+
 class _mangageGroupMember extends State<mangageGroupMember> {
   final TextEditingController _accessCodeController = TextEditingController();
 
@@ -31,6 +33,24 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   late bool isUserAdmin;
   late bool doesNewGroupExist;
 
+  String themeBrightness = "";
+  String themeColor = "";
+
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if (user != null) {
+      DocumentSnapshot db =
+          await FirebaseFirestore.instance.collection("Users").doc(user).get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
+        });
+      }
+    }
+  }
+
   void setDoesNewGroupExist(String groupID) async {
     doesNewGroupExist = await _groupController.doesGroupExist(groupID);
   }
@@ -42,6 +62,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   void buildIsUserAdmin(String uID) async {
     isUserAdmin = await _groupController.isUserAdmin(uID);
   }
+
   void buildNonAdminUsers() async {
     peopleInGroup = await _groupController.getNonAdminUserNames(_uID!);
     peopleInGroupID = await _groupController.getNonAdminUserIDs(_uID!);
@@ -51,7 +72,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   void showNotAdminUserDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: const Text("Okay"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.pop(context, 'Okay');
       },
     );
@@ -74,110 +95,104 @@ class _mangageGroupMember extends State<mangageGroupMember> {
 
   /// This method returns whether [groupID] is formatted correct
   /// the formatting being exactly 5 digits
-  bool isGroupIDFormatted(String groupID)
-  {
+  bool isGroupIDFormatted(String groupID) {
     final fiveDigit = RegExp(r'^\d{5}$');
     return fiveDigit.hasMatch(groupID);
   }
 
-
   Future<void> showAddAdminDialog(BuildContext context) async {
     buildNonAdminUsers();
 
-    return await showDialog(context: context, builder: (context) {
-      // Replaced textEditingController with _newChatNameController.
-      // final TextEditingController textEditingController = TextEditingController();
-      bool? isChecked = false;
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          // Replaced textEditingController with _newChatNameController.
+          // final TextEditingController textEditingController = TextEditingController();
+          bool? isChecked = false;
 
-      return StatefulBuilder(builder: (context, setState) {
-        return AlertDialog(
-          title: const Text("Add Admin User(s)"),
-          content: Form(
-              key: formKey,
-              child: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Padding
-                    const SizedBox(height: 30),
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Add Admin User(s)"),
+              content: Form(
+                  key: formKey,
+                  child: SizedBox(
+                    width: double.maxFinite,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Padding
+                        const SizedBox(height: 30),
 
-                    // Text
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Select Group Members",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-
-                    // Padding
-                    const SizedBox(height: 20),
-
-                    // Checklist
-                    Container(
-                      // Can change color.
-                      color: const Color.fromARGB(255, 227, 227, 227),
-                      child: SizedBox(
-                        width: double.maxFinite,
-                        height: 150,
-                        child: Scrollbar(
-                          thumbVisibility: true,
-                          thickness: 5,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: peopleInGroup.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return CheckboxListTile(
-                                  value: addPeopleYesOrNo[index],
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      addPeopleYesOrNo[index] = value!;
-                                    });
-                                  },
-                                  title: Text(peopleInGroup[index])
-                              );
-                            },
+                        // Text
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Select Group Members",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
 
-                      ),
+                        // Padding
+                        const SizedBox(height: 20),
+
+                        // Checklist
+                        Container(
+                          // Can change color.
+                          color: const Color.fromARGB(255, 227, 227, 227),
+                          child: SizedBox(
+                            width: double.maxFinite,
+                            height: 150,
+                            child: Scrollbar(
+                              thumbVisibility: true,
+                              thickness: 5,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: peopleInGroup.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return CheckboxListTile(
+                                      value: addPeopleYesOrNo[index],
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          addPeopleYesOrNo[index] = value!;
+                                        });
+                                      },
+                                      title: Text(peopleInGroup[index]));
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-
-                  ],
-                ),
-              )),
-
-          actions: <Widget>[
-            TextButton(
-              child: const Text("Add"),
-              onPressed: () {
-                // If text input is empty or not valid or no group members are
-                if (addPeopleYesOrNo.contains(true)) {
-                  List<String> newAdminIDS = [];
-                  for (int i = 0; i < addPeopleYesOrNo.length; i++) {
-                    if (addPeopleYesOrNo[i]) {
-                      newAdminIDS.add(peopleInGroupID[i]);
-                    }
-                  }
-                  _groupController.addAdminUsers(newAdminIDS, groupID);
-                }
-              }
-            ),
-          ],
-        );
-      });
-    });
+                  )),
+              actions: <Widget>[
+                TextButton(
+                    child: const Text("Add"),
+                    onPressed: () {
+                      // If text input is empty or not valid or no group members are
+                      if (addPeopleYesOrNo.contains(true)) {
+                        List<String> newAdminIDS = [];
+                        for (int i = 0; i < addPeopleYesOrNo.length; i++) {
+                          if (addPeopleYesOrNo[i]) {
+                            newAdminIDS.add(peopleInGroupID[i]);
+                          }
+                        }
+                        _groupController.addAdminUsers(newAdminIDS, groupID);
+                      }
+                    }),
+              ],
+            );
+          });
+        });
   }
 
-  showAlertDialog(BuildContext context)
-  {
+  showAlertDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: const Text("Cancel"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.pop(context, 'Cancel');
 
         Get.snackbar("Canceled", "Leaving group has been canceled");
@@ -185,9 +200,10 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
     Widget continueButton = TextButton(
       child: const Text("Continue"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.pop(context, 'Continue');
-        _groupController.removeUser(_uID!).whenComplete(() =>  Get.snackbar("Left Group", "You have left the group"));
+        _groupController.removeUser(_uID!).whenComplete(
+            () => Get.snackbar("Left Group", "You have left the group"));
       },
     );
     AlertDialog alert = AlertDialog(
@@ -208,11 +224,10 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
   }
 
-  showAlreadyInGroupDialog(BuildContext context)
-  {
+  showAlreadyInGroupDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: const Text("Okay"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.pop(context, 'Okay');
       },
     );
@@ -234,11 +249,10 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
   }
 
-  showGroupDoesNotExist(BuildContext context)
-  {
+  showGroupDoesNotExist(BuildContext context) {
     Widget cancelButton = TextButton(
       child: const Text("Okay"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.pop(context, 'Okay');
       },
     );
@@ -260,11 +274,10 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
   }
 
-  showEmptyGroupIDDialog (BuildContext context)
-  {
+  showEmptyGroupIDDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: const Text("Okay"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.pop(context, 'Okay');
       },
     );
@@ -286,11 +299,10 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
   }
 
-  showGroupIDNotFormatted (BuildContext context)
-  {
+  showGroupIDNotFormatted(BuildContext context) {
     Widget cancelButton = TextButton(
       child: const Text("Okay"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.pop(context, 'Okay');
       },
     );
@@ -312,7 +324,6 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     buildNonAdminUsers();
@@ -323,7 +334,8 @@ class _mangageGroupMember extends State<mangageGroupMember> {
         backgroundColor: setAppBarColor(themeColor, themeBrightness),
         title: const Text("Group Member"),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
+          icon: Icon(Icons.arrow_back,
+              color: setBackGroundBarColor(themeBrightness)),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -334,62 +346,68 @@ class _mangageGroupMember extends State<mangageGroupMember> {
             SizedBox(
               width: 50,
               child: InputField(
-                title:   "Group Code"  ,
+                title: "Group Code",
                 hint: "Enter your code",
-                controller: _accessCodeController,),
+                controller: _accessCodeController,
+              ),
             ),
-            const SizedBox(height: 20,),
-            SizedBox(width: 15,
+            const SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+                width: 15,
                 child: ElevatedButton(
-                  onPressed: (){
+                  onPressed: () {
                     //check to see if the user is in a group first
                     isUserInGroup(_uID!);
                     setDoesNewGroupExist(_accessCodeController.text.trim());
-                    if(isuseringroup)
-                      {
-                        showAlreadyInGroupDialog(context);
-                        return;
-                      }
-                    if(_accessCodeController.text.isEmpty)
-                      {
-                        showEmptyGroupIDDialog(context);
-                        return;
-                      }
-                    if(!isGroupIDFormatted(_accessCodeController.text.trim()))
-                      {
-                        showGroupIDNotFormatted(context);
-                        return;
-                      }
+                    if (isuseringroup) {
+                      showAlreadyInGroupDialog(context);
+                      return;
+                    }
+                    if (_accessCodeController.text.isEmpty) {
+                      showEmptyGroupIDDialog(context);
+                      return;
+                    }
+                    if (!isGroupIDFormatted(
+                        _accessCodeController.text.trim())) {
+                      showGroupIDNotFormatted(context);
+                      return;
+                    }
 
-                    if(!doesNewGroupExist!)
-                      {
-                        showGroupDoesNotExist(context);
-                        return;
-                      }
-                    _groupController.addUserToGroup(_uID!, _accessCodeController.text.trim());
+                    if (!doesNewGroupExist!) {
+                      showGroupDoesNotExist(context);
+                      return;
+                    }
+                    _groupController.addUserToGroup(
+                        _uID!, _accessCodeController.text.trim());
                   },
-                  style:ElevatedButton.styleFrom(
-                      backgroundColor:setAppBarColor(themeColor, themeBrightness),side: BorderSide.none, shape: const StadiumBorder()
-                  ) ,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          setAppBarColor(themeColor, themeBrightness),
+                      side: BorderSide.none,
+                      shape: const StadiumBorder()),
                   child: const Text(
-                    "Join Different Group",style: TextStyle(color:Colors.white),
+                    "Join Different Group",
+                    style: TextStyle(color: Colors.white),
                   ),
-                )
+                )),
+            const SizedBox(
+              height: 20,
             ),
-            const SizedBox(height:20,)
-     ,
-            SizedBox(width: 15,
+            SizedBox(
+                width: 15,
                 child: ElevatedButton(
                   onPressed: () {
                     //Back-End from Groups database
 
                     isUserInGroup(_uID!);
                     //check if the user is already groupless
-                    if(!(isuseringroup))
-                      {
-                        Get.snackbar("Error", "You cannot leave group because you are not in a group!");
-                        return;
-                      }
+                    if (!(isuseringroup)) {
+                      Get.snackbar("Error",
+                          "You cannot leave group because you are not in a group!");
+                      return;
+                    }
                     showAlertDialog(context);
                     // provide a "Are you sure you want to leave prompt"
 
@@ -398,53 +416,48 @@ class _mangageGroupMember extends State<mangageGroupMember> {
                     // they make another member an admin before they leave,
                     // if they are the only member just let them leave group and
                     // delete group
-
                   },
-                  style:ElevatedButton.styleFrom(
-                      backgroundColor: setAppBarColor(themeColor, themeBrightness),side: BorderSide.none, shape: const StadiumBorder()
-                  ) ,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          setAppBarColor(themeColor, themeBrightness),
+                      side: BorderSide.none,
+                      shape: const StadiumBorder()),
                   child: const Text(
-                    "Leave Group",style: TextStyle(color:Colors.white),
+                    "Leave Group",
+                    style: TextStyle(color: Colors.white),
                   ),
-                )
+                )),
+            SizedBox(
+              height: 20,
             ),
-            SizedBox(height:20,)
-            ,
-            SizedBox(width: 15,
+            SizedBox(
+                width: 15,
                 child: ElevatedButton(
-                  onPressed: ()  {
-
+                  onPressed: () {
                     buildIsUserAdmin(_uID!);
                     //check if the current user is an admin user
-                    if(isUserAdmin)
-                      {
-                        showAddAdminDialog(context);
-                      }
-                    else
-                      {
-                        showNotAdminUserDialog(context);
-                      }
+                    if (isUserAdmin) {
+                      showAddAdminDialog(context);
+                    } else {
+                      showNotAdminUserDialog(context);
+                    }
                     //first check to see if this user is an admin use for the group
 
                     // IF the user is admin pull list of users in the group who are not admins
                     //have a list to select users and make them admins for the group
-
-
-
                   },
-                  style:ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,side: BorderSide.none, shape: const StadiumBorder()
-                  ) ,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      side: BorderSide.none,
+                      shape: const StadiumBorder()),
                   child: const Text(
-                    "Add Admin Users",style: TextStyle(color:Colors.white),
+                    "Add Admin Users",
+                    style: TextStyle(color: Colors.white),
                   ),
-                )
-            )
+                ))
           ],
         ),
       ),
-
     );
   }
-
 }

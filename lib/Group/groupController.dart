@@ -93,6 +93,11 @@ class groupController extends GetxController {
     return await _db.isInParentMode(groupID);
   }
 
+  /// Returns whether the group [groupID] is in admin mode
+  Future<bool> isGroupAdminModeByID(String uID) async {
+    return await _db.isInParentModeByID(uID);
+  }
+
   Future<List<String>> getNonAdminUserIDs(String uID) async {
     return await _db.getNonAdminUserIDs(uID);
   }

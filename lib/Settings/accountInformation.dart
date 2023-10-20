@@ -28,6 +28,11 @@ class _EditProfilePage extends State<EditProfile> {
   String imageURL = "";
   String themeBrightness = "";
   String themeColor = "";
+  String groupID = "";
+  GeoPoint location = GeoPoint(0, 0);
+
+  List<String> chatrooms = [];
+
   final picker = ImagePicker();
 
   //Bug still
@@ -123,10 +128,14 @@ class _EditProfilePage extends State<EditProfile> {
           imageURL = list['imageURL'];
           themeBrightness = list['themeBrightness'];
           themeColor = list['themeColor'];
+          groupID = list['groupID'];
+          chatrooms = list['chatRooms'];
+          location = list['location'];
         });
       }
     }
   }
+
   Future updateUserData() async {
     String? userID = FirebaseAuth.instance.currentUser?.uid;
     imageURL = await getImageURL();
@@ -140,6 +149,9 @@ class _EditProfilePage extends State<EditProfile> {
         imageURL: imageURL,
         themeBrightness: themeBrightness,
         themeColor: themeColor,
+        groupID: groupID,
+        chatRooms: chatrooms,
+        location: location,
       );
       await FirebaseFirestore.instance.collection("Users").doc(userID).update(
           user.toJson());
