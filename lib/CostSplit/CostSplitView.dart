@@ -127,7 +127,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                       else if (snapshot.hasData) {
                         final payments = snapshot.data!;
 
-                        payments.sort((a, b) => a.time.compareTo(b.time));
+                        payments.sort((a, b) => b.time.compareTo(a.time));
 
                         // Calculate how much you owe or are owed.
                         var youOwe = 0.0;
