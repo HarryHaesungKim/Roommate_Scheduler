@@ -322,7 +322,6 @@ class _CostSplitViewPage extends State<CostSplitView> {
       return StatefulBuilder(builder: (context, setState) {
 
                 return AlertDialog(
-
                   // Rounding corners of the dialogue.
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15)),
