@@ -181,6 +181,78 @@ class _profilePage extends State<ProfilePage> {
                       const SizedBox(
                         height: 20,
                       ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          label: const Text("Group Code"),
+                          labelStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'OpenSans',
+                            color: Colors.black,
+                          ),
+                          hintText: groupID,
+                          enabled: false,
+                          hintStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'OpenSans',
+                            color: Colors.black,
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixIcon:
+                          const Icon(Icons.people, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          label: const Text("Admin Mode"),
+                          labelStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'OpenSans',
+                            color: Colors.black,
+                          ),
+                          hintText: adminMode,
+                          enabled: false,
+                          hintStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'OpenSans',
+                            color: Colors.black,
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixIcon:
+                          const Icon(Icons.people, color: Colors.black),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          label: const Text("Admin User"),
+                          labelStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'OpenSans',
+                            color: Colors.black,
+                          ),
+                          hintText: isAdmin,
+                          enabled: false,
+                          hintStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'OpenSans',
+                            color: Colors.black,
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          prefixIcon:
+                          const Icon(Icons.people, color: Colors.black),
+                        ),
+                      ),
                     ],
                   ),
                 ),

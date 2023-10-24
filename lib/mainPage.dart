@@ -71,7 +71,7 @@ class _mainPageState extends State<mainPage> {
 
       case 2:
         {
-          title = "Cost Split";
+          title = "Split Pay";
         }
         break;
 
@@ -144,7 +144,7 @@ class _mainPageState extends State<mainPage> {
                 ),
                 GButton(
                   icon: Icons.money,
-                  text: "Cost Split",
+                  text: "Split Pay",
                 ),
                 GButton(
                   icon: Icons.notifications,

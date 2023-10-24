@@ -201,9 +201,9 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     Widget continueButton = TextButton(
       child: const Text("Continue"),
       onPressed: () {
-        Navigator.pop(context, 'Continue');
         _groupController.removeUser(_uID!).whenComplete(
-            () => Get.snackbar("Left Group", "You have left the group"));
+                () => Get.snackbar("Left Group", "You have left the group"));
+        Navigator.pop(context, 'Continue');
       },
     );
     AlertDialog alert = AlertDialog(
@@ -329,6 +329,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     buildNonAdminUsers();
     isUserInGroup(_uID!);
     buildIsUserAdmin(_uID!);
+    setDoesNewGroupExist(groupID);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: setAppBarColor(themeColor, themeBrightness),
@@ -379,8 +380,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
                       showGroupDoesNotExist(context);
                       return;
                     }
-                    _groupController.addUserToGroup(
-                        _uID!, _accessCodeController.text.trim());
+                    _groupController.addUserToGroup(_accessCodeController.text.trim(), _uID!);
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor:

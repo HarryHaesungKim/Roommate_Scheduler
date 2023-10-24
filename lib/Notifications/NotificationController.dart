@@ -34,8 +34,10 @@ class NotificationController {
 
     // Get the user IDs via groupID
 
+    final futureData = await Future.wait([getUserData()]);
+
     final QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance.collection("Users")
-        .where('groupID', isEqualTo: '84461')
+        .where('groupID', isEqualTo: futureData[0][1])
         .get();
 
     final allMembersInGroupData = querySnapshot.docs.map((doc) => doc.id).toList();

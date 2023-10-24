@@ -395,7 +395,7 @@ class _NotificationPage extends State<NotificationView> {
               final notifications = snapshot.data!;
 
               // Sorting by time.
-              notifications.sort((a, b) => a.time.compareTo(b.time));
+              notifications.sort((a, b) => b.time.compareTo(a.time));
 
               return Center(
                   child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
