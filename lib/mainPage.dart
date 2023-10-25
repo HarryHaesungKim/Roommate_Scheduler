@@ -12,8 +12,15 @@ import 'calendarPage/calendarPage.dart';
 import 'strings.dart';
 
 class mainPage extends StatefulWidget {
+
+  int navigateToScreen = 0;
+
+  mainPage(int i){
+    navigateToScreen = i;
+  }
+
   @override
-  _mainPageState createState() => _mainPageState();
+  _mainPageState createState() => _mainPageState(navigateToScreen);
 
 
 }
@@ -32,6 +39,10 @@ class _mainPageState extends State<mainPage> {
     NotificationView(),
     ProfilePage(),
   ];
+
+  _mainPageState(int navigateToScreen){
+    _selectedIndex = navigateToScreen;
+  }
 
   @override
   void initState() {

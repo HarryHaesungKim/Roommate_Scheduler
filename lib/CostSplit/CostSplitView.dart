@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -81,11 +82,16 @@ class _CostSplitViewPage extends State<CostSplitView> {
   @override
   Widget build(BuildContext context) {
 
+    // Testing notification routing stuff
+    // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
+    // print(message.notification!.title.toString());
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.orange[700],
           title: const Text("Split Pay"),
+          //title: Text( message.notification!.title.toString()),
         ),
 
         body: FutureBuilder(

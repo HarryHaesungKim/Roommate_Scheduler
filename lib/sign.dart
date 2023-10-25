@@ -13,7 +13,7 @@ class sign extends StatelessWidget{
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context,snapshot){
           if(snapshot.hasData){
-           return mainPage();
+           return mainPage(0);
           }else{
             return AuthPage();
           }

@@ -59,7 +59,7 @@ class _joinGroupPage extends State<joinGroupPage> {
       }
     // group exists add user to this group
     _groupController.addUserToGroup(groupID, uID);
-    MaterialPageRoute(builder: ((context) => mainPage()));
+    MaterialPageRoute(builder: ((context) => mainPage(0)));
   }
 
   createGroup(GroupModel group) async {
@@ -136,7 +136,7 @@ class _joinGroupPage extends State<joinGroupPage> {
                         await joinGroup(_groupIDController.text.trim(), _uID!);
                       }
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => mainPage()));
+                        MaterialPageRoute(builder: (context) => mainPage(0)));
                   },
                   child: const Text(
                     'Join group',
@@ -179,7 +179,7 @@ class _joinGroupPage extends State<joinGroupPage> {
 
                     // TODO: Database implementation
                     // Need to connect to database. Link code to a new group and tasks that belong to that group (empty).
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage(0)));
                   },
                   child: const Text(
                     'Create group',
