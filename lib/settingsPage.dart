@@ -146,7 +146,7 @@ class _settingsProfileState extends State<settingsProfile> {
 
                 //Help menu
                 ListTile(
-                  leading: Icon(Icons.map,color: Colors.orange,),
+                  leading: Icon(Icons.map,color: setAppBarColor(themeColor, themeBrightness),),
                   title: Text("User Current Location"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: (){

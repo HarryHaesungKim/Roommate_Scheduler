@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../themeData.dart';
 import 'NotificationObject.dart';
 import 'NotificationController.dart';
 
@@ -358,124 +359,131 @@ class _NotificationPage extends State<NotificationView> {
 
   @override
   Widget build(BuildContext context) {
-
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.orange[700],
-          title: const Text("Notifications"),
-
-          // actions: <Widget>[
-          //   Padding(
-          //       padding: const EdgeInsets.only(right: 20.0),
-          //       child: GestureDetector(
-          //         onTap: () {
-          //           // Pull up an alert dialog that allows Users to make an announcement to everyone in the group.
-          //           // print("working");
-          //           showDialog(context: context, builder: (context){
-          //             return announcementAlertDialogue(context);
-          //           });
-          //         },
-          //         child: const Icon(
-          //           Icons.add_alert_outlined,
-          //           //size: 25,
-          //         ),
-          //       )
-          //   ),
-          // ],
-        ),
-
-        body: StreamBuilder<List<NotificationObject>>(
+        return StreamBuilder<List<NotificationObject>>(
           stream: readNotifications(),
           builder: (context, snapshot){
             if (snapshot.hasError){
               return Text('Something went wrong! ${snapshot.data}');
             }
             else if (snapshot.hasData){
-              final notifications = snapshot.data!;
+              return StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(currUser)
+                      .snapshots(),
+                  builder: (context, snapshot2){
+                    if (snapshot.hasError){
+                      return Text('Something went wrong! ${snapshot.data}');
+                    }
+                    else if (snapshot2.hasData){
+                      final notifications = snapshot.data!;
+                      final UserData = snapshot2.data!;
+                      // Sorting by time.
+                      notifications.sort((a, b) => b.time.compareTo(a.time));
+                      return MaterialApp(
+                          theme: showOption(UserData['themeBrightness']),
+                          home: Scaffold(
+                            appBar: AppBar(
+                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                              title: const Text("Notifications"),
+                            ),
+                            floatingActionButton: FloatingActionButton(
+                                backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                onPressed: () async {
+                                  showDialog(context: context, builder: (context){
+                                    return announcementAlertDialogue(context);
+                                  });
+                                },child: const Icon(Icons.add_alert_outlined)
+                            ),
+                            body: Center(
+                                child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                                  return Column(
+                                    children: [
+                                      SizedBox(
+                                        width: constraints.maxWidth,
+                                        height: constraints.maxHeight,
+                                        child: ListView.separated(
+                                          padding: const EdgeInsets.all(8),
 
-              // Sorting by time.
-              notifications.sort((a, b) => b.time.compareTo(a.time));
+                                          primary: true,
+                                          itemCount: notifications.length,
 
-              return Center(
-                  child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-                    return Column(
-                      children: [
+                                          itemBuilder: (context, index) {
 
-                        SizedBox(
-                          width: constraints.maxWidth,
-                          height: constraints.maxHeight,
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(8),
+                                            // Extra padding at the top (for aesthetic purposes).
+                                            if (index == 0) {
+                                              return Padding(
 
-                            primary: true,
-                            itemCount: notifications.length,
+                                                  padding: const EdgeInsets.fromLTRB(
+                                                      10, 5, 10, 0),
 
-                            itemBuilder: (context, index) {
+                                                  // The task tiles.
+                                                  child: notificationTile(
+                                                      notifications[index].title,
+                                                      notifications[index].time,
+                                                      notifications[index].body,
+                                                      notifications[index].type,
+                                                      notifications[index].id,
+                                                      notifications[index].creator)
+                                              );
+                                            }
 
-                              // Extra padding at the top (for aesthetic purposes).
-                              if (index == 0) {
-                                return Padding(
+                                            // Adding extra padding at the last item for the button (so that it doesn't overlap).
+                                            else if (index == notifications.length - 1) {
+                                              return Padding(
 
-                                    padding: const EdgeInsets.fromLTRB(
-                                        10, 5, 10, 0),
+                                                  padding: const EdgeInsets.fromLTRB(
+                                                      10, 0, 10, 75),
 
-                                    // The task tiles.
-                                    child: notificationTile(
-                                        notifications[index].title,
-                                        notifications[index].time,
-                                        notifications[index].body,
-                                        notifications[index].type,
-                                        notifications[index].id,
-                                        notifications[index].creator)
-                                );
-                              }
+                                                  // The task tiles.
+                                                  child: notificationTile(
+                                                      notifications[index].title,
+                                                      notifications[index].time,
+                                                      notifications[index].body,
+                                                      notifications[index].type,
+                                                      notifications[index].id,
+                                                      notifications[index].creator)
+                                              );
+                                            }
 
-                              // Adding extra padding at the last item for the button (so that it doesn't overlap).
-                              else if (index == notifications.length - 1) {
-                                return Padding(
+                                            else {
+                                              return Padding(
 
-                                    padding: const EdgeInsets.fromLTRB(
-                                        10, 0, 10, 75),
+                                                // Spacing between elements:
+                                                  padding: const EdgeInsets.fromLTRB(
+                                                      10, 0, 10, 0),
 
-                                    // The task tiles.
-                                    child: notificationTile(
-                                        notifications[index].title,
-                                        notifications[index].time,
-                                        notifications[index].body,
-                                        notifications[index].type,
-                                        notifications[index].id,
-                                        notifications[index].creator)
-                                );
-                              }
+                                                  // The task tiles.
+                                                  child: notificationTile(
+                                                      notifications[index].title,
+                                                      notifications[index].time,
+                                                      notifications[index].body,
+                                                      notifications[index].type,
+                                                      notifications[index].id,
+                                                      notifications[index].creator));
+                                            }
+                                          },
 
-                              else {
-                                return Padding(
+                                          // Separates the items. Invisible with a sized box rather than a divider.
+                                          separatorBuilder: (BuildContext context, int index) => const SizedBox ( height : 10),
 
-                                  // Spacing between elements:
-                                    padding: const EdgeInsets.fromLTRB(
-                                        10, 0, 10, 0),
-
-                                    // The task tiles.
-                                    child: notificationTile(
-                                        notifications[index].title,
-                                        notifications[index].time,
-                                        notifications[index].body,
-                                        notifications[index].type,
-                                        notifications[index].id,
-                                        notifications[index].creator));
-                              }
-                            },
-
-                            // Separates the items. Invisible with a sized box rather than a divider.
-                            separatorBuilder: (BuildContext context, int index) => const SizedBox ( height : 10),
-
-                          ),
-                        ),
-                      ],
-                    );
-                  })
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                })
+                            ),
+                          )
+                      );
+                    }
+                    else{
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  }
               );
+
             }
 
             // Loading.
@@ -484,20 +492,7 @@ class _NotificationPage extends State<NotificationView> {
                 child: CircularProgressIndicator(),
               );
             }
-
           },
-        ),
-
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.orange[700],
-            onPressed: () async {
-              showDialog(context: context, builder: (context){
-                return announcementAlertDialogue(context);
-              });
-            },child: const Icon(Icons.add_alert_outlined)
-        ),
-
-      ),
-    );
+        );
   }
 }

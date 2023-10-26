@@ -17,17 +17,17 @@ class userController extends GetxController {
   @override
   Future<void> onReady() async {
     String groupID = await _groupController.getGroupIDFromUser(uID!);
-    getUserData(groupID);
+    //getUserData(groupID);
     super.onReady();
   }
 
 
 
-  void getUserData(String groupID) async {
-    List<Map<String, dynamic>> userdata = await _userData.getUserData(groupID);
-    userdataList.assignAll(
-        userdata.map((data) => new UserData.formJson(data)).toList());
-  }
+  // void getUserData(String groupID) async {
+  //   List<Map<String, dynamic>> userdata = await _userData.getUserData(groupID);
+  //   userdataList.assignAll(
+  //       userdata.map((data) => new UserData.formJson(data)).toList());
+  // }
   void getUserLocation(String uid) async {
     List<GeoPoint> userLocation= await _userData.getUsersLocationInGroup(uid);
     userLocationList.assignAll(
