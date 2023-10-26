@@ -31,8 +31,8 @@ class _AddTaskPageState extends State<addTask> {
   late String groupID = "";
   late Future<List<String>> FutureAssigneeList;
   late List<String> assigneeList;
-  String themeColor = '';
-  String themeBrightness = '';
+ late String themeColor;
+  late String themeBrightness;
   late Future<String> futureThemeColor;
   late Future<String> futureThemeBrightness;
   final _db = Get.put(DBHelper());
