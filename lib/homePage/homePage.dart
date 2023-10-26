@@ -87,9 +87,52 @@ class _homePage extends State<homePage> {
           future: Future.wait([futureCurrGroup, isGroupAdmin,futureThemeBrightness,futureThemeColor,userName]),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
 
-            // If there's no error and the snapshot has data.
-            if (snapshot.hasData) {
-              //return Text("GroupCode: ${snapshot.data}");=
+              // If there's no error and the snapshot has data.
+              else if (snapshot.hasData) {
+                // Setting the task data.
+                return StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc(currUser)
+                        .snapshots(),
+                    builder: (context, snapshot2){
+                      if (snapshot2.hasError) {
+                        return Text('Something went wrong! ${snapshot2.data}');
+                      }
+                      else if (snapshot2.hasData){
+                        final tasksData = snapshot.data!;
+                        final UserData = snapshot2.data!;
+                        return MaterialApp(
+                            title: "Tasks",
+                            theme: showOption(UserData['themeBrightness']),
+                            home: Scaffold(
+                                appBar: AppBar(
+                                  backgroundColor:setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                  title: const Text("Home"),
+                                  actions: <Widget>[
+                                    Padding(
+                                        padding: EdgeInsets.only(right: 20.0),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      GroupChatsListPage()),
+                                            );
+                                          },
+                                          child: const Icon(Icons.send),
+                                        )),
+                                  ],
+                                ),
+                                floatingActionButton: FloatingActionButton(
+                                    backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                    onPressed: () async {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) => addTask()),
+                                      );
+                                      Get.lazyPut(() => taskController());
 
               // Setting the groupID.
               currGroup = snapshot.data[0];
@@ -98,13 +141,12 @@ class _homePage extends State<homePage> {
               themeColor = snapshot.data[3];
               currentName = snapshot.data[4];
 
-              return StreamBuilder<List<TaskObject>>(
-                stream: readTasks(),
-                builder: (context, snapshot) {
-                  // If there's an error.
-                  if (snapshot.hasError) {
-                    return Text('Something went wrong! ${snapshot.data}');
-                  }
+                                              // Adding extra padding at the last item for the button (so that it doesn't overlap).
+                                              if (index == tasksData.length - 1) {
+                                                return Padding(
+                                                  // Spacing between elements:
+                                                  padding: const EdgeInsets.fromLTRB(
+                                                      10, 5, 10, 70),
 
                   // If there's no error and the snapshot has data.
                   else if (snapshot.hasData) {
@@ -161,19 +203,15 @@ class _homePage extends State<homePage> {
                                   var title = task.title;
                                   int? coloDB = task.color;
 
-                                  // Adding extra padding at the last item for the button (so that it doesn't overlap).
-                                  if (index == tasksData.length - 1) {
-                                    return Padding(
-                                      // Spacing between elements:
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 5, 10, 70),
-
-                                      // The task tiles.
-                                      child: InkWell(
-                                        child: taskView(task),
-                                        onTap: () {
-                                          showBottomSheet(context, task);
-                                        },
+                                                // The task tiles.
+                                                child: InkWell(
+                                                  child: taskView(task),
+                                                  onTap: () {
+                                                    showBottomSheet(context, task);
+                                                  },
+                                                ),
+                                              );
+                                            }),
                                       ),
                                     );
                                   }

@@ -37,8 +37,8 @@ class _EditProfilePage extends State<EditProfile> {
 //Store the file
       //Handle the error
       try {
-       await referenceImageUpload.putFile(File(_image!.path));
-       url = await referenceImageUpload.getDownloadURL();
+        await referenceImageUpload.putFile(File(_image!.path));
+        url = await referenceImageUpload.getDownloadURL();
       }
       catch(error){
         print("ALSIJLSKDJLKSJDLNSKFLNKNKLQJWLQJPINASLNX!");
@@ -130,7 +130,7 @@ class _EditProfilePage extends State<EditProfile> {
       user.updateEmail(_newEmail);
       user.updatePassword(_newPassWord);
       success = true;
-      });
+    });
     return success;
   }
 
@@ -367,6 +367,7 @@ class _EditProfilePage extends State<EditProfile> {
         }
       },
     );
+  }
 }
 }
 

@@ -106,12 +106,6 @@ class _settingsProfileState extends State<settingsProfile> {
                     );
                   },
                 ),
-                Container(
-                  width: double.infinity,
-                  height: 1.0,
-                  color: Colors.grey.shade300,
-                ),
-
                 //Change theme
                 ListTile(
                   leading: Icon(Icons.password_outlined,color:setAppBarColor(themeColor, themeBrightness),),
@@ -152,7 +146,7 @@ class _settingsProfileState extends State<settingsProfile> {
 
                 //Help menu
                 ListTile(
-                  leading: Icon(Icons.map,color: Colors.orange,),
+                  leading: Icon(Icons.map,color: setAppBarColor(themeColor, themeBrightness),),
                   title: Text("User Current Location"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: (){
