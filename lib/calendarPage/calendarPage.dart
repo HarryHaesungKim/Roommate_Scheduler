@@ -34,6 +34,7 @@ class _calendarPage extends State<calendarPage> {
   String groupID = "";
   late Future<String> futureCurrGroup;
   String currGroup = '';
+  RxMap<String?, int> eventsCountMap = RxMap<String?,int>();
 
   // For Events
   // Map<DateTime, List<Event>> events = {};
@@ -237,6 +238,20 @@ class _calendarPage extends State<calendarPage> {
                           else if (snapshot2.hasData) {
                             final EventData = snapshot2.data!;
                             final UserData = snapshot.data!;
+                            eventsCountMap.clear();
+                            for(int i = 0; i < EventData.length; i++){
+                              if (eventsCountMap.containsKey(EventData[i].date)) {
+                                if(eventsCountMap[EventData[i].date] != null){
+                                  eventsCountMap[EventData[i].date] =eventsCountMap[EventData[i].date]! + 1;
+                                }
+                              }
+                              else{
+                                // eventsMap.addAll({
+                                //   eventsCountMap[i].date: 1
+                                // });
+                                eventsCountMap[EventData[i].date] = 1;
+                              }
+                            }
                             return MaterialApp(
                                 title: "Calendar",
                                 theme: showOption(UserData['themeBrightness']),
@@ -296,6 +311,32 @@ class _calendarPage extends State<calendarPage> {
                                           onPageChanged: (focusedDay) {
                                             _focusedDay = focusedDay;
                                           },
+                                            calendarBuilders: CalendarBuilders(
+                                              markerBuilder: (context, day, events) {
+                                                String curDay = '${day.month}/${day.day}/${day.year}';
+                                                int countEvent = 0;
+                                                if(eventsCountMap[curDay]==null){
+                                                  countEvent = 0;
+                                                }
+                                                else{
+                                                  countEvent = eventsCountMap[curDay]!;
+                                                  return Container(
+                                                    width: 20,
+                                                    height: 15,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(4.0),
+                                                      color: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                                    ),
+                                                    child: Text(
+                                                      '${countEvent}',
+                                                      style: const TextStyle(color: Colors.white),
+                                                    ),
+                                                  );
+                                                }
+
+                                              }
+                                        ),
                                         ),
                                         // Spacer
                                         const SizedBox(height: 8.0),
@@ -312,18 +353,8 @@ class _calendarPage extends State<calendarPage> {
                                                       //thickness: 10,
                                                       child: ListView.builder(
                                                           primary: true,
-                                                          // itemCount: _eventController
-                                                          //     .eventsMap[selectedDayString]?.length ??
-                                                          //     0,
                                                           itemCount: EventData.length,
                                                           itemBuilder: (BuildContext context, int index) {
-                                                            //Event event = _eventController.eventList[index]
-                                                            // print("_eventController.eventsMap[_focusedDay]?.length");
-                                                            // print(_eventController
-                                                            //     .eventsMap[selectedDayString]?.length);
-                                                            // int temp = _eventController
-                                                            //     .eventsMap[selectedDayString]![index];
-                                                            // Event event = _eventController.eventList[temp];
                                                             if(EventData[index].date == selectedDayString){
                                                               Event event = EventData[index];
                                                               return Padding(
