@@ -6,7 +6,6 @@ import 'package:roommates/LoginPage.dart';
 import 'package:roommates/Settings/accountInformation.dart';
 import 'package:roommates/Settings/changeThemePage.dart';
 import 'package:roommates/Settings/helpMenu.dart';
-import 'package:roommates/Settings/mangageBalance.dart';
 import 'package:roommates/Settings/mangageGroupMember.dart';
 import 'package:roommates/User/user_model.dart';
 import 'package:roommates/themeData.dart';
@@ -104,19 +103,6 @@ class _settingsProfileState extends State<settingsProfile> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => mangageGroupMember()),
-                    );
-                  },
-                ),
-                //Mangage balance
-                ListTile(
-                  leading: Icon(Icons.password_outlined,color:setAppBarColor(themeColor, themeBrightness),),
-                  title: Text("Mangage Balance"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  //Undo
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => mangageBalance()),
                     );
                   },
                 ),

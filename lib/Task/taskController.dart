@@ -38,6 +38,10 @@ class taskController extends GetxController {
      await _db.markTaskDone(groupID, id);
      getTasks(groupID);
    }
+  void setRate(String groupID,TaskObject task, double rate) async {
+    await _db.setRate(groupID, task,rate);
+    getTasks(groupID);
+  }
 
 
 }

@@ -31,21 +31,20 @@ class UserData {
      this.themeColor,
 
    });
-   UserData.formJson(Map<String, dynamic> json) {
-     email = json['Email'].toString();
-     password = json['Password'].toString();
-     username = json['UserName'].toString();
-     balance = json['Balance'].toString();
-     income = json['Income'].toString();
-     expense = json['Expense'].toString();
-     groupID = json['groupID'].toString();
-     chatRooms = json['chatRooms'];
-     imageURL = json['imageURL'].toString();
-     location = json['location'];
-     themeBrightness = json['themeBrightness'].toString();
-     themeColor = json['themeColor'].toString();
-
-   }
+   static UserData fromJson(Map<String, dynamic> json) => UserData(
+     email : json['Email'].toString(),
+     password : json['Password'].toString(),
+     username : json['UserName'].toString(),
+     balance :json['Balance'].toString(),
+     income :json['Income'].toString(),
+     expense : json['Expense'].toString(),
+     groupID : json['groupID'].toString(),
+     chatRooms : json['chatRooms'],
+     imageURL :json['imageURL'].toString(),
+     location : json['location'],
+     themeBrightness : json['themeBrightness'].toString(),
+     themeColor : json['themeColor'].toString(),
+   );
 
    Map<String, dynamic> toJson() {
      final Map<String, dynamic> data = new Map<String, dynamic>();

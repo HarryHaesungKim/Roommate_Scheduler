@@ -25,8 +25,7 @@ class userController extends GetxController {
 
   void getUserData(String groupID) async {
     List<Map<String, dynamic>> userdata = await _userData.getUserData(groupID);
-    userdataList.assignAll(
-        userdata.map((data) => new UserData.formJson(data)).toList());
+    userdataList.assignAll(userdata.map((data) =>  UserData.fromJson(data)).toList());
   }
   void getUserLocation(String uid) async {
     List<GeoPoint> userLocation= await _userData.getUsersLocationInGroup(uid);
@@ -36,6 +35,9 @@ class userController extends GetxController {
   updateUserData(UserData user) async{
     _userData.UpdateUserData(user);
   }
+  getUserDetails(String uID) async{
+    _userData.getUserDetails(uID);
+  }
 
   ///
   /// Given a userID returns the username of that user
@@ -43,5 +45,10 @@ class userController extends GetxController {
   Future<String> getUserName(String uID) async {
     return await _userData.getUserName(uID);
   }
-
+  Future<String> getUserThemeColor(String uID) async {
+    return await _userData.getUserThemeColor(uID);
+  }
+  Future<String> getUserThemeBrightness(String uID) async {
+    return await _userData.getUserThemeBrightness(uID);
+  }
 }

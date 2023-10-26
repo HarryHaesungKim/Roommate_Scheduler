@@ -42,6 +42,20 @@ class taskView extends StatelessWidget {
                 const SizedBox(
                   height: 12,
                 ),
+
+                if(task.rate != null)
+                Text(
+                  "Rate: "+ task.rate.toString(),
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
