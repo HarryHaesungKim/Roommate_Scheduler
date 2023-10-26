@@ -38,8 +38,8 @@ class _profilePage extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Future.wait([isGroupAdmin, isFutureAdmin]),
+   return FutureBuilder(
+     future: Future.wait([isGroupAdmin, isFutureAdmin]),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
 
         // If there's no error and the snapshot has data.
@@ -279,3 +279,4 @@ class _profilePage extends State<ProfilePage> {
     );
   }
 }
+

@@ -36,6 +36,9 @@ class userController extends GetxController {
   updateUserData(UserData user) async{
     _userData.UpdateUserData(user);
   }
+  getUserDetails(String uID) async{
+    _userData.getUserDetails(uID);
+  }
 
   ///
   /// Given a userID returns the username of that user
@@ -43,5 +46,10 @@ class userController extends GetxController {
   Future<String> getUserName(String uID) async {
     return await _userData.getUserName(uID);
   }
-
+  Future<String> getUserThemeColor(String uID) async {
+    return await _userData.getUserThemeColor(uID);
+  }
+  Future<String> getUserThemeBrightness(String uID) async {
+    return await _userData.getUserThemeBrightness(uID);
+  }
 }
