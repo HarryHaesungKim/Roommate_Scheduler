@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:roommates/Group/groupController.dart';
 import 'package:roommates/Task/taskController.dart';
 import 'package:roommates/User/user_controller.dart';
-import 'package:roommates/groceriesPage/groceriesView.dart';
 import 'package:roommates/homePage/addTask.dart';
 import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/theme.dart';
@@ -38,7 +37,7 @@ class _homePage extends State<homePage> {
   // Controllers
   final taskController taskCon = taskController();
   final groupController groupCon = groupController();
- final userController userCon = userController();
+  final userController userCon = userController();
   // Media query stuff?
   static late MediaQueryData _mediaQueryData;
 
@@ -83,107 +82,66 @@ class _homePage extends State<homePage> {
   @override
   Widget build(BuildContext context) {
     _mediaQueryData = MediaQuery.of(context);
-        return FutureBuilder(
-          future: Future.wait([futureCurrGroup, isGroupAdmin,futureThemeBrightness,futureThemeColor,userName]),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+    return FutureBuilder(
+      future: Future.wait([futureCurrGroup, isGroupAdmin,futureThemeBrightness,futureThemeColor,userName]),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+
+        // If there's no error and the snapshot has data.
+        if (snapshot.hasData) {
+          //return Text("GroupCode: ${snapshot.data}");=
+
+          // Setting the groupID.
+          currGroup = snapshot.data[0];
+          gotIsGroupAdmin = snapshot.data[1];
+          themeBrightness = snapshot.data[2];
+          themeColor = snapshot.data[3];
+          currentName = snapshot.data[4];
+
+          return StreamBuilder<List<TaskObject>>(
+            stream: readTasks(),
+            builder: (context, snapshot) {
+              // If there's an error.
+              if (snapshot.hasError) {
+                return Text('Something went wrong! ${snapshot.data}');
+              }
 
               // If there's no error and the snapshot has data.
               else if (snapshot.hasData) {
                 // Setting the task data.
-                return StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('Users')
-                        .doc(currUser)
-                        .snapshots(),
-                    builder: (context, snapshot2){
-                      if (snapshot2.hasError) {
-                        return Text('Something went wrong! ${snapshot2.data}');
-                      }
-                      else if (snapshot2.hasData){
-                        final tasksData = snapshot.data!;
-                        final UserData = snapshot2.data!;
-                        return MaterialApp(
-                            title: "Tasks",
-                            theme: showOption(UserData['themeBrightness']),
-                            home: Scaffold(
-                                appBar: AppBar(
-                                  backgroundColor:setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                                  title: const Text("Home"),
-                                  actions: <Widget>[
-                                    Padding(
-                                        padding: EdgeInsets.only(right: 20.0),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      GroupChatsListPage()),
-                                            );
-                                          },
-                                          child: const Icon(Icons.send),
-                                        )),
-                                  ],
-                                ),
-                                floatingActionButton: FloatingActionButton(
-                                    backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                                    onPressed: () async {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) => addTask()),
-                                      );
-                                      Get.lazyPut(() => taskController());
-
-              // Setting the groupID.
-              currGroup = snapshot.data[0];
-              gotIsGroupAdmin = snapshot.data[1];
-              themeBrightness = snapshot.data[2];
-              themeColor = snapshot.data[3];
-              currentName = snapshot.data[4];
-
-                                              // Adding extra padding at the last item for the button (so that it doesn't overlap).
-                                              if (index == tasksData.length - 1) {
-                                                return Padding(
-                                                  // Spacing between elements:
-                                                  padding: const EdgeInsets.fromLTRB(
-                                                      10, 5, 10, 70),
-
-                  // If there's no error and the snapshot has data.
-                  else if (snapshot.hasData) {
-                    // Setting the task data.
-                    final tasksData = snapshot.data!;
-                    return MaterialApp(
-                        title: "Tasks",
-                        home: Scaffold(
-                            appBar: AppBar(
-                              backgroundColor: setAppBarColor(themeColor, themeBrightness),
-                              title: const Text("Home"),
-                              actions: <Widget>[
-                                Padding(
-                                    padding: EdgeInsets.only(right: 20.0),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => GroupChatsListPage()),
-                                        );
-                                      },
-                                      child: const Icon(Icons.send),
-                                    )),
-                              ],
-                            ),
-                          floatingActionButton: FloatingActionButton(
-                              backgroundColor: setAppBarColor(themeColor, themeBrightness),
-                              onPressed: () async {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (context) => addTask()),
+                final tasksData = snapshot.data!;
+                return MaterialApp(
+                  theme: showOption(themeBrightness),
+                  title: "Tasks",
+                  home: Scaffold(
+                    appBar: AppBar(
+                      backgroundColor: setAppBarColor(themeColor, themeBrightness),
+                      title: const Text("Home"),
+                      actions: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.only(right: 20.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => GroupChatsListPage()),
                                 );
-                                Get.lazyPut(() => taskController());
-
-                                // Add task.
                               },
-                              child: const Icon(Icons.add,)),
+                              child: const Icon(Icons.send),
+                            )),
+                      ],
+                    ),
+                    floatingActionButton: FloatingActionButton(
+                        backgroundColor: setAppBarColor(themeColor, themeBrightness),
+                        onPressed: () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => addTask()),
+                          );
+                          Get.lazyPut(() => taskController());
+
+                          // Add task.
+                        },
+                        child: const Icon(Icons.add,)),
                     // Building the widget.
                     body: LayoutBuilder(builder:
                         (BuildContext context, BoxConstraints constraints) {
@@ -203,15 +161,19 @@ class _homePage extends State<homePage> {
                                   var title = task.title;
                                   int? coloDB = task.color;
 
-                                                // The task tiles.
-                                                child: InkWell(
-                                                  child: taskView(task),
-                                                  onTap: () {
-                                                    showBottomSheet(context, task);
-                                                  },
-                                                ),
-                                              );
-                                            }),
+                                  // Adding extra padding at the last item for the button (so that it doesn't overlap).
+                                  if (index == tasksData.length - 1) {
+                                    return Padding(
+                                      // Spacing between elements:
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 5, 10, 70),
+
+                                      // The task tiles.
+                                      child: InkWell(
+                                        child: taskView(task),
+                                        onTap: () {
+                                          showBottomSheet(context, task);
+                                        },
                                       ),
                                     );
                                   }
@@ -235,33 +197,33 @@ class _homePage extends State<homePage> {
                       );
                     }),
                   ),
-                    );
-                  }
-                  // Loading.
-                  else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
+                );
+              }
+              // Loading.
+              else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
 
-                //child: MyStatefulWidget()
-              );
-            }
+            //child: MyStatefulWidget()
+          );
+        }
 
-            // If there's an error.
-            else if (snapshot.hasError) {
-              return Text("Something went wrong! ${snapshot.error}");
-            }
+        // If there's an error.
+        else if (snapshot.hasError) {
+          return Text("Something went wrong! ${snapshot.error}");
+        }
 
-            // Loading.
-            else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        );
+        // Loading.
+        else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
   }
 
   addTaskBar() {
@@ -456,7 +418,7 @@ class _homePage extends State<homePage> {
                     Get.snackbar("Error:", "You can‘t vote your task");
                   }
                 }
-                },
+              },
               clr: Colors.yellow[300])
               : _buildBottomSheetButton(
               label: "Task Completed",
@@ -686,5 +648,3 @@ class _homePage extends State<homePage> {
   }
 
 }
-
-

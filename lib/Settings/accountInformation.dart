@@ -99,22 +99,22 @@ class _EditProfilePage extends State<EditProfile> {
 
   Future updateUserData(String balance, String income, String expense, String imageURL, String themeBrightness, String themeColor, List<String> chatRooms, GeoPoint? location, String groupID, ) async {
     imageURL = await getImageURL();
-      final user = UserData(
-        email: _emailController.text.trim(),
-        password: _passWordController.text.trim(),
-        username: _userNameController.text.trim(),
-        balance: balance,
-        income: income,
-        expense: expense,
-        imageURL: imageURL,
-        themeBrightness: themeBrightness,
-        themeColor: themeColor,
-        groupID: groupID,
-        chatRooms: chatRooms,
-        location: location,
-      );
-      await FirebaseFirestore.instance.collection("Users").doc(_uID).update(
-          user.toJson());
+    final user = UserData(
+      email: _emailController.text.trim(),
+      password: _passWordController.text.trim(),
+      username: _userNameController.text.trim(),
+      balance: balance,
+      income: income,
+      expense: expense,
+      imageURL: imageURL,
+      themeBrightness: themeBrightness,
+      themeColor: themeColor,
+      groupID: groupID,
+      chatRooms: chatRooms,
+      location: location,
+    );
+    await FirebaseFirestore.instance.collection("Users").doc(_uID).update(
+        user.toJson());
 
   }
 
@@ -369,7 +369,3 @@ class _EditProfilePage extends State<EditProfile> {
     );
   }
 }
-}
-
-
-
