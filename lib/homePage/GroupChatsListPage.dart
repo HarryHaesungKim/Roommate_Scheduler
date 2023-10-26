@@ -49,13 +49,19 @@ class _messagingPage extends State<GroupChatsListPage> {
   ];
 
   // names of people in group
-  late List<String> peopleInGroup = [];
+
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
-  late List<String> peopleinGroupIDs = [];
-  // map of group info, key is groupchatID, and the value is the title of that group chat
-  late Map<String, String> groupInfo = {};
+  late Future<List<String>> futurePeopleInGroup;
+  late Future<List<String>> futurePeopleinGroupIDs;
+  late Future<Map<String, String>> futureGroupInfo;
+
+
   // inverse of group Info, chat title is the key and chatID is value
-  late Map<String, String> groupInfoInv = {};
+  late Map<String, String>groupInfoInv;
+  late List<bool> addPeopleYesOrNo1;
+  late List<String> peopleInGroup;
+  late List<String> peopleInGroupIDs;
+  late Map<String, String> groupInfo;
 
 
   // Idea is to pass a unique groupchat ID from GroupChatsListPage.dart to ChatPage.dart.
@@ -91,23 +97,23 @@ class _messagingPage extends State<GroupChatsListPage> {
   ///
   /// This method creates the list users to select from and their ids
   ///
-  void buildGroupChatList() async {
-    //user id
-    String? uID = FirebaseAuth.instance.currentUser?.uid;
-    peopleInGroup = await _groupController.getUsersInGroup(uID!);
-    peopleinGroupIDs = await _groupController.getUserIDsInGroup(uID!);
-    groupInfo = await _chatRoomController.getGroupInfo(uID);
-    groupInfoInv = groupInfo.map((k,v) => MapEntry(v, k));
-
-  }
+  // void buildGroupChatList() async {
+  //   //user id
+  //   String? uID = FirebaseAuth.instance.currentUser?.uid;
+  //   peopleInGroup = await _groupController.getUsersInGroup(uID!);
+  //   peopleinGroupIDs = await _groupController.getUserIDsInGroup(uID!);
+  //   groupInfo = await _chatRoomController.getGroupInfo(uID);
+  //   groupInfoInv = groupInfo.map((k,v) => MapEntry(v, k));
+  //
+  // }
 
   ///
   /// This method fills the list of groupChatTitles
   ///
-  Future<List<String>> buildGroupChatTitles() async {
-    String? uID = FirebaseAuth.instance.currentUser?.uid;
-    return await _chatRoomController.getGroupChatTitles(uID!);
-  }
+  // Future<List<String>> buildGroupChatTitles() async {
+  //   String? uID = FirebaseAuth.instance.currentUser?.uid;
+  //   return await _chatRoomController.getGroupChatTitles(uID!);
+  // }
   @override
   void initState() {
     // TODO: implement initState
@@ -116,6 +122,12 @@ class _messagingPage extends State<GroupChatsListPage> {
     futureThemeBrightness = userCon.getUserThemeBrightness(uID!);
     futureThemeColor = userCon.getUserThemeColor(uID!);
     FutureGroupchatTitles = _chatRoomController.getGroupChatTitles(uID!);
+
+    futurePeopleInGroup =  _groupController.getUsersInGroup(uID!);
+    futurePeopleinGroupIDs =  _groupController.getUserIDsInGroup(uID!);
+    futureGroupInfo = _chatRoomController.getGroupInfo(uID);
+    print("futuregroupInfo");
+    //groupInfoInv = groupInfo.map((k,v) => MapEntry(v, k));
   }
   // Method that deletes the chat from the list.
   // Should this be replaced to leave chat?
@@ -131,8 +143,6 @@ class _messagingPage extends State<GroupChatsListPage> {
   }
 
   Future<void> showCreateNewGroupChatAlertDialog(BuildContext context) async {
-    buildGroupChatList();
-
     return await showDialog(context: context, builder: (context) {
       // Replaced textEditingController with _newChatNameController.
       // final TextEditingController textEditingController = TextEditingController();
@@ -227,7 +237,7 @@ class _messagingPage extends State<GroupChatsListPage> {
                   List<String> receiverids = [];
                   for (int i = 0; i < addPeopleYesOrNo.length; i++) {
                     if (addPeopleYesOrNo[i]) {
-                      receiverids.add(peopleinGroupIDs[i]);
+                      receiverids.add(peopleInGroupIDs[i]);
                     }
                   }
                   createGroupChat(receiverids, _newChatNameController.text);
@@ -253,14 +263,23 @@ class _messagingPage extends State<GroupChatsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    buildGroupChatList();
     return FutureBuilder(
-        future: Future.wait([FutureGroupchatTitles, futureThemeBrightness,futureThemeColor]),
+        future: Future.wait([FutureGroupchatTitles, futureThemeBrightness, futureThemeColor,
+          futurePeopleInGroup, futurePeopleinGroupIDs, futureGroupInfo]),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (!snapshot.hasData) return Container();
           groupchatTitles = snapshot.data[0];
           themeBrightness = snapshot.data[1];
           themeColor = snapshot.data[2];
+          peopleInGroup = snapshot.data[3];
+          peopleInGroupIDs = snapshot.data[4];
+          groupInfo = snapshot.data[5];
+          groupInfoInv = groupInfo.map((k,v) => MapEntry(v, k));
+
+          print("groupInfo : $groupInfo");
+          print("people in group : $peopleInGroup");
+          print("people in Group IDS : $peopleInGroupIDs");
+
           return MaterialApp(
               theme: showOption(themeBrightness),
               home: Scaffold(
@@ -286,16 +305,14 @@ class _messagingPage extends State<GroupChatsListPage> {
                       // If you click on a tile, it will send you to the ChatPage.
                       onTap: () {
                         // Delete later.
-                        // This is how each group's ID will be determined and sent.
-
-                        print(groupChatUniqueIDs[index]);
 
                         String title = groupchatTitles[index];
                         String? chatID = groupInfoInv[title];
                         String? uID = FirebaseAuth.instance.currentUser?.uid;
+                        print("title: " + title);
                         print("groupInfo" + groupInfo.toString());
                         print("groupInfoInv" + groupInfoInv.toString());
-                        print("uID" + uID.toString());
+                        print("uID : " + uID.toString());
                         print("chatID" + chatID.toString());
                         List<String> receiverids = _chatRoomController.getUserInChatID(uID!, chatID!);
                         Navigator.push(context, MaterialPageRoute(
