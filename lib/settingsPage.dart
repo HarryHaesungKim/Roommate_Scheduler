@@ -126,23 +126,23 @@ class _settingsProfileState extends State<settingsProfile> {
                 ),
 
                 //Help menu
-                ListTile(
-                  leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
-                  title: Text("Help Menu"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: (){
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                          return HelpMenuPage();
-                        }));
-                  },
+                // ListTile(
+                //   leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
+                //   title: Text("Help Menu"),
+                //   trailing: Icon(Icons.keyboard_arrow_right),
+                //   onTap: (){
+                //     Navigator.push(context,
+                //         MaterialPageRoute(builder: (context) {
+                //           return HelpMenuPage();
+                //         }));
+                //   },
+                // ),
 
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 1.0,
-                  color: Colors.grey.shade300,
-                ),
+                // Container(
+                //   width: double.infinity,
+                //   height: 1.0,
+                //   color: Colors.grey.shade300,
+                // ),
 
                 //Help menu
                 ListTile(
