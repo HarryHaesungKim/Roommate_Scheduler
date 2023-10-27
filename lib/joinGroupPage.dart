@@ -1,12 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:roommates/Task/taskController.dart';
-import 'package:roommates/groceriesPage/groceriesPage.dart';
-import 'package:roommates/homePage/addTask.dart';
-import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/mainPage.dart';
-import 'package:roommates/theme.dart';
-import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 import 'Group/groupController.dart';
@@ -59,7 +53,7 @@ class _joinGroupPage extends State<joinGroupPage> {
       }
     // group exists add user to this group
     _groupController.addUserToGroup(groupID, uID);
-    MaterialPageRoute(builder: ((context) => mainPage(0)));
+    MaterialPageRoute(builder: ((context) => const mainPage(navigateToScreen: 0,)));
   }
 
   createGroup(GroupModel group) async {
@@ -86,7 +80,7 @@ class _joinGroupPage extends State<joinGroupPage> {
               ),
 
               // Join group code textbox
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               // Group
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -115,7 +109,7 @@ class _joinGroupPage extends State<joinGroupPage> {
               ),
 
               // Join Group button
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               SizedBox(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
@@ -136,7 +130,7 @@ class _joinGroupPage extends State<joinGroupPage> {
                         await joinGroup(_groupIDController.text.trim(), _uID!);
                       }
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => mainPage(0)));
+                        MaterialPageRoute(builder: (context) => mainPage(navigateToScreen: 0,)));
                   },
                   child: const Text(
                     'Join group',
@@ -179,7 +173,7 @@ class _joinGroupPage extends State<joinGroupPage> {
 
                     // TODO: Database implementation
                     // Need to connect to database. Link code to a new group and tasks that belong to that group (empty).
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage(0)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage(navigateToScreen: 0,)));
                   },
                   child: const Text(
                     'Create group',

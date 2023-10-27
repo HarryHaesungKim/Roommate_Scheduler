@@ -23,13 +23,13 @@ class _LoginPageState extends State<LoginPage> {
           email: emailController.text.trim(),
           password: passwordController.text.trim());
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => mainPage(0)));
+          MaterialPageRoute(builder: (context) => const mainPage(navigateToScreen: 0,)));
     } on FirebaseAuthException catch (e) {
       //Error Message
       showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
+            return const AlertDialog(
               content: Text("You have entered an incorrect email or password"),
             );
           });

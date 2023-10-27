@@ -9,19 +9,17 @@ import 'package:roommates/Notifications/NotificationView.dart';
 import 'package:roommates/profilePage.dart';
 import 'package:roommates/themeData.dart';
 import 'calendarPage/calendarPage.dart';
-import 'strings.dart';
+
+import 'package:roommates/api/firebase_api.dart';
 
 class mainPage extends StatefulWidget {
 
-  int navigateToScreen = 0;
+  final int navigateToScreen;
 
-  mainPage(int i){
-    navigateToScreen = i;
-  }
+  const mainPage({Key? key, required this.navigateToScreen}) : super(key: key);
 
   @override
-  _mainPageState createState() => _mainPageState(navigateToScreen);
-
+  State<mainPage> createState() => _mainPageState();
 
 }
 
@@ -40,13 +38,17 @@ class _mainPageState extends State<mainPage> {
     ProfilePage(),
   ];
 
-  _mainPageState(int navigateToScreen){
-    _selectedIndex = navigateToScreen;
-  }
+  late int screenCopy;
+
+  FirebaseApi pushNotifCon = FirebaseApi();
 
   @override
   void initState() {
     super.initState();
+    screenCopy = widget.navigateToScreen;
+    _selectedIndex = screenCopy;
+    print("Sent from mainPage.dart");
+    pushNotifCon.sendTokenToFirebase();
   }
 
   Future getUserData() async {
@@ -140,8 +142,8 @@ class _mainPageState extends State<mainPage> {
               gap: 3,
               activeColor: setBackGroundBarColor(themeBrightness),
               iconSize: 25,
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: deep(color, themeBrightness),
               color: setBackGroundBarColor(themeBrightness),
               tabs: const [

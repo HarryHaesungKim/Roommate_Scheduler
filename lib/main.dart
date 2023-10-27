@@ -27,7 +27,7 @@ void main() async{
   // final fcmToken = await FirebaseMessaging.instance.getToken();
   // print(fcmToken);
 
-  // push notification stuff
+  // initialize push notification stuff
   await FirebaseApi().initNotifications();
 
   runApp(const MyApp());
@@ -50,9 +50,9 @@ class MyApp extends StatelessWidget {
 
       // routes user to a specific screen when clicking on notification
       routes: {
-        '/home_screen':(context) => mainPage(0),
-        '/calendar_screen':(context) => mainPage(1),
-        '/costSplit_screen':(context) => mainPage(2),
+        '/home_screen':(context) => const mainPage(navigateToScreen: 0,),
+        '/calendar_screen':(context) => const mainPage(navigateToScreen: 1,),
+        '/costSplit_screen':(context) => const mainPage(navigateToScreen: 2,),
 
         // More routes for new message, new group members(?), etc.
 
