@@ -126,7 +126,6 @@ class _messagingPage extends State<GroupChatsListPage> {
     futurePeopleInGroup =  _groupController.getUsersInGroup(uID!);
     futurePeopleinGroupIDs =  _groupController.getUserIDsInGroup(uID!);
     futureGroupInfo = _chatRoomController.getGroupInfo(uID);
-    print("futuregroupInfo");
     //groupInfoInv = groupInfo.map((k,v) => MapEntry(v, k));
   }
   // Method that deletes the chat from the list.
