@@ -266,64 +266,6 @@ class _homePage extends State<homePage> {
           //     label: const Text(''),
           // ),
 
-          Container(
-            height: 37.0,
-            width: 40.0,
-            color: setAppBarColor(themeColor,themeBrightness),
-            child: TextButton(
-              child: const Icon(
-                Icons.refresh,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                build(context);
-              },
-            ),
-          ),
-
-          // Add task button
-          ElevatedButton(
-            onPressed: () async {
-              //await Get.to(addTask());
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => addTask()),
-              // );
-
-              Get.lazyPut(() => taskController());
-
-              if (gotIsGroupAdmin) {
-                if (!await groupCon.isUserAdmin(currUser!)) {
-                  showNotAdminUser(context);
-                } else {
-                  await Get.to(addTask());
-                  taskCon.getTasks(currGroup);
-                  //taskCon = Get.put(taskController());
-                }
-              } else {
-                await Get.to(addTask());
-                taskCon.getTasks(currGroup);
-              }
-              // check if the current user is an admin user
-              // if(!await _groupController.isUserAdmin(uID!))
-              //   {
-              //     showNotAdminUser(context);
-              //   }
-              // else
-              // {
-              //   await Get.to(addTask());
-              //   taskCon.getTasks(groupID);
-              //   //taskCon = Get.put(taskController());
-              // }
-            },
-            style: ButtonStyle(
-              backgroundColor:
-              MaterialStateProperty.all<Color>(setAppBarColor(themeColor,themeBrightness)!),
-            ),
-            child: const Text(
-              '+ Add Task',
-            ),
-          ),
         ],
       ),
     );
