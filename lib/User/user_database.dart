@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:roommates/User/user_model.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -6,7 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserDatabaseHelper {
   final _db = FirebaseFirestore.instance;
-
+  String? userID = FirebaseAuth.instance.currentUser?.uid;
+//All users
   getUserData(String groupID) async {
     List<Map<String, dynamic>> userdatas = [];
     await _db.collection("Group").doc(groupID).collection("users").get().then(
@@ -37,7 +39,6 @@ class UserDatabaseHelper {
   }
   Future<String> getGroupID(String uID) async
   {
-
     final docref = await _db.collection('Users').doc(uID).get();
     String gID = docref.data()?['groupID'];
     return gID;
@@ -53,6 +54,9 @@ class UserDatabaseHelper {
       Get.snackbar("ERROR", "Whoops, something went wrong.");
     });
   }
+  createUser( UserData userdatas) async {
+    await _db.collection("Users").doc(userID).set(userdatas.toJson());
+  }
 
   UpdateUserData(UserData userData) async {
     //await _db.collection("Users").doc(userData.id).update(userData.toJson());
@@ -67,4 +71,21 @@ class UserDatabaseHelper {
     String userName = userRef['UserName'];
     return userName;
   }
+  Future<String> getUserThemeColor(String uID) async {
+    final userRef = await _db.collection("Users").doc(uID).get();
+    String themeColor = userRef['themeColor'];
+    return themeColor;
+  }
+  Future<String> getUserThemeBrightness(String uID) async {
+    final userRef = await _db.collection("Users").doc(uID).get();
+    String themeBrightness = userRef['themeBrightness'];
+    return themeBrightness;
+  }
+  Future<UserData> getUserDetails(String uID) async {
+    final docRef = _db.collection("users").doc(uID);
+    DocumentSnapshot doc = await docRef.get();
+    final data = doc.data() as UserData;
+    return data;
+  }
+
 }

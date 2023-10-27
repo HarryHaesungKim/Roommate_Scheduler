@@ -22,6 +22,16 @@ class DBHelper {
     String gID = userRef.data()!['groupID'].toString();
     return gID.isNumericOnly;
   }
+  setRate(String groupID,TaskObject Task, double rate) async {
+    final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(Task.id);
+    docref.update({"Rate": rate}).whenComplete(() =>
+        Get.snackbar("Completed",
+            "Task marked as complete.")).
+    catchError((error, stackTrace) {
+      //something went wrong. tell user
+      Get.snackbar("ERROR", "Whoops, something went wrong.");
+    });
+  }
 
   /// This method returns whether user [uID] is an admin in their group
   Future<bool> isUserAdmin(String uID) async {

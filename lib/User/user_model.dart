@@ -1,51 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserData {
-   String? username;
-   String? password;
-   String? email;
-   String? balance;
-   String? income;
-   String? expense;
-   String? groupID;
-   String? imageURL;
-   List<String>? chatRooms;
-   GeoPoint? location;
-   String? themeBrightness; //light or dark
-   String? themeColor; // colors
+  String? username;
+  String? password;
+  String? email;
+  String? balance;
+  String? income;
+  String? expense;
+  String? groupID;
+  String? imageURL;
+  List<String>? chatRooms;
+  GeoPoint? location;
+  String? themeBrightness; //light or dark
+  String? themeColor; // colors
 
 
 
-   UserData({
-     this.email,
-     this.password,
-     this.username,
-     this.balance,
-     this.income,
-     this.expense,
-     this.groupID,
-     this.chatRooms,
-     this.imageURL,
-     this.location,
-     this.themeBrightness,
-     this.themeColor,
+  UserData({
+    this.email,
+    this.password,
+    this.username,
+    this.balance,
+    this.income,
+    this.expense,
+    this.groupID,
+    this.chatRooms,
+    this.imageURL,
+    this.location,
+    this.themeBrightness,
+    this.themeColor,
 
    });
-   UserData.formJson(Map<String, dynamic> json) {
-     email = json['Email'].toString();
-     password = json['Password'].toString();
-     username = json['UserName'].toString();
-     balance = json['Balance'].toString();
-     income = json['Income'].toString();
-     expense = json['Expense'].toString();
-     groupID = json['groupID'].toString();
-     chatRooms = json['chatRooms'];
-     imageURL = json['imageURL'].toString();
-     location = json['location'];
-     themeBrightness = json['themeBrightness'].toString();
-     themeColor = json['themeColor'].toString();
-
-   }
+   static UserData fromJson(Map<String, dynamic> json) => UserData(
+     email : json['Email'].toString(),
+     password : json['Password'].toString(),
+     username : json['UserName'].toString(),
+     balance :json['Balance'].toString(),
+     income :json['Income'].toString(),
+     expense : json['Expense'].toString(),
+     groupID : json['groupID'].toString(),
+     chatRooms : json['chatRooms'],
+     imageURL :json['imageURL'].toString(),
+     location : json['location'],
+     themeBrightness : json['themeBrightness'].toString(),
+     themeColor : json['themeColor'].toString(),
+   );
 
    Map<String, dynamic> toJson() {
      final Map<String, dynamic> data = new Map<String, dynamic>();

@@ -1,23 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:roommates/calendarPage/event.dart';
 import 'package:roommates/calendarPage/eventController.dart';
-import 'package:roommates/groceriesPage/groceriesPagedata.dart';
 
 import '../Group/groupController.dart';
 import '../Notifications/NotificationController.dart';
 import '../Task/database_demo.dart';
 import '../Task/input_field.dart';
-import '../theme.dart';
-import 'package:roommates/groceriesPage/groceriesPageController.dart';
+import '../themeData.dart';
 
 class addEvent extends StatefulWidget {
   @override
   _AddEventState createState() => _AddEventState();
-
 }
 
 class _AddEventState extends State<addEvent> {
@@ -54,168 +52,94 @@ class _AddEventState extends State<addEvent> {
     final now = new DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
-
-    return Scaffold(
-      //backgroundColor: context.theme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.orange[700],
-        title: const Text("Add Event"),
-      ),
-      backgroundColor:  Color.fromARGB(255, 227, 227, 227),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InputField(
-                title: "Title",
-                hint: "Enter title here.",
-                controller: _titleController,
+    return StreamBuilder(
+        stream:
+            FirebaseFirestore.instance.collection('Users').doc(uID).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong! ${snapshot.data}');
+          }
+          else if (snapshot.hasData) {
+            final UserData = snapshot.data!;
+            return Scaffold(
+              //backgroundColor: context.theme.backgroundColor,
+              appBar: AppBar(
+                backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                title: const Text("Add Event"),
               ),
-              InputField(
-                  title: "Description",
-                  hint: "Enter Description here.",
-                  controller: _noteController),
-              InputField(
-                title: "Date",
-                hint: DateFormat.yMd().format(_selectedDate),
-                widget: IconButton(
-                  icon: (Icon(
-                    Icons.calendar_month_sharp,
-                    color: Colors.grey,
-                  )),
-                  onPressed: () {
-                    //_showDatePicker(context);
-                    _getDateFromUser();
-                  },
+              backgroundColor: Color.fromARGB(255, 227, 227, 227),
+              body: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InputField(
+                        title: "Title",
+                        hint: "Enter title here.",
+                        controller: _titleController,
+                      ),
+                      InputField(
+                          title: "Description",
+                          hint: "Enter Description here.",
+                          controller: _noteController),
+                      InputField(
+                        title: "Date",
+                        hint: DateFormat.yMd().format(_selectedDate),
+                        widget: IconButton(
+                          icon: (Icon(
+                            Icons.calendar_month_sharp,
+                            color: Colors.grey,
+                          )),
+                          onPressed: () {
+                            //_showDatePicker(context);
+                            _getDateFromUser();
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        height: 18.0,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            child: Text('Create Event'),
+                            onPressed: () {
+                              _validateInputs();
+
+                              // Adding a notification of event creation.
+                              String notifTitle =
+                                  "New Event: ${_titleController.text}";
+                              String notifBody =
+                                  "Event Description: ${_noteController.text}\nEvent Date: ${_selectedDate.month}/${_selectedDate.day}/${_selectedDate.year}";
+                              notifCon.createNotification(
+                                  title: notifTitle,
+                                  body: notifBody,
+                                  type: "event");
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  setAppBarColor(UserData['themeColor'], UserData['themeBrightness'])!),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              // InputField(
-              //   title: "Remind",
-              //   hint: "$_selectedRemind minutes early",
-              //   widget: Row(
-              //     children: [
-              //       DropdownButton<String>(
-              //         //value: _selectedRemind.toString(),
-              //           icon: Icon(
-              //             Icons.keyboard_arrow_down,
-              //             color: Colors.grey,
-              //           ),
-              //           iconSize: 32,
-              //           elevation: 4,
-              //           style: subTitleTextStle,
-              //           underline: Container(height: 0),
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               _selectedRemind = int.parse(newValue!);
-              //             });
-              //           },
-              //           items: remindList
-              //               .map<DropdownMenuItem<String>>((int value) {
-              //             return DropdownMenuItem<String>(
-              //               value: value.toString(),
-              //               child: Text(value.toString()),
-              //             );
-              //           }).toList()),
-              //       SizedBox(width: 6),
-              //     ],
-              //   ),
-              // ),
-              // InputField(
-              //   title: "Paid Name",
-              //   hint: "$_selectedAssigness",
-              //   widget: Row(
-              //     children: [
-              //       DropdownButton<String>(
-              //         //value: _selectedRemind.toString(),
-              //           icon: Icon(
-              //             Icons.keyboard_arrow_down,
-              //             color: Colors.grey,
-              //           ),
-              //           iconSize: 32,
-              //           elevation: 4,
-              //           style: subTitleTextStle,
-              //           underline: Container(height: 0),
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               _selectedAssigness = newValue!;
-              //             });
-              //           },
-              //           items: AssigneesList
-              //               .map<DropdownMenuItem<String>>((String value) {
-              //             return DropdownMenuItem<String>(
-              //               value: value.toString(),
-              //               child: Text(value.toString()),
-              //             );
-              //           }).toList()),
-              //       SizedBox(width: 6),
-              //     ],
-              //   ),
-              // ),
-              // InputField(
-              //   title: "Split",
-              //   hint: "$_selectedSplit",
-              //   widget: Row(
-              //     children: [
-              //       DropdownButton<String>(
-              //         //value: _selectedRemind.toString(),
-              //           icon: Icon(
-              //             Icons.keyboard_arrow_down,
-              //             color: Colors.grey,
-              //           ),
-              //           iconSize: 32,
-              //           elevation: 4,
-              //           style: subTitleTextStle,
-              //           underline: Container(height: 0),
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               _selectedSplit = newValue!;
-              //             });
-              //           },
-              //           items: splitList
-              //               .map<DropdownMenuItem<String>>((String value) {
-              //             return DropdownMenuItem<String>(
-              //               value: value.toString(),
-              //               child: Text(value.toString()),
-              //             );
-              //           }).toList()),
-              //       SizedBox(width: 6),
-              //     ],
-              //   ),
-              // ),
-              SizedBox(
-                height: 18.0,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-
-                  ElevatedButton(
-                    child: Text('Create Event'),
-                    onPressed: () {
-                      _validateInputs();
-
-                      // Adding a notification of event creation.
-                      String notifTitle = "New Event: ${_titleController.text}";
-                      String notifBody = "Event Description: ${_noteController.text}\nEvent Date: ${_selectedDate.month}/${_selectedDate.day}/${_selectedDate.year}";
-                      notifCon.createNotification(title: notifTitle, body: notifBody, type: "event");
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.orange[700]!),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 30.0,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 
   _validateInputs() {
@@ -235,16 +159,15 @@ class _AddEventState extends State<addEvent> {
 
   _addEventToDB() async {
     String groupID = await _groupController.getGroupIDFromUser(uID!);
-    await _eventController.addEvent(groupID,
+    await _eventController.addEvent(
+      groupID,
       event: Event(
         title: _titleController.text.toString(),
         note: _noteController.text.toString(),
         date: DateFormat.yMd().format(_selectedDate),
       ),
     );
-
   }
-
 
   double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 

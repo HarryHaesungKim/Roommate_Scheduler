@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/homePage/chat_bubble.dart';
 import 'package:roommates/homePage/chat_service.dart';
+import 'package:roommates/themeData.dart';
 
+import '../User/user_controller.dart';
 import 'message.dart';
 import 'my_text_field.dart';
 
@@ -16,7 +18,6 @@ import 'my_text_field.dart';
 //https://www.youtube.com/watch?v=mBBycL0EtBQ&ab_channel=MitchKoko timestamp: 29:51
 
 class ChatPage extends StatefulWidget {
-
   // Declare a field that holds the group chat data
 
   // from video
@@ -27,7 +28,6 @@ class ChatPage extends StatefulWidget {
     super.key,
     required this.receiverUserName,
     required this.receiverUserIDs,
-
   });
 
   @override
@@ -35,11 +35,23 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPage extends State<ChatPage> {
-
-  late List<String> messages = ["Hey Guys. How's it going?", "Not bad", "I'm good"];
+  String? uID = FirebaseAuth.instance.currentUser?.uid;
+  final userController userCon = userController();
+  late List<String> messages = [
+    "Hey Guys. How's it going?",
+    "Not bad",
+    "I'm good"
+  ];
   late List<String> whoSent = ["Me", "Andrew", "Bob"];
-  late List<DateTime> timeSent = [DateTime.parse('2023-09-06 20:18:04Z'), DateTime.parse('2023-09-06 20:20:04Z'), DateTime.parse('2023-09-06 20:25:04Z')];
-
+  late List<DateTime> timeSent = [
+    DateTime.parse('2023-09-06 20:18:04Z'),
+    DateTime.parse('2023-09-06 20:20:04Z'),
+    DateTime.parse('2023-09-06 20:25:04Z')
+  ];
+  late Future<String> futureThemeColor;
+  late Future<String> futureThemeBrightness;
+  late String themeColor;
+  late String themeBrightness;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
 
@@ -49,53 +61,69 @@ class _ChatPage extends State<ChatPage> {
 
   void sendMessage() async {
     // only send message if there is something to send.
-    if (_messageController.text.isNotEmpty){
-      await _chatService.sendMessage(widget.receiverUserIDs, _messageController.text);
+    if (_messageController.text.isNotEmpty) {
+      await _chatService.sendMessage(
+          widget.receiverUserIDs, _messageController.text);
       // clear the text controller after sending the message.
       _messageController.clear();
     }
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    futureThemeBrightness = userCon.getUserThemeBrightness(uID!);
+    futureThemeColor = userCon.getUserThemeColor(uID!);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: Future.wait([futureThemeBrightness, futureThemeColor]),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            themeBrightness = snapshot.data[0];
+            themeColor = snapshot.data[1];
+          }
+          return MaterialApp(
+              theme: showOption(themeBrightness),
+              home: Scaffold(
+                appBar: AppBar(
+                  leading: IconButton(
+                    icon: Icon(Icons.arrow_back,
+                        color: setBackGroundBarColor(themeBrightness)),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  backgroundColor: setAppBarColor(themeColor, themeBrightness),
 
-    
-    return Scaffold(
+                  // Needs to be title of the group chat!
+                  title: const Text("Messaging"),
+                ),
+                backgroundColor: const Color.fromARGB(255, 227, 227, 227),
+                body: Column(children: [
+                  //const SizedBox(height: 10,),
 
-      appBar: AppBar(
-        backgroundColor: Colors.orange[700],
+                  // messages
+                  // REMOVE COMMENTS 81 - 83
+                  Expanded(child: _buildMessageList()),
 
-        // Needs to be title of the group chat!
-        title: const Text("Messaging"),
-      ),
-      backgroundColor:  const Color.fromARGB(255, 227, 227, 227),
+                  // user input
+                  _buildMessageInput(),
 
-
-      body: Column(
-
-        children: [
-
-          //const SizedBox(height: 10,),
-
-          // messages
-          // REMOVE COMMENTS 81 - 83
-          Expanded(
-            child: _buildMessageList()
-          ),
-
-          // user input
-          _buildMessageInput(),
-
-          const SizedBox(height: 25,),
-        ]
-      ),
-    );
+                  const SizedBox(
+                    height: 25,
+                  ),
+                ]),
+              ));
+        });
   }
 
   // build message list
-  Widget _buildMessageList(){
+  Widget _buildMessageList() {
     return StreamBuilder(
-      stream: _chatService.getMessages(_firebaseAuth.currentUser!.uid, widget.receiverUserIDs),
+      stream: _chatService.getMessages(
+          _firebaseAuth.currentUser!.uid, widget.receiverUserIDs),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Error${snapshot.error}');
@@ -112,7 +140,6 @@ class _ChatPage extends State<ChatPage> {
         );
       },
     );
-
   }
 
   // build message item
@@ -120,36 +147,48 @@ class _ChatPage extends State<ChatPage> {
     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
     // align the messages to the right if the sender is the current user, otherwise to the left.
-    var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid) ? Alignment.centerRight : Alignment.centerLeft;
+    var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid)
+        ? Alignment.centerRight
+        : Alignment.centerLeft;
 
     // Messages from you should be a different color than messages from others.
-    var bubbleColor = (data['senderId'] == _firebaseAuth.currentUser!.uid) ? Colors.blue : Colors.grey.shade400;
-    var textColor = (data['senderId'] == _firebaseAuth.currentUser!.uid) ? 0 : 1;
+    var bubbleColor = (data['senderId'] == _firebaseAuth.currentUser!.uid)
+        ? Colors.blue
+        : Colors.grey.shade400;
+    var textColor =
+    (data['senderId'] == _firebaseAuth.currentUser!.uid) ? 0 : 1;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(15,0,15,0),
+      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       child: Container(
-        alignment: alignment,
-        child: Column(
-          crossAxisAlignment: (data['senderId'] == _firebaseAuth.currentUser!.uid)
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          mainAxisAlignment: (data['senderId'] == _firebaseAuth.currentUser!.uid)
-              ? MainAxisAlignment.end
-              : MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 5,),
-            Text(data['senderUserName']),
-            const SizedBox(height: 3,),
-            ChatBubble(message: data['message'], color: bubbleColor, textColor: textColor),
-          ]
-        )
-      ),
+          alignment: alignment,
+          child: Column(
+              crossAxisAlignment:
+              (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              mainAxisAlignment:
+              (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(data['senderUserName']),
+                const SizedBox(
+                  height: 3,
+                ),
+                ChatBubble(
+                    message: data['message'],
+                    color: bubbleColor,
+                    textColor: textColor),
+              ])),
     );
   }
 
   // build message input
-  Widget _buildMessageInput(){
+  Widget _buildMessageInput() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 15, 20, 0),
       child: Row(
@@ -158,9 +197,7 @@ class _ChatPage extends State<ChatPage> {
               child: MyTextField(
                   controller: _messageController,
                   hintText: 'Enter message',
-                  obscureText: false
-              )
-          ),
+                  obscureText: false)),
 
           // send button
           IconButton(
@@ -168,11 +205,9 @@ class _ChatPage extends State<ChatPage> {
               icon: const Icon(
                 Icons.arrow_upward,
                 size: 40,
-              )
-          )
+              ))
         ],
       ),
     );
   }
-
 }
