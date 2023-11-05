@@ -24,6 +24,7 @@ class Themes {
   );
 }
 
+
 TextStyle get headingTextStyle {
   return GoogleFonts.lato(
     textStyle: TextStyle(

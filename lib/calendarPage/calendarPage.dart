@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:roommates/User/user_model.dart';
 import 'package:roommates/calendarPage/addEvent.dart';
 import 'package:roommates/calendarPage/eventView.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -17,7 +16,7 @@ import 'package:intl/intl.dart';
 // Use for implementing events: https://www.youtube.com/watch?v=ASCs_g8RJ9s&ab_channel=AIwithFlutter
 
 class calendarPage extends StatefulWidget {
-  calendarPage({Key? key}) : super(key: key);
+  const calendarPage({Key? key}) : super(key: key);
 
   @override
   State<calendarPage> createState() => _calendarPage();
@@ -122,7 +121,7 @@ class _calendarPage extends State<calendarPage> {
   showBottomSheet(BuildContext context, Event event) {
     Get.bottomSheet(
       Container(
-        padding: EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: 4),
         // height: groceries.isCompleted == 1
         //     ? _mediaQueryData.size.height * 0.24
         //     : _mediaQueryData.size.height * 0.32,
@@ -159,7 +158,7 @@ class _calendarPage extends State<calendarPage> {
                 }
               },
               clr: Colors.red[300]),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _buildBottomSheetButton(
@@ -168,7 +167,7 @@ class _calendarPage extends State<calendarPage> {
                 Get.back();
               },
               isClose: true),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ]),
@@ -183,9 +182,9 @@ class _calendarPage extends State<calendarPage> {
     return GestureDetector(
       onTap: onTap as void Function()?,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 4),
+        margin: const EdgeInsets.symmetric(vertical: 4),
         height: 55,
-        width: _mediaQueryData.size.width! * 0.9,
+        width: _mediaQueryData.size.width* 0.9,
         decoration: BoxDecoration(
           border: Border.all(
             width: 2,
@@ -267,11 +266,11 @@ class _calendarPage extends State<calendarPage> {
                                           if (!await _groupController.isUserAdmin(uID!)) {
                                             showNotAdminUser(context);
                                           } else {
-                                            await Get.to(addEvent());
+                                            await Get.to(const addEvent());
                                             _eventController.getEvents(groupID);
                                           }
                                         } else {
-                                          await Get.to(addEvent());
+                                          await Get.to(const addEvent());
                                           _eventController.getEvents(groupID);
                                         }
                                         // await Get.to(addEvent());
@@ -329,11 +328,12 @@ class _calendarPage extends State<calendarPage> {
                                                       color: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
                                                     ),
                                                     child: Text(
-                                                      '${countEvent}',
+                                                      '$countEvent',
                                                       style: const TextStyle(color: Colors.white),
                                                     ),
                                                   );
                                                 }
+                                                return null;
                                               }
                                         ),
                                         ),
@@ -370,10 +370,10 @@ class _calendarPage extends State<calendarPage> {
                                                               );
                                                             }
                                                             else{
-                                                              return Padding(
+                                                              return const Padding(
                                                                 // Spacing between elements:
                                                                 padding:
-                                                                const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
                                                               );
                                                             }
                                                           }
@@ -448,11 +448,11 @@ class _calendarPage extends State<calendarPage> {
                                 if (!await _groupController.isUserAdmin(uID!)) {
                                   showNotAdminUser(context);
                                 } else {
-                                  await Get.to(addEvent());
+                                  await Get.to(const addEvent());
                                   _eventController.getEvents(groupID);
                                 }
                               } else {
-                                await Get.to(addEvent());
+                                await Get.to(const addEvent());
                                 _eventController.getEvents(groupID);
                               }
                               // await Get.to(addEvent());
@@ -467,11 +467,11 @@ class _calendarPage extends State<calendarPage> {
                                   if (!await _groupController.isUserAdmin(uID!)) {
                                     showNotAdminUser(context);
                                   } else {
-                                    await Get.to(addEvent());
+                                    await Get.to(const addEvent());
                                     _eventController.getEvents(groupID);
                                   }
                                 } else {
-                                  await Get.to(addEvent());
+                                  await Get.to(const addEvent());
                                   _eventController.getEvents(groupID);
                                 }
                                 // await Get.to(addEvent());
@@ -556,10 +556,10 @@ class _calendarPage extends State<calendarPage> {
                                                         );
                                                       }
                                                       else{
-                                                        return Padding(
+                                                        return const Padding(
                                                           // Spacing between elements:
                                                           padding:
-                                                          const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                                          EdgeInsets.fromLTRB(0, 0, 0, 0),
                                                         );
                                                       }
                                                     }

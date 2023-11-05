@@ -6,7 +6,6 @@ import 'package:roommates/homePage/chat_service.dart';
 import 'package:roommates/themeData.dart';
 
 import '../User/user_controller.dart';
-import 'message.dart';
 import 'my_text_field.dart';
 
 //https://stackoverflow.com/questions/50702749/flutter-i-want-to-pass-variable-from-one-class-to-another

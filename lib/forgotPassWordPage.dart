@@ -25,17 +25,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
+            return const AlertDialog(
               content: Text(
                   "The forgot password process was attempted for your email, and please check your email!"),
             );
           });
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       //Error message
       showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
+            return const AlertDialog(
               content: Text("You have entered an incorrect email"),
             );
           });
@@ -52,15 +52,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25.0),
             child: Text(
               'Please submit to reset your password.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 25.0),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           //Email
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -74,7 +74,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 padding: const EdgeInsets.only(left: 12.0),
                 child: TextField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     prefixIcon: Icon(
                       Icons.email,
                       color: Colors.blue,
@@ -87,7 +87,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           MaterialButton(
             onPressed: () {
               if (_emailController.text.isEmpty) {
@@ -100,9 +100,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 passWordreset();
               }
             },
-            child: Text('Reset Password'),
             textColor: Colors.white,
             color: Colors.blue,
+            child: const Text('Reset Password'),
           )
         ],
       ),

@@ -6,7 +6,7 @@ import '../theme.dart';
 
 class eventView extends StatelessWidget {
   final Event event;
-  eventView(this.event);
+  const eventView(this.event, {super.key});
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -18,7 +18,7 @@ class eventView extends StatelessWidget {
       width: _mediaQueryData.size.width,
       margin: EdgeInsets.only(bottom: (12 / 375.0) * _mediaQueryData.size.width),
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -36,7 +36,7 @@ class eventView extends StatelessWidget {
                     Text(
                       event.title!,
                       style: GoogleFonts.lato(
-                        textStyle: TextStyle(
+                        textStyle: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87),
@@ -47,28 +47,28 @@ class eventView extends StatelessWidget {
                       "${event.date}",
                       style: GoogleFonts.lato(
                         textStyle:
-                        TextStyle(fontSize: 13, color: Colors.black87),
+                        const TextStyle(fontSize: 13, color: Colors.black87),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
                   event.note!,
                   style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.black87),
+                    textStyle: const TextStyle(fontSize: 15, color: Colors.black87),
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             height: 60,
             width: 0.5,
-            color: Colors.black87!.withOpacity(0.7),
+            color: Colors.black87.withOpacity(0.7),
           ),
         ]),
       ),

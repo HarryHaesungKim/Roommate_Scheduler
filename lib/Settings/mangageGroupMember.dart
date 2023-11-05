@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:roommates/Task/input_field.dart';
-import 'package:roommates/User/user_model.dart';
 import 'package:get/get.dart';
 
 import '../Group/groupController.dart';
@@ -403,7 +402,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
                         return;
                       }
 
-                      if (!doesNewGroupExist!) {
+                      if (!doesNewGroupExist) {
                         showGroupDoesNotExist(context);
                         return;
                       }
@@ -454,7 +453,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
                       style: TextStyle(color: Colors.white),
                     ),
                   )),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               SizedBox(

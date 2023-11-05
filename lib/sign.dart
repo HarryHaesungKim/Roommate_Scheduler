@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/mainPage.dart';
 import 'package:roommates/AuthPage.dart';
@@ -13,9 +12,9 @@ class sign extends StatelessWidget{
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context,snapshot){
           if(snapshot.hasData){
-           return mainPage();
+           return const mainPage();
           }else{
-            return AuthPage();
+            return const AuthPage();
           }
         },
       ),

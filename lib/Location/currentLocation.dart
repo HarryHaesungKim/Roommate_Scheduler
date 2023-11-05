@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +39,7 @@ class _CurrentLocationState extends State<CurrentLocation> {
     String gID = docref.data()?['groupID'];
     return gID;
   }
+  @override
   void initState() {
     super.initState();
     futureCurrGroup = groupCon.getGroupIDFromUser(uID!);
@@ -116,12 +116,12 @@ class _CurrentLocationState extends State<CurrentLocation> {
 
                                 setState(() {});
                               },
-                              child:Icon(
+                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                              child:const Icon(
                                 Icons.my_location,
                               ),
-                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             FloatingActionButton(
@@ -130,22 +130,22 @@ class _CurrentLocationState extends State<CurrentLocation> {
                                 updateUserData(UserData['Email'], UserData['Password'], UserData['UserName'], UserData['Balance'].toString(),UserData['Income'].toString(),
                                     UserData['Expense'].toString(),UserData['imageURL'].toString(),
                                     UserData['themeBrightness'].toString(),UserData['themeColor'].toString(),
-                                    UserData["chatRooms"].cast<String>(), GeoPoint(position.latitude as double, position.longitude as double),UserData['groupID'].toString());
+                                    UserData["chatRooms"].cast<String>(), GeoPoint(position.latitude, position.longitude),UserData['groupID'].toString());
                                 //_userdataController.getUserData(groupID);
                                 _userdataController.getUserLocation(uID!);
                                 markers.clear();
                                 for(int i = 0; i < _userdataController.userLocationList.length; i++){
-                                  String id = "User" + i.toString();
+                                  String id = "User$i";
                                   print(_userdataController.userLocationList[i].latitude);
                                   markers.add(Marker(markerId: MarkerId(id),position: LatLng(_userdataController.userLocationList[i].latitude, _userdataController.userLocationList[i].longitude)));
                                 }
                                 print(markers.length);
                                 setState(() {});
                               },
-                              child:Icon(
+                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                              child:const Icon(
                                 Icons.share_location,
                               ),
-                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
                             ),
                           ]
                       ),

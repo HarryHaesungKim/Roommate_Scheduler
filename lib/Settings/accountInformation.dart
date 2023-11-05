@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 
 import '../themeData.dart';
 class EditProfile extends StatefulWidget {
-  EditProfile({Key? key}) : super(key: key);
+  const EditProfile({Key? key}) : super(key: key);
 
   @override
   State<EditProfile> createState() => _EditProfilePage();
@@ -75,7 +75,7 @@ class _EditProfilePage extends State<EditProfile> {
       builder: (context) => CupertinoActionSheet(
         actions: [
           CupertinoActionSheetAction(
-            child: Text('Photo Gallery'),
+            child: const Text('Photo Gallery'),
             onPressed: () {
               // close the options modal
               Navigator.of(context).pop();
@@ -84,7 +84,7 @@ class _EditProfilePage extends State<EditProfile> {
             },
           ),
           CupertinoActionSheetAction(
-            child: Text('Camera'),
+            child: const Text('Camera'),
             onPressed: () {
               // close the options modal
               Navigator.of(context).pop();
@@ -122,13 +122,13 @@ class _EditProfilePage extends State<EditProfile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
-  Future <bool> updateEmailAndPassWord(String _email, String _newEmail, String _password, String _newPassWord) async {
+  Future <bool> updateEmailAndPassWord(String email, String newEmail, String password, String newPassWord) async {
     bool success= false;
-    var user = await FirebaseAuth.instance.currentUser!;
-    final cred = await EmailAuthProvider.credential(email: _email, password: _password);
+    var user = FirebaseAuth.instance.currentUser!;
+    final cred = EmailAuthProvider.credential(email: email, password: password);
     await user.reauthenticateWithCredential(cred).then((value) async{
-      user.updateEmail(_newEmail);
-      user.updatePassword(_newPassWord);
+      user.updateEmail(newEmail);
+      user.updatePassword(newPassWord);
       success = true;
     });
     return success;
@@ -175,7 +175,7 @@ class _EditProfilePage extends State<EditProfile> {
 
                       ),
                       body: Container(
-                        padding: EdgeInsets.only(left: 15, top: 20, right: 15),
+                        padding: const EdgeInsets.only(left: 15, top: 20, right: 15),
                         child: GestureDetector(
                           onTap: () {
                             FocusScope.of(context).unfocus();
@@ -238,66 +238,66 @@ class _EditProfilePage extends State<EditProfile> {
                                               color: Colors.blue),
                                           child: IconButton(
                                             onPressed: showOptions,
-                                            icon: Icon(Icons.edit),
+                                            icon: const Icon(Icons.edit),
                                           ),
                                         )),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 50),
+                              const SizedBox(height: 50),
                               Form(child: Column(
                                 children: [
                                   TextFormField(
                                     controller: _userNameController,
                                     decoration: InputDecoration(
-                                      label:Text("Full Name"),
+                                      label:const Text("Full Name"),
                                       hintText: UserData['UserName'],
-                                      hintStyle: TextStyle(
+                                      hintStyle: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: 'OpenSans',
                                         color: Colors.black,
                                       ),
                                       floatingLabelBehavior: FloatingLabelBehavior.always,
-                                      prefixIcon: Icon(Icons.people),
+                                      prefixIcon: const Icon(Icons.people),
 
                                     ),
                                   ),
-                                  SizedBox(height: 20,),
+                                  const SizedBox(height: 20,),
                                   TextFormField(
                                     controller: _emailController,
                                     decoration: InputDecoration(
                                         hintText: UserData['Email'],
-                                        hintStyle: TextStyle(
+                                        hintStyle: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: 'OpenSans',
                                           color: Colors.black,
                                         ),
-                                        label:Text("Email"),
+                                        label:const Text("Email"),
                                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                                        prefixIcon: Icon(Icons.email,color: Colors.black)
+                                        prefixIcon: const Icon(Icons.email,color: Colors.black)
 
                                     ),
                                   ),
-                                  SizedBox(height: 20,),
+                                  const SizedBox(height: 20,),
                                   TextFormField(
                                     controller: _passWordController,
                                     decoration: InputDecoration(
                                       hintText: UserData['Password'],
-                                      label:Text("Password"),
-                                      hintStyle: TextStyle(
+                                      label:const Text("Password"),
+                                      hintStyle: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: 'OpenSans',
                                         color: Colors.black,
                                       ),
                                       floatingLabelBehavior: FloatingLabelBehavior.always,
-                                      prefixIcon: Icon(Icons.password,color: Colors.black),
+                                      prefixIcon: const Icon(Icons.password,color: Colors.black),
 
                                     ),
                                   ),
-                                  SizedBox(height: 20,),
+                                  const SizedBox(height: 20,),
                                   SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton(
@@ -315,7 +315,7 @@ class _EditProfilePage extends State<EditProfile> {
                                           showDialog(
                                               context: context,
                                               builder: (context) {
-                                                return AlertDialog(
+                                                return const AlertDialog(
                                                   content: Text(
                                                       "Passwords and UserNames are same"),
                                                 );

@@ -1,9 +1,6 @@
-import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:roommates/Task/TaskObject.dart';
 
 import '../Group/groupModel.dart';
@@ -132,7 +129,7 @@ class DBHelper {
   ///
   ///
   Future<void> addParentUsers(List<String> pUsers, String groupID) async {
-    final groupRef = await _db.collection("Group").doc(groupID);
+    final groupRef = _db.collection("Group").doc(groupID);
     for (int i = 0; i < pUsers.length; i++) {
       groupRef.update({'parentUsers': FieldValue.arrayUnion(pUsers)});
     }
@@ -197,7 +194,7 @@ class DBHelper {
     //remove them from all events, tasks, etc. from this group
 
     //set the users groupID to NULL
-    final userRef = await _db.collection("Users").doc(uID);
+    final userRef = _db.collection("Users").doc(uID);
     userRef.update({'groupID': ""});
   }
 
@@ -223,13 +220,13 @@ class DBHelper {
   Future<List<String>> getGroupChatTitles(String uID) async {
     final userRef = await _db.collection("Users").doc(uID).get();
     var array = userRef.data()?['chatRooms'];
-    print("Groupchat ids" + array.toString());
+    print("Groupchat ids$array");
     List<String> titles = [];
     for (int i = 0; i < array.length; i++) {
       final chatRef = await _db.collection("chat_rooms").doc(array[i]).get();
       titles.add(chatRef.data()!['title'].toString());
     }
-    print("Group chat titles" + titles.toString());
+    print("Group chat titles$titles");
     return titles;
   }
 
@@ -249,10 +246,10 @@ class DBHelper {
       //groupInfo.assign(array[i], titles[i]);
       groupInfo[array[i]] = titles[i];
     }
-    print("arr" + array.toString());
-    print("titles" + titles.toString());
-    print("arr leng" + array.length.toString());
-    print("db group info" + groupInfo.toString());
+    print("arr$array");
+    print("titles$titles");
+    print("arr leng${array.length}");
+    print("db group info$groupInfo");
     return groupInfo;
   }
 
@@ -306,7 +303,7 @@ class DBHelper {
     String chatID = ids.join("_");
 
     //create the new chatroom in fireStore with the created chatID and title
-    print("chatroom id :" + chatID);
+    print("chatroom id :$chatID");
     await _db.collection("chat_rooms").doc(chatID).set({"title": title});
 
     // add the chatID to all users list of chatrooms they are in

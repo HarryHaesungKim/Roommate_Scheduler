@@ -1,15 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:roommates/User/user_model.dart';
 import 'package:roommates/themeData.dart';
 import 'package:roommates/settingsPage.dart';
 import 'package:get/get.dart';
 import 'Group/groupController.dart';
-import 'LoginPage.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _profilePage();
@@ -17,7 +15,7 @@ class ProfilePage extends StatefulWidget {
 
 //Edit profile page
 class _profilePage extends State<ProfilePage> {
-  bool _password = true;
+  final bool _password = true;
   final groupController _groupController = Get.put(groupController());
   //String isAdmin = "";
   final _uID = FirebaseAuth.instance.currentUser?.uid;
@@ -72,13 +70,13 @@ class _profilePage extends State<ProfilePage> {
                       title: const Text("Profile"),
                       actions: <Widget>[
                         Padding(
-                            padding: EdgeInsets.only(right: 20.0),
+                            padding: const EdgeInsets.only(right: 20.0),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => settingsProfile()),
+                                      builder: (context) => const settingsProfile()),
                                 );
                               },
                               child: const Icon(Icons.settings),

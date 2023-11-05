@@ -30,27 +30,27 @@ class GroupModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['parentMode'] = this.parentMode;
-    data['tasks'] = this.tasks;
-    data['users'] = this.users;
-    data['parentUsers'] = this.parentUsers;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['parentMode'] = parentMode;
+    data['tasks'] = tasks;
+    data['users'] = users;
+    data['parentUsers'] = parentUsers;
     return data;
   }
 
   static Future<String> groupGenerator() async {
-    final _db = Get.put(DBHelper());
+    final db = Get.put(DBHelper());
     // generates a random 5 digit number (groupID)
     String groupID = "";
-    var random = new Random();
+    var random = Random();
     for (var i = 0; i < 5; i++) {
       groupID = groupID + random.nextInt(9).toString();
     }
     //check if that groupID is already being used
 
     //if groupID already exists, generate a new one
-    if (await _db.groupIDExists(groupID)) {
+    if (await db.groupIDExists(groupID)) {
       groupID = await groupGenerator();
     }
 

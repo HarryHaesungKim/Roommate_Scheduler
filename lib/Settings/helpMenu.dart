@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 import '../themeData.dart';
 
@@ -44,8 +43,8 @@ class _HelpMenuPage extends State<HelpMenuPage> {
         title: const Text("Help"),
       ),
     body: ListView(
-      padding: EdgeInsets.all(20),
-      children: [
+      padding: const EdgeInsets.all(20),
+      children: const [
         Text("Welcome to the Help Menu! If you need assistance with our app, we're here to help! Below are some common topics to help you get started.",
           style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Colors.black),)
       ],

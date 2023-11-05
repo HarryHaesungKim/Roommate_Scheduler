@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +14,8 @@ import '../User/user_controller.dart';
 import '../theme.dart';
 
 class addTask extends StatefulWidget {
+  const addTask({super.key});
+
   @override
   _AddTaskPageState createState() => _AddTaskPageState();
 }
@@ -69,7 +70,7 @@ class _AddTaskPageState extends State<addTask> {
   ///
   void setGroupID() async {
     groupID = await _groupController.getGroupIDFromUser(uID!);
-    print("groupID in setgroupID" + groupID);
+    print("groupID in setgroupID$groupID");
   }
 
 
@@ -87,15 +88,15 @@ class _AddTaskPageState extends State<addTask> {
   Widget build(BuildContext context) {
     //Below shows the time like Sep 15, 2021
     //print(new DateFormat.yMMMd().format(new DateTime.now()));
-    print(" starttime " + _startTime!);
-    final now = new DateTime.now();
+    print(" starttime ${_startTime!}");
+    final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
 
     print(format.format(dt));
-    print("add Task date: " + DateFormat.yMd().format(_selectedDate));
-    print("List of assignees" + AssigneesList.toString());
-    print("user id " + uID.toString());
+    print("add Task date: ${DateFormat.yMd().format(_selectedDate)}");
+    print("List of assignees$AssigneesList");
+    print("user id $uID");
     return FutureBuilder(
         future: Future.wait([FutureAssigneeList,futureThemeBrightness,futureThemeColor,futureCurrGroup]),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -110,7 +111,7 @@ class _AddTaskPageState extends State<addTask> {
               backgroundColor: setAppBarColor(themeColor, themeBrightness),
               title: const Text("Add Task"),
             ),
-            backgroundColor: Color.fromARGB(255, 227, 227, 227),
+            backgroundColor: const Color.fromARGB(255, 227, 227, 227),
             body: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SingleChildScrollView(
@@ -147,7 +148,7 @@ class _AddTaskPageState extends State<addTask> {
                             title: "Start Time",
                             hint: _startTime,
                             widget: IconButton(
-                              icon: (Icon(
+                              icon: (const Icon(
                                 Icons.alarm,
                                 color: Colors.grey,
                               )),
@@ -158,7 +159,7 @@ class _AddTaskPageState extends State<addTask> {
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 12,
                         ),
                         Expanded(
@@ -166,7 +167,7 @@ class _AddTaskPageState extends State<addTask> {
                             title: "End Time",
                             hint: _endTime,
                             widget: IconButton(
-                              icon: (Icon(
+                              icon: (const Icon(
                                 Icons.alarm,
                                 color: Colors.grey,
                               )),
@@ -185,7 +186,7 @@ class _AddTaskPageState extends State<addTask> {
                         children: [
                           DropdownButton<String>(
                               //value: _selectedRemind.toString(),
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.keyboard_arrow_down,
                                 color: Colors.grey,
                               ),
@@ -205,7 +206,7 @@ class _AddTaskPageState extends State<addTask> {
                                   child: Text(value.toString()),
                                 );
                               }).toList()),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                         ],
                       ),
                     ),
@@ -218,7 +219,7 @@ class _AddTaskPageState extends State<addTask> {
                             child: DropdownButton<String>(
                                 dropdownColor: Colors.blueGrey,
                                 //value: _selectedRemind.toString(),
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.keyboard_arrow_down,
                                   color: Colors.grey,
                                 ),
@@ -239,23 +240,23 @@ class _AddTaskPageState extends State<addTask> {
                                     value: value,
                                     child: Text(
                                       value,
-                                      style: TextStyle(color: Colors.white),
+                                      style: const TextStyle(color: Colors.white),
                                     ),
                                   );
                                 }).toList()),
                           ),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                         ],
                       ),
                     ),
                     InputField(
                       title: "Assignees",
-                      hint: "$_selectedAssigness",
+                      hint: _selectedAssigness,
                       widget: Row(
                         children: [
                           DropdownButton<String>(
                               //value: _selectedRemind.toString(),
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.keyboard_arrow_down,
                                 color: Colors.grey,
                               ),
@@ -270,17 +271,17 @@ class _AddTaskPageState extends State<addTask> {
                               },
                               items: assigneeList.map<DropdownMenuItem<String>>(
                                   (String value) {
-                                print("assingees" + assigneeList.toString());
+                                print("assingees$assigneeList");
                                 return DropdownMenuItem<String>(
                                   value: value.toString(),
                                   child: Text(value.toString()),
                                 );
                               }).toList()),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 18.0,
                     ),
                     Row(
@@ -289,7 +290,6 @@ class _AddTaskPageState extends State<addTask> {
                       children: [
                         _colorChips(),
                         ElevatedButton(
-                          child: Text('Create Task'),
                           onPressed: () {
                             _validateInputs();
 
@@ -307,10 +307,11 @@ class _AddTaskPageState extends State<addTask> {
                             backgroundColor: MaterialStateProperty.all<Color>(
                                 setAppBarColor(themeColor, themeBrightness)!),
                           ),
+                          child: const Text('Create Task'),
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30.0,
                     ),
                   ],
@@ -365,7 +366,7 @@ class _AddTaskPageState extends State<addTask> {
         "Color",
         style: titleTextStle,
       ),
-      SizedBox(
+      const SizedBox(
         height: 8,
       ),
       Wrap(
@@ -388,7 +389,7 @@ class _AddTaskPageState extends State<addTask> {
                           ? pinkClr
                           : yellowClr,
                   child: index == _selectedColor
-                      ? Center(
+                      ? const Center(
                           child: Icon(
                             Icons.done,
                             color: Colors.white,
@@ -408,19 +409,19 @@ class _AddTaskPageState extends State<addTask> {
   double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 
   _getTimeFromUser({required bool isStartTime}) async {
-    var _pickedTime = await _showTimePicker();
-    print(_pickedTime.format(context));
-    String? _formatedTime = _pickedTime.format(context);
-    print(_formatedTime);
-    if (_pickedTime == null)
+    var pickedTime = await _showTimePicker();
+    print(pickedTime.format(context));
+    String? formatedTime = pickedTime.format(context);
+    print(formatedTime);
+    if (pickedTime == null) {
       print("time canceld");
-    else if (isStartTime)
+    } else if (isStartTime)
       setState(() {
-        _startTime = _formatedTime;
+        _startTime = formatedTime;
       });
     else if (!isStartTime) {
       setState(() {
-        _endTime = _formatedTime;
+        _endTime = formatedTime;
       });
       //_compareTime();
     }
@@ -437,15 +438,15 @@ class _AddTaskPageState extends State<addTask> {
   }
 
   _getDateFromUser() async {
-    final DateTime? _pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: _selectedDate,
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101));
-    if (_pickedDate != null) {
+    if (pickedDate != null) {
       setState(() {
-        _selectedDate = _pickedDate;
+        _selectedDate = pickedDate;
       });
     }
   }

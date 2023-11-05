@@ -2,15 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:roommates/LoginPage.dart';
 import 'package:roommates/sign.dart';
 import 'package:get/get.dart';
-import 'package:roommates/registrationPageCreatGroup.dart';
 //@dart = 2.9
-import 'Task/database_demo.dart';
 // import 'strings.dart'
 
-import 'package:firebase_analytics/firebase_analytics.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +26,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return  GetMaterialApp(
+    return  const GetMaterialApp(
       home : sign(),
     );
   }

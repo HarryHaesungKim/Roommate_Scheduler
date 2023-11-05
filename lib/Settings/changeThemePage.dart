@@ -96,19 +96,19 @@ class _changeTheme extends State<changeTheme> {
                     appBar: AppBar(
                       backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
                       leading: IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                       title: const Text("Change Theme"),
                     ),
                     body: Column(
                       children: [
-                        SizedBox(height: 20,),
+                        const SizedBox(height: 20,),
                         Row(
                           children:[
-                            SizedBox(width: 10,),
-                            Text('Theme Color', style: TextStyle(fontSize: 20),),
-                            SizedBox(width: 20,),
+                            const SizedBox(width: 10,),
+                            const Text('Theme Color', style: TextStyle(fontSize: 20),),
+                            const SizedBox(width: 20,),
                             DropdownMenu<ColorLabel>(
                               controller: colorController,
                               initialSelection: ColorLabel.blue,
@@ -122,12 +122,12 @@ class _changeTheme extends State<changeTheme> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20,),
+                        const SizedBox(height: 20,),
                         Row(
                           children:[
-                            SizedBox(width: 10,),
-                            Text('Theme Brightness', style: TextStyle(fontSize: 20),),
-                            SizedBox(width: 20,),
+                            const SizedBox(width: 10,),
+                            const Text('Theme Brightness', style: TextStyle(fontSize: 20),),
+                            const SizedBox(width: 20,),
                             DropdownMenu<String>(
                               controller: themeController,
                               initialSelection: "Light",
@@ -141,7 +141,7 @@ class _changeTheme extends State<changeTheme> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 50),
+                        const SizedBox(height: 50),
                         SizedBox(width: width*0.5,
                             child: ElevatedButton(
                               onPressed: (){

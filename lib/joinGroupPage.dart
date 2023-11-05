@@ -6,11 +6,9 @@ import 'Group/groupController.dart';
 import 'Group/groupModel.dart';
 
 
-/**
- * This class holds the widget that allows users to join or create a group.
- */
+/// This class holds the widget that allows users to join or create a group.
 class joinGroupPage extends StatefulWidget {
-  joinGroupPage({Key? key}) : super(key: key);
+  const joinGroupPage({Key? key}) : super(key: key);
 
   @override
   State<joinGroupPage> createState() => _joinGroupPage();
@@ -52,7 +50,7 @@ class _joinGroupPage extends State<joinGroupPage> {
       }
     // group exists add user to this group
     _groupController.addUserToGroup(groupID, uID);
-    MaterialPageRoute(builder: ((context) => mainPage()));
+    MaterialPageRoute(builder: ((context) => const mainPage()));
   }
 
   createGroup(GroupModel group) async {
@@ -79,7 +77,7 @@ class _joinGroupPage extends State<joinGroupPage> {
               ),
 
               // Join group code textbox
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               // Group
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -108,7 +106,7 @@ class _joinGroupPage extends State<joinGroupPage> {
               ),
 
               // Join Group button
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               SizedBox(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
@@ -129,7 +127,7 @@ class _joinGroupPage extends State<joinGroupPage> {
                         await joinGroup(_groupIDController.text.trim(), _uID!);
                       }
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => mainPage()));
+                        MaterialPageRoute(builder: (context) => const mainPage()));
                   },
                   child: const Text(
                     'Join group',
@@ -145,8 +143,8 @@ class _joinGroupPage extends State<joinGroupPage> {
               ),
 
               // Create group button
-              SizedBox(height: 25),
-              Container(
+              const SizedBox(height: 25),
+              SizedBox(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
                 height: 40.0,
@@ -172,7 +170,7 @@ class _joinGroupPage extends State<joinGroupPage> {
 
                     // TODO: Database implementation
                     // Need to connect to database. Link code to a new group and tasks that belong to that group (empty).
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => mainPage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const mainPage()));
                   },
                   child: const Text(
                     'Create group',

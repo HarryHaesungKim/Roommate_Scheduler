@@ -10,9 +10,10 @@ import 'package:roommates/profilePage.dart';
 import 'package:roommates/themeData.dart';
 import 'User/user_controller.dart';
 import 'calendarPage/calendarPage.dart';
-import 'strings.dart';
 
 class mainPage extends StatefulWidget {
+  const mainPage({super.key});
+
   @override
   _mainPageState createState() => _mainPageState();
 
@@ -26,11 +27,11 @@ class _mainPageState extends State<mainPage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final screens = [
-    homePage(),
-    calendarPage(),
-    CostSplitView(),
-    NotificationView(),
-    ProfilePage(),
+    const homePage(),
+    const calendarPage(),
+    const CostSplitView(),
+    const NotificationView(),
+    const ProfilePage(),
   ];
 
   @override
@@ -122,8 +123,8 @@ class _mainPageState extends State<mainPage> {
                   gap: 3,
                   activeColor: setBackGroundBarColor( UserData['themeBrightness']),
                   iconSize: 25,
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                  duration: Duration(milliseconds: 400),
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                  duration: const Duration(milliseconds: 400),
                   tabBackgroundColor: deep(UserData['themeColor'],  UserData['themeBrightness']),
                   color: setBackGroundBarColor( UserData['themeBrightness']),
                   tabs: const [

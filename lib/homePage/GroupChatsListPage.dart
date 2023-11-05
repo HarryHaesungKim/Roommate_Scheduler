@@ -9,7 +9,7 @@ import '../Task/database_demo.dart';
 import '../User/user_controller.dart';
 
 class GroupChatsListPage extends StatefulWidget {
-  GroupChatsListPage({Key? key}) : super(key: key);
+  const GroupChatsListPage({Key? key}) : super(key: key);
 
   @override
   State<GroupChatsListPage> createState() => _messagingPage();
@@ -120,11 +120,11 @@ class _messagingPage extends State<GroupChatsListPage> {
     super.initState();
     String? uID = FirebaseAuth.instance.currentUser?.uid;
     futureThemeBrightness = userCon.getUserThemeBrightness(uID!);
-    futureThemeColor = userCon.getUserThemeColor(uID!);
-    FutureGroupchatTitles = _chatRoomController.getGroupChatTitles(uID!);
+    futureThemeColor = userCon.getUserThemeColor(uID);
+    FutureGroupchatTitles = _chatRoomController.getGroupChatTitles(uID);
 
-    futurePeopleInGroup =  _groupController.getUsersInGroup(uID!);
-    futurePeopleinGroupIDs =  _groupController.getUserIDsInGroup(uID!);
+    futurePeopleInGroup =  _groupController.getUsersInGroup(uID);
+    futurePeopleinGroupIDs =  _groupController.getUserIDsInGroup(uID);
     futureGroupInfo = _chatRoomController.getGroupInfo(uID);
     //groupInfoInv = groupInfo.map((k,v) => MapEntry(v, k));
   }
@@ -308,11 +308,11 @@ class _messagingPage extends State<GroupChatsListPage> {
                         String title = groupchatTitles[index];
                         String? chatID = groupInfoInv[title];
                         String? uID = FirebaseAuth.instance.currentUser?.uid;
-                        print("title: " + title);
-                        print("groupInfo" + groupInfo.toString());
-                        print("groupInfoInv" + groupInfoInv.toString());
-                        print("uID : " + uID.toString());
-                        print("chatID" + chatID.toString());
+                        print("title: $title");
+                        print("groupInfo$groupInfo");
+                        print("groupInfoInv$groupInfoInv");
+                        print("uID : $uID");
+                        print("chatID$chatID");
                         List<String> receiverids = _chatRoomController.getUserInChatID(uID!, chatID!);
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) =>

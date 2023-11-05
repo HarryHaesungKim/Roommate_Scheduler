@@ -47,19 +47,19 @@ class UserData {
    );
 
    Map<String, dynamic> toJson() {
-     final Map<String, dynamic> data = new Map<String, dynamic>();
-     data['Email'] = this.email;
-     data['Password'] = this.password;
-     data['UserName'] = this.username;
-     data['Balance'] = this.balance;
-     data['Income'] = this.income;
-     data['Expense'] = this.expense;
-     data['groupID'] = this.groupID;
-     data['chatRooms'] = this.chatRooms;
-     data['imageURL'] = this.imageURL;
-     data['location'] = this.location;
-     data['themeBrightness'] = this.themeBrightness;
-     data['themeColor'] = this.themeColor;
+     final Map<String, dynamic> data = <String, dynamic>{};
+     data['Email'] = email;
+     data['Password'] = password;
+     data['UserName'] = username;
+     data['Balance'] = balance;
+     data['Income'] = income;
+     data['Expense'] = expense;
+     data['groupID'] = groupID;
+     data['chatRooms'] = chatRooms;
+     data['imageURL'] = imageURL;
+     data['location'] = location;
+     data['themeBrightness'] = themeBrightness;
+     data['themeColor'] = themeColor;
      return data;
    }
 

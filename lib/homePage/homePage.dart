@@ -19,7 +19,7 @@ import '../Task/TaskObject.dart';
 import '../Task/taskView.dart';
 
 class homePage extends StatefulWidget {
-  homePage({Key? key}) : super(key: key);
+  const homePage({Key? key}) : super(key: key);
 
   @override
   State<homePage> createState() => _homePage();
@@ -118,13 +118,13 @@ class _homePage extends State<homePage> {
                       title: const Text("Home"),
                       actions: <Widget>[
                         Padding(
-                            padding: EdgeInsets.only(right: 20.0),
+                            padding: const EdgeInsets.only(right: 20.0),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => GroupChatsListPage()),
+                                      builder: (context) => const GroupChatsListPage()),
                                 );
                               },
                               child: const Icon(Icons.send),
@@ -135,7 +135,7 @@ class _homePage extends State<homePage> {
                         backgroundColor: setAppBarColor(themeColor, themeBrightness),
                         onPressed: () async {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => addTask()),
+                            MaterialPageRoute(builder: (context) => const addTask()),
                           );
                           Get.lazyPut(() => taskController());
 
@@ -228,8 +228,8 @@ class _homePage extends State<homePage> {
 
   addTaskBar() {
     return Container(
-      margin: EdgeInsets.only(bottom: 12, top: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(bottom: 12, top: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -324,7 +324,7 @@ class _homePage extends State<homePage> {
   showBottomSheet(BuildContext context, TaskObject task) {
     Get.bottomSheet(
       Container(
-        padding: EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.only(top: 4),
         height: task.isCompleted == 1
             ? _mediaQueryData.size.height * 0.32
             : _mediaQueryData.size.height * 0.32,
@@ -338,7 +338,7 @@ class _homePage extends State<homePage> {
                 borderRadius: BorderRadius.circular(10),
                 color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
           ),
-          Spacer(),
+          const Spacer(),
           //if you are an admin user, you can vote other's task. others can't vote.
           //if you are not admin user, everyone can vote other's task.
           task.isCompleted == 1
@@ -399,7 +399,7 @@ class _homePage extends State<homePage> {
                 }
               },
               clr: Colors.red[300]),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           _buildBottomSheetButton(
@@ -408,7 +408,7 @@ class _homePage extends State<homePage> {
                 Get.back();
               },
               isClose: true),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
         ]),
@@ -424,9 +424,9 @@ class _homePage extends State<homePage> {
     return GestureDetector(
       onTap: onTap as void Function()?,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 4),
+        margin: const EdgeInsets.symmetric(vertical: 4),
         height: 55,
-        width: _mediaQueryData.size.width! * 0.9,
+        width: _mediaQueryData.size.width* 0.9,
         decoration: BoxDecoration(
           border: Border.all(
             width: 2,
@@ -462,8 +462,8 @@ class _homePage extends State<homePage> {
             borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
           backgroundColor:_getBGClr(task.color),
-          title: Text("Task Title:" + task.title!,style:
-          TextStyle(
+          title: Text("Task Title:${task.title!}",style:
+          const TextStyle(
             //fontWeight: FontWeight.bold,
               fontSize: 16,
               color: Colors.white
@@ -476,7 +476,7 @@ class _homePage extends State<homePage> {
                       child: Text(
                           textAlign: TextAlign.left,
                           //notificationTitles[index],
-                          task.startTime! + "-   " + task.endTime!,
+                          "${task.startTime!}-   ${task.endTime!}",
                           style: GoogleFonts.lato(
                             textStyle: const TextStyle(
                               //fontWeight: FontWeight.bold,
@@ -486,13 +486,13 @@ class _homePage extends State<homePage> {
                           )
                       ),
                     ),
-                    SizedBox(height: 25,),
+                    const SizedBox(height: 25,),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                           textAlign: TextAlign.left,
                           //notificationTitles[index],
-                          "Due date: "+ task.date!,
+                          "Due date: ${task.date!}",
                           style: GoogleFonts.lato(
                             textStyle: const TextStyle(
                               //fontWeight: FontWeight.bold,
@@ -502,13 +502,13 @@ class _homePage extends State<homePage> {
                           )
                       ),
                     ),
-                    SizedBox(height: 25,),
+                    const SizedBox(height: 25,),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                           textAlign: TextAlign.left,
                           //notificationTitles[index],
-                          "Description: " + task.note!,
+                          "Description: ${task.note!}",
                           style: GoogleFonts.lato(
                             textStyle: const TextStyle(
                               //fontWeight: FontWeight.bold,
@@ -518,13 +518,13 @@ class _homePage extends State<homePage> {
                           )
                       ),
                     ),
-                    SizedBox(height: 25,),
+                    const SizedBox(height: 25,),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                           textAlign: TextAlign.left,
                           //notificationTitles[index],
-                          "Task Assign: "+ task.assignedUserName!,
+                          "Task Assign: ${task.assignedUserName!}",
                           style: GoogleFonts.lato(
                             textStyle: const TextStyle(
                               //fontWeight: FontWeight.bold,
@@ -534,15 +534,15 @@ class _homePage extends State<homePage> {
                           )
                       ),
                     ),
-                    SizedBox(height: 25,),
+                    const SizedBox(height: 25,),
                     RatingBar.builder(
                       initialRating: 1,
                       minRating: 0,
                       direction: Axis.horizontal,
                       allowHalfRating: true,
                       itemCount: 5,
-                      itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                      itemBuilder: (context, _) => Icon(
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
                       ),

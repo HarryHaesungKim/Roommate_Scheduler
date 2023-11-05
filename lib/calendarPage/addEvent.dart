@@ -14,6 +14,8 @@ import '../Task/input_field.dart';
 import '../themeData.dart';
 
 class addEvent extends StatefulWidget {
+  const addEvent({super.key});
+
   @override
   _AddEventState createState() => _AddEventState();
 }
@@ -49,7 +51,7 @@ class _AddEventState extends State<addEvent> {
   Widget build(BuildContext context) {
     //Below shows the time like Sep 15, 2021
     //print(new DateFormat.yMMMd().format(new DateTime.now()));
-    final now = new DateTime.now();
+    final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, now.minute, now.second);
     final format = DateFormat.jm();
     return StreamBuilder(
@@ -67,9 +69,9 @@ class _AddEventState extends State<addEvent> {
                 backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
                 title: const Text("Add Event"),
               ),
-              backgroundColor: Color.fromARGB(255, 227, 227, 227),
+              backgroundColor: const Color.fromARGB(255, 227, 227, 227),
               body: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +89,7 @@ class _AddEventState extends State<addEvent> {
                         title: "Date",
                         hint: DateFormat.yMd().format(_selectedDate),
                         widget: IconButton(
-                          icon: (Icon(
+                          icon: (const Icon(
                             Icons.calendar_month_sharp,
                             color: Colors.grey,
                           )),
@@ -97,7 +99,7 @@ class _AddEventState extends State<addEvent> {
                           },
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 18.0,
                       ),
                       Row(
@@ -105,7 +107,6 @@ class _AddEventState extends State<addEvent> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ElevatedButton(
-                            child: Text('Create Event'),
                             onPressed: () {
                               _validateInputs();
 
@@ -123,10 +124,11 @@ class _AddEventState extends State<addEvent> {
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   setAppBarColor(UserData['themeColor'], UserData['themeBrightness'])!),
                             ),
+                            child: const Text('Create Event'),
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30.0,
                       ),
                     ],
@@ -172,19 +174,19 @@ class _AddEventState extends State<addEvent> {
   double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 
   _getTimeFromUser({required bool isStartTime}) async {
-    var _pickedTime = await _showTimePicker();
-    print(_pickedTime.format(context));
-    String? _formatedTime = _pickedTime.format(context);
-    print(_formatedTime);
-    if (_pickedTime == null)
+    var pickedTime = await _showTimePicker();
+    print(pickedTime.format(context));
+    String? formatedTime = pickedTime.format(context);
+    print(formatedTime);
+    if (pickedTime == null) {
       print("time canceld");
-    else if (isStartTime)
+    } else if (isStartTime)
       setState(() {
-        _startTime = _formatedTime;
+        _startTime = formatedTime;
       });
     else if (!isStartTime) {
       setState(() {
-        _endTime = _formatedTime;
+        _endTime = formatedTime;
       });
       //_compareTime();
     }
@@ -201,15 +203,15 @@ class _AddEventState extends State<addEvent> {
   }
 
   _getDateFromUser() async {
-    final DateTime? _pickedDate = await showDatePicker(
+    final DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: _selectedDate,
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101));
-    if (_pickedDate != null) {
+    if (pickedDate != null) {
       setState(() {
-        _selectedDate = _pickedDate;
+        _selectedDate = pickedDate;
       });
     }
   }

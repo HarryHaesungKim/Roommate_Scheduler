@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:roommates/Task/database_demo.dart';
 import 'package:roommates/Task/TaskObject.dart';
-import 'package:roommates/Task/database_demo.dart';
 
 class taskController extends GetxController {
   //this will hold the data and update the ui
