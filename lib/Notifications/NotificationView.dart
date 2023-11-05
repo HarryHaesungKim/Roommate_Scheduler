@@ -310,8 +310,6 @@ class _NotificationPage extends State<NotificationView> {
                 // deletes a notification, it deletes it from firebase and
                 // no one can see it.
 
-                // TODO: Make deleting notifications unique to all users.
-
                 final docUser = FirebaseFirestore.instance
                     .collection('Users')
                     .doc(currUser)
@@ -385,7 +383,62 @@ class _NotificationPage extends State<NotificationView> {
                           home: Scaffold(
                             appBar: AppBar(
                               backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                              title: const Text("Notifications"),
+                              title: const Text("Notifications Log"),
+                              actions: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+
+                                    // Pulls up an alert dialogue that asks if you want to clear all notifications.
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+
+                                        // set up the buttons
+                                        Widget cancelButton = TextButton(
+                                          child: const Text("Cancel"),
+                                          onPressed:  () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        );
+                                        Widget deleteAllButton = TextButton(
+                                          child: const Text("Delete All"),
+                                          onPressed:  () async {
+
+                                            // Exit the alert dialog.
+                                            Navigator.pop(context);
+
+                                            // delete the entire collection.
+                                            final instance = FirebaseFirestore.instance;
+                                            final batch = instance.batch();
+                                            var collection = instance.collection('Users').doc(currUser).collection('Notifications');
+                                            var snapshots = await collection.get();
+                                            for (var doc in snapshots.docs) {
+                                              batch.delete(doc.reference);
+                                            }
+                                            await batch.commit();
+
+                                          },
+                                        );
+
+                                        return AlertDialog(
+                                          scrollable: true,
+                                          title: const Text("Delete all notifications?"),
+                                          actionsAlignment: MainAxisAlignment.spaceEvenly,
+                                          actions: [
+                                            deleteAllButton,
+                                            cancelButton,
+                                          ],
+                                        );
+                                      },
+                                    );
+
+                                  },
+                                )
+                              ],
                             ),
                             floatingActionButton: FloatingActionButton(
                                 backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
@@ -473,7 +526,7 @@ class _NotificationPage extends State<NotificationView> {
                                   );
                                 })
                             ),
-                          )
+                          ),
                       );
                     }
                     else{

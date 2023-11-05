@@ -177,31 +177,35 @@ class _CostSplitViewPage extends State<CostSplitView> {
                                           //   child:
                                           // ),
                                           Container(
-                                            color: Colors.white,
+                                            color: Colors.transparent,
                                             child: Padding(
                                               padding:
-                                              const EdgeInsets.fromLTRB(25, 15, 25, 15),
+                                              const EdgeInsets.fromLTRB(35, 10, 25, 5),
                                               child: Row(
                                                 mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
                                                 children: [
-                                                  Align(
-                                                    alignment: Alignment.centerLeft,
-                                                    child: Text(
-                                                        overflow: TextOverflow.ellipsis,
-                                                        textAlign: TextAlign.left,
-                                                        "${iDNameMap[uID]!},",
-                                                        style: GoogleFonts.lato(
-                                                            textStyle: const TextStyle(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 30,
-                                                                color: Colors.black))),
-                                                  ),
 
-                                                  const SizedBox(
-                                                    width: 10,
-                                                  ),
-                                                  // Text for the title.
+                                                  // // The username.
+                                                  // Align(
+                                                  //   alignment: Alignment.centerLeft,
+                                                  //   child: Text(
+                                                  //       overflow: TextOverflow.ellipsis,
+                                                  //       textAlign: TextAlign.left,
+                                                  //       "${iDNameMap[uID]!},",
+                                                  //       style: GoogleFonts.lato(
+                                                  //           textStyle: const TextStyle(
+                                                  //               fontWeight: FontWeight.bold,
+                                                  //               fontSize: 30,
+                                                  //               color: Colors.black))),
+                                                  // ),
+                                                  //
+                                                  // // Spacing.
+                                                  // const SizedBox(
+                                                  //   width: 10,
+                                                  // ),
+
+                                                  // Text for you owe.
                                                   Align(
                                                     alignment: Alignment.center,
                                                     child: Text(
@@ -213,16 +217,17 @@ class _CostSplitViewPage extends State<CostSplitView> {
                                                         style: GoogleFonts.lato(
                                                           textStyle: const TextStyle(
                                                               fontWeight: FontWeight.bold,
-                                                              fontSize: 20,
+                                                              fontSize: 30,
                                                               color: Colors.red),
                                                         )),
                                                   ),
 
+                                                  // Spacing.
                                                   const SizedBox(
-                                                    width: 10,
+                                                    width: 15,
                                                   ),
 
-                                                  // Text for the title.
+                                                  // Text for you are owed.
                                                   Align(
                                                     alignment: Alignment.center,
                                                     child: Text(
@@ -234,10 +239,11 @@ class _CostSplitViewPage extends State<CostSplitView> {
                                                         style: GoogleFonts.lato(
                                                           textStyle: const TextStyle(
                                                               fontWeight: FontWeight.bold,
-                                                              fontSize: 20,
+                                                              fontSize: 30,
                                                               color: Colors.green),
                                                         )),
                                                   ),
+
                                                 ],
                                               ),
                                             ),
@@ -245,7 +251,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
 
                                           SizedBox(
                                             width: constraints.maxWidth,
-                                            height: constraints.maxHeight - 26 - 26 - 26,
+                                            height: constraints.maxHeight - 26 - 26 - 26 - 9,
                                             child: ListView.separated(
                                               padding:
                                               const EdgeInsets.fromLTRB(20, 10, 20, 20),
