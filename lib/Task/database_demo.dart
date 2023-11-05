@@ -293,8 +293,7 @@ class DBHelper {
   ///
   /// This method creates a chat_room with the sender, as well as list of receivers, and title
   ///
-  createChatRoom(
-      String senderID, List<String> receiverIDs, String title) async {
+  createChatRoom(String senderID, List<String> receiverIDs, String title) async {
     //create a list of ids and sort to get them in a deterministic order
     List<String> ids = List.from(receiverIDs);
     ids.add(senderID);

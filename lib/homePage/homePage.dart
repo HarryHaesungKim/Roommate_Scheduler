@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:roommates/Group/groupController.dart';
+import 'package:roommates/Messaging/GroupChatsListPageUpdated.dart';
 import 'package:roommates/Task/taskController.dart';
 import 'package:roommates/User/user_controller.dart';
 import 'package:roommates/homePage/addTask.dart';
-import 'package:roommates/homePage/GroupChatsListPage.dart';
 import 'package:roommates/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -124,7 +124,7 @@ class _homePage extends State<homePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const GroupChatsListPage()),
+                                      builder: (context) => const GroupChatsListPageUpdated()),
                                 );
                               },
                               child: const Icon(Icons.send),
