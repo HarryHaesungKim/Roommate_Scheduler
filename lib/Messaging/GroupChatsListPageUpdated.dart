@@ -45,7 +45,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
   late List<String> peopleInGroupIDs;
 
   // names of people in group
-  late List<bool> addPeopleYesOrNo = List.filled(iDNameMap.length, false);
+  late List<bool> addPeopleYesOrNo = [];
 
   // Text controller for adding new chat pop-up.
   final TextEditingController _newChatNameController = TextEditingController();
@@ -64,7 +64,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
 
     // Get list of group chats that the current user is apart of.
     return FirebaseFirestore.instance
-        .collection('chat_rooms').where('groupChatMembers', arrayContains: uID)
+        .collection('Chats').where('groupChatMembers', arrayContains: uID)
         .snapshots()
         .map((snapshot) => snapshot.docs
         .map((doc) => GroupChatObject.fromJson(doc.data()))
@@ -100,8 +100,11 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
             }
 
             // Deleting the current user from the group
-            peopleInGroup.remove(iDNameMap[uID]);
-            peopleInGroupIDs.remove(uID);
+            peopleInGroup.remove(iDNameMap[uID!]);
+            peopleInGroupIDs.remove(uID!);
+
+            // Creating a bool checklist for adding people.
+            addPeopleYesOrNo = List.filled(peopleInGroupIDs.length, false);
 
             // For testing
             // print("groupInfo : $groupInfo");
@@ -338,9 +341,11 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                   for (int i = 0; i < addPeopleYesOrNo.length; i++) {
                     if (addPeopleYesOrNo[i]) {
                       receiverids.add(peopleInGroupIDs[i]);
-                      receiverids.add(uID!);
                     }
                   }
+
+                  // Adding in the current user.
+                  receiverids.add(uID!);
 
                   // Creating a new group chat and getting it's ID.
                   String chatID = await messagingCon.createChatRoom(receiverids, _newChatNameController.text);

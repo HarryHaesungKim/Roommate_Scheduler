@@ -223,7 +223,7 @@ class DBHelper {
     print("Groupchat ids$array");
     List<String> titles = [];
     for (int i = 0; i < array.length; i++) {
-      final chatRef = await _db.collection("chat_rooms").doc(array[i]).get();
+      final chatRef = await _db.collection("Chats").doc(array[i]).get();
       titles.add(chatRef.data()!['title'].toString());
     }
     print("Group chat titles$titles");
@@ -238,7 +238,7 @@ class DBHelper {
     var array = userRef.data()?['chatRooms'];
     List<String> titles = [];
     for (int i = 0; i < array.length; i++) {
-      final chatRef = await _db.collection("chat_rooms").doc(array[i]).get();
+      final chatRef = await _db.collection("Chats").doc(array[i]).get();
       titles.add(chatRef.data()!['title'].toString());
     }
     Map<String, String> groupInfo = {};
@@ -303,7 +303,7 @@ class DBHelper {
 
     //create the new chatroom in fireStore with the created chatID and title
     print("chatroom id :$chatID");
-    await _db.collection("chat_rooms").doc(chatID).set({"title": title});
+    await _db.collection("Chats").doc(chatID).set({"title": title});
 
     // add the chatID to all users list of chatrooms they are in
     final userRef = _db.collection("Users").doc(senderID);
@@ -313,8 +313,8 @@ class DBHelper {
       final user = _db.collection('Users').doc(receiverIDs[i]);
       user.update({'chatRooms': FieldValue.arrayUnion(chatid)});
     }
-    //await _fireStore.collection('chat_rooms').doc(chatRoomId).collection('messages').add(newMessage.toMap());
-    //final chatRef = _db.collection('chat_rooms').doc(chatID);
+    //await _fireStore.collection('Chats').doc(chatRoomId).collection('messages').add(newMessage.toMap());
+    //final chatRef = _db.collection('Chats').doc(chatID);
     //chatRef.update({'Title' : title});
 
     //add empty collection of messages in the chatRoom

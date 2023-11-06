@@ -9,7 +9,7 @@ class MessagingController {
   Future<String> createChatRoom(List<String> members, String title) async {
 
     // Reference to Document.
-    final groupChat = FirebaseFirestore.instance.collection('chat_rooms').doc();
+    final groupChat = FirebaseFirestore.instance.collection('Chats').doc();
 
     // Create the notification object.
     final announcement = GroupChatObject(
@@ -25,6 +25,6 @@ class MessagingController {
 
   /// This method deletes a chat from Firebase.
   void deleteChat(String chatID){
-    FirebaseFirestore.instance.collection('chat_rooms').doc(chatID).delete();
+    FirebaseFirestore.instance.collection('Chats').doc(chatID).delete();
   }
 }

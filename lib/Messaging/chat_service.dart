@@ -42,7 +42,7 @@ class ChatService extends ChangeNotifier {
     // Get the chat ID.
 
     // add new message to database
-    await _fireStore.collection('chat_rooms').doc(chatID).collection('messages').add(newMessage.toMap());
+    await _fireStore.collection('Chats').doc(chatID).collection('messages').add(newMessage.toMap());
 
   }
 
@@ -50,6 +50,6 @@ class ChatService extends ChangeNotifier {
   Stream<QuerySnapshot> getMessages(String chatID) {
     // construct chat room id from user ids (sorted to ensure it matches the id used when sending messages).
 
-    return _fireStore.collection("chat_rooms").doc(chatID).collection('messages').orderBy('timestamp', descending: false).snapshots();
+    return _fireStore.collection("Chats").doc(chatID).collection('messages').orderBy('timestamp', descending: false).snapshots();
   }
 }
