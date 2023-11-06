@@ -51,7 +51,7 @@ class _RegPageState extends State<registrationPage> {
             password: _passwordController.text.trim(),
             username: _userName.text.trim(),
             groupID: "",
-            chatRooms: [],
+            //chatRooms: [],
             balance:_balance,
             income: _income,
             expense:  _expense,

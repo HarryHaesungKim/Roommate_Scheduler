@@ -57,7 +57,7 @@ class _CurrentLocationState extends State<CurrentLocation> {
       themeBrightness: themeBrightness,
       themeColor: themeColor,
       groupID: groupID,
-      chatRooms: chatRooms,
+      // chatRooms: chatRooms,
       location: location,
     );
     await FirebaseFirestore.instance.collection("Users").doc(uID).update(

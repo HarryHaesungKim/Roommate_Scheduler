@@ -9,7 +9,7 @@ class UserData {
   String? expense;
   String? groupID;
   String? imageURL;
-  List<String>? chatRooms;
+  // List<String>? chatRooms;
   GeoPoint? location;
   String? themeBrightness; //light or dark
   String? themeColor; // colors
@@ -24,7 +24,7 @@ class UserData {
     this.income,
     this.expense,
     this.groupID,
-    this.chatRooms,
+    // this.chatRooms,
     this.imageURL,
     this.location,
     this.themeBrightness,
@@ -39,7 +39,7 @@ class UserData {
      income :json['Income'].toString(),
      expense : json['Expense'].toString(),
      groupID : json['groupID'].toString(),
-     chatRooms : json['chatRooms'],
+     // chatRooms : json['chatRooms'],
      imageURL :json['imageURL'].toString(),
      location : json['location'],
      themeBrightness : json['themeBrightness'].toString(),
@@ -55,7 +55,7 @@ class UserData {
      data['Income'] = income;
      data['Expense'] = expense;
      data['groupID'] = groupID;
-     data['chatRooms'] = chatRooms;
+     // data['chatRooms'] = chatRooms;
      data['imageURL'] = imageURL;
      data['location'] = location;
      data['themeBrightness'] = themeBrightness;

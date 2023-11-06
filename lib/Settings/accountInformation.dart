@@ -110,7 +110,7 @@ class _EditProfilePage extends State<EditProfile> {
       themeBrightness: themeBrightness,
       themeColor: themeColor,
       groupID: groupID,
-      chatRooms: chatRooms,
+      //chatRooms: chatRooms,
       location: location,
     );
     await FirebaseFirestore.instance.collection("Users").doc(_uID).update(

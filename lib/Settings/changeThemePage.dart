@@ -30,7 +30,7 @@ class _changeTheme extends State<changeTheme> {
   final TextEditingController colorController = TextEditingController();
   final TextEditingController themeController = TextEditingController();
 
-  Future updateUserData(String email, String password, String userName,String balance, String income, String expense, String imageURL, String themeBrightness, String themeColor, List<String> chatRooms, GeoPoint? location, String groupID, ) async {
+  Future updateUserData(String email, String password, String userName,String balance, String income, String expense, String imageURL, String themeBrightness, String themeColor, GeoPoint? location, String groupID, ) async {
     final user = UserData(
       email: email,
       password: password,
@@ -42,7 +42,7 @@ class _changeTheme extends State<changeTheme> {
       themeBrightness: themeBrightness,
       themeColor: themeColor,
       groupID: groupID,
-      chatRooms: chatRooms,
+      // chatRooms: chatRooms,
       location: location,
     );
     await FirebaseFirestore.instance.collection("Users").doc(userID).update(
@@ -146,7 +146,19 @@ class _changeTheme extends State<changeTheme> {
                             child: ElevatedButton(
                               onPressed: (){
 
-                              updateUserData(UserData["Email"].toString(),UserData["Password"].toString(),UserData["UserName"].toString(),UserData["Balance"].toString(),UserData["Income"].toString(),UserData["Expense"].toString(),UserData["imageURL"],themeController.text.trim().toString(),colorController.text.trim().toString(),UserData["chatRooms"].cast<String>(),UserData["location"] ,UserData['groupID'].toString());
+                              updateUserData(
+                                  UserData["Email"].toString(),
+                                  UserData["Password"].toString(),
+                                  UserData["UserName"].toString(),
+                                  UserData["Balance"].toString(),
+                                  UserData["Income"].toString(),
+                                  UserData["Expense"].toString(),
+                                  UserData["imageURL"],
+                                  themeController.text.trim().toString(),
+                                  colorController.text.trim().toString(),
+                                  //UserData["chatRooms"].cast<String>(),
+                                  UserData["location"],
+                                  UserData['groupID'].toString());
 
                               },
                               style:ElevatedButton.styleFrom(
