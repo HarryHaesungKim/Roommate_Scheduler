@@ -348,7 +348,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                   receiverids.add(uID!);
 
                   // Creating a new group chat and getting it's ID.
-                  String chatID = await messagingCon.createChatRoom(receiverids, _newChatNameController.text);
+                  String chatID = await messagingCon.createChatRoom(uID!, receiverids, _newChatNameController.text);
 
                   // Avoids annoying "Do not use BuildContexts across async gaps" warning.
                   if (context.mounted){

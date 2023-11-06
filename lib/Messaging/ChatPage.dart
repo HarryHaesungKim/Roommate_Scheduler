@@ -1,12 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:roommates/Messaging/EditGroupChatView.dart';
 import 'package:roommates/Messaging/chat_bubble.dart';
 import 'package:roommates/Messaging/chat_service.dart';
 import 'package:roommates/themeData.dart';
 
+import '../Group/groupController.dart';
 import '../User/user_controller.dart';
 import '../homePage/my_text_field.dart';
+import 'GroupChatObject.dart';
+import 'MessagingController.dart';
 
 //https://stackoverflow.com/questions/50702749/flutter-i-want-to-pass-variable-from-one-class-to-another
 
@@ -41,11 +45,15 @@ class _ChatPage extends State<ChatPage> {
   late String themeColor;
   late String themeBrightness;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
 
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  late String groupChatTitle;
+
+  final MessagingController messagingCon = MessagingController();
 
   void sendMessage() async {
     // only send message if there is something to send.
@@ -65,45 +73,124 @@ class _ChatPage extends State<ChatPage> {
     futureThemeColor = userCon.getUserThemeColor(uID!);
   }
 
+  // Getting the group chats from firebase.
+  Stream<List<GroupChatObject>> readGroupChats() {
+    // Get list of group chats that the current user is apart of.
+    return FirebaseFirestore.instance
+        .collection('Chats')
+        .where('id', isEqualTo: widget.chatID)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => GroupChatObject.fromJson(doc.data()))
+            .toList());
+  }
+
   @override
   Widget build(BuildContext context) {
+    // groupChatTitle = widget.chatTitle;
+
     return FutureBuilder(
-        future: Future.wait([futureThemeBrightness, futureThemeColor]),
+        future: Future.wait(
+            [futureThemeBrightness, futureThemeColor]),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          // If the snapshot has an error.
+          if (snapshot.hasError) {
+            return Text('Something went wrong! ${snapshot.error}');
+          }
+
+          // If the snapshot has meaningful data.
           if (snapshot.hasData) {
             themeBrightness = snapshot.data[0];
             themeColor = snapshot.data[1];
+            // groupChatTitle = snapshot.data[2];
+
+            return StreamBuilder(
+                stream: readGroupChats(),
+                builder: (context, snapshot) {
+
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong! ${snapshot.error}');
+                  }
+
+                  if (snapshot.hasData) {
+
+                    groupChatTitle = snapshot.data![0].title;
+
+                    return MaterialApp(
+                      theme: showOption(themeBrightness),
+                      home: Scaffold(
+                        appBar: AppBar(
+                          leading: IconButton(
+                            icon: Icon(Icons.arrow_back,
+                                color: setBackGroundBarColor(themeBrightness)),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          backgroundColor:
+                          setAppBarColor(themeColor, themeBrightness),
+
+                          // Needs to be title of the group chat!
+                          title: Text(groupChatTitle),
+                          actions: [
+                            IconButton(
+                                icon: const Icon(
+                                  Icons.more_vert,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () async {
+                                  // Bring up a new page to change the name, add more users, or delete the chat.
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditGroupChatView(
+                                                groupMembers: widget
+                                                    .groupMembers,
+                                                chatID: widget.chatID,
+                                                chatTitle: groupChatTitle,
+                                              )));
+                                  // if (context.mounted) {
+                                  //   build(context);
+                                  // }
+                                  setState(() {});
+                                }),
+                          ],
+                        ),
+                        backgroundColor: const Color.fromARGB(
+                            255, 227, 227, 227),
+                        body: Column(children: [
+                          //const SizedBox(height: 10,),
+
+                          // messages
+                          // REMOVE COMMENTS 81 - 83
+                          Expanded(child: _buildMessageList()),
+
+                          // user input
+                          _buildMessageInput(),
+
+                          const SizedBox(
+                            height: 25,
+                          ),
+                        ]),
+                      ),
+                    );
+                  }
+
+                  // Show loading.
+                  else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                });
           }
-          return MaterialApp(
-              theme: showOption(themeBrightness),
-              home: Scaffold(
-                appBar: AppBar(
-                  leading: IconButton(
-                    icon: Icon(Icons.arrow_back,
-                        color: setBackGroundBarColor(themeBrightness)),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  backgroundColor: setAppBarColor(themeColor, themeBrightness),
 
-                  // Needs to be title of the group chat!
-                  title: const Text("Messaging"),
-                ),
-                backgroundColor: const Color.fromARGB(255, 227, 227, 227),
-                body: Column(children: [
-                  //const SizedBox(height: 10,),
-
-                  // messages
-                  // REMOVE COMMENTS 81 - 83
-                  Expanded(child: _buildMessageList()),
-
-                  // user input
-                  _buildMessageInput(),
-
-                  const SizedBox(
-                    height: 25,
-                  ),
-                ]),
-              ));
+          // Show loading.
+          else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
         });
   }
 
@@ -145,7 +232,7 @@ class _ChatPage extends State<ChatPage> {
         ? Colors.blue
         : Colors.grey.shade400;
     var textColor =
-    (data['senderId'] == _firebaseAuth.currentUser!.uid) ? 0 : 1;
+        (data['senderId'] == _firebaseAuth.currentUser!.uid) ? 0 : 1;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -153,13 +240,13 @@ class _ChatPage extends State<ChatPage> {
           alignment: alignment,
           child: Column(
               crossAxisAlignment:
-              (data['senderId'] == _firebaseAuth.currentUser!.uid)
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
+                  (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
               mainAxisAlignment:
-              (data['senderId'] == _firebaseAuth.currentUser!.uid)
-                  ? MainAxisAlignment.end
-                  : MainAxisAlignment.start,
+                  (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
               children: [
                 const SizedBox(
                   height: 5,

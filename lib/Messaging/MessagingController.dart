@@ -6,13 +6,14 @@ class MessagingController {
   /// This method creates a new chatroom in Firebase.
   ///
   /// Returns the chat ID.
-  Future<String> createChatRoom(List<String> members, String title) async {
+  Future<String> createChatRoom(String owner, List<String> members, String title) async {
 
     // Reference to Document.
     final groupChat = FirebaseFirestore.instance.collection('Chats').doc();
 
     // Create the notification object.
     final announcement = GroupChatObject(
+      owner: owner,
       id: groupChat.id,
       title: title,
       groupChatMembers: members,
@@ -27,4 +28,18 @@ class MessagingController {
   void deleteChat(String chatID){
     FirebaseFirestore.instance.collection('Chats').doc(chatID).delete();
   }
+  
+  /// This method updates information of a group chat in Firebase.
+  void updateChat(String chatID, String newTitle, List<String> newMembers){
+    FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'title': newTitle, 'groupChatMembers': newMembers});
+
+  }
+
+  /// This method returns the title of the group chat through their ID.
+  Future<String> getGroupChatTitle(String chatID) async {
+    final groupChatRef = await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
+    String title = groupChatRef.data()?['title'];
+    return title;
+  }
+
 }
