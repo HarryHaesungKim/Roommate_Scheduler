@@ -127,6 +127,8 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                     // The group chat objects.
                     var groupChats = snapshot.data!;
 
+                    groupChats.sort((a, b) => b.lastSentMessageTime.compareTo(a.lastSentMessageTime));
+
                     return MaterialApp(
                       theme: showOption(themeBrightness),
                       home: Scaffold(
@@ -151,7 +153,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) =>
                                         ChatPage(
-                                          groupMembers: groupChats[index].groupChatMembers,
+                                          groupChatMembers: groupChats[index].groupChatMembers,
                                           chatID: groupChats[index].id,
                                         )
                                 ));
@@ -165,6 +167,12 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
 
                               // Group chat title
                               title: Text(groupChats[index].title),
+
+                              subtitle: Text(
+                                groupChats[index].lastSentMessage,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
 
                               // Three dots button at the end of the group chat tile.
                               trailing: GestureDetector(
@@ -348,14 +356,14 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                   receiverids.add(uID!);
 
                   // Creating a new group chat and getting it's ID.
-                  String chatID = await messagingCon.createChatRoom(uID!, receiverids, _newChatNameController.text);
+                  String chatID = await messagingCon.createChatRoom(uID!, receiverids, _newChatNameController.text, '');
 
                   // Avoids annoying "Do not use BuildContexts across async gaps" warning.
                   if (context.mounted){
                     Navigator.of(context).pop();
                     Navigator.push(context, MaterialPageRoute(builder: (context) =>
                         ChatPage(
-                          groupMembers: receiverids, 
+                          groupChatMembers: receiverids, 
                           chatID: chatID,
                         )
                     ),);

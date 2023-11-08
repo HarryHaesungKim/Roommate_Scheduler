@@ -24,12 +24,12 @@ class ChatPage extends StatefulWidget {
   // Declare a field that holds the group chat data
 
   // from video
-  final List<String> groupMembers;
+  final List<String> groupChatMembers;
   final String chatID;
 
   const ChatPage({
     super.key,
-    required this.groupMembers,
+    required this.groupChatMembers,
     required this.chatID,
   });
 
@@ -59,7 +59,7 @@ class _ChatPage extends State<ChatPage> {
     // only send message if there is something to send.
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
-          widget.groupMembers, _messageController.text, widget.chatID);
+          widget.groupChatMembers, _messageController.text, widget.chatID);
       // clear the text controller after sending the message.
       _messageController.clear();
     }
@@ -143,8 +143,8 @@ class _ChatPage extends State<ChatPage> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               EditGroupChatView(
-                                                groupMembers: widget
-                                                    .groupMembers,
+                                                groupChatMembers: widget
+                                                    .groupChatMembers,
                                                 chatID: widget.chatID,
                                                 chatTitle: groupChatTitle,
                                               )));
