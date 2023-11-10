@@ -57,7 +57,6 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     futurePeopleInGroupID = _groupController.getUserIDsInGroup(uID);
     futureIsUserInGroup = _groupController.isUserInGroup(uID);
     futureIsUserAdmin = _groupController.isUserAdmin(uID);
-
   }
 
   void getUserData() async {
@@ -119,8 +118,6 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     return await showDialog(
         context: context,
         builder: (context) {
-          // Replaced textEditingController with _newChatNameController.
-          // final TextEditingController textEditingController = TextEditingController();
           bool? isChecked = false;
 
           return StatefulBuilder(builder: (context, setState) {
