@@ -1,15 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:roommates/Messaging/GroupChatObject.dart';
 import 'package:roommates/Messaging/MessagingController.dart';
+import 'package:roommates/mainPage.dart';
 import '../Group/groupController.dart';
 import '../User/user_controller.dart';
 import '../themeData.dart';
 import 'ChatPage.dart';
 
+import 'package:get/get.dart';
+
 class GroupChatsListPageUpdated extends StatefulWidget {
-  const GroupChatsListPageUpdated({Key? key}) : super(key: key);
+
+  final bool gotKicked;
+
+  //const GroupChatsListPageUpdated({Key? key}) : super(key: key);
+  const GroupChatsListPageUpdated({
+    super.key,
+    required this.gotKicked,
+  });
 
   @override
   State<GroupChatsListPageUpdated> createState() => _messagingPage();
@@ -71,12 +82,48 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
         .toList());
   }
 
+  void showAlert(BuildContext context) {
+
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Kicked!"),
+      content: const Text("You have been removed from the chat."),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder: (context) => alert,
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    // if(widget.gotKicked) {
+    //   SchedulerBinding.instance.addPostFrameCallback((_) {
+    //     //Future.delayed(Duration.zero, () => showAlert(context));
+    //     showAlert(context);
+    //   });
+    // }
+
+    // When trying to show an alert dialog after user has been kicked, errors pop up. Why?
 
     return FutureBuilder(
         future: Future.wait([futureThemeColor, futureThemeBrightness, futurePeopleInGroup, futurePeopleInGroupIDs]),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+
+          // Get.snackbar("ERROR", "Whoops, something went wrong.");
+          // showAlertDialog(context);
 
           // If the snapshot has an error.
           if (snapshot.hasError) {
@@ -135,7 +182,9 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                         appBar: AppBar(
                           leading: IconButton(
                             icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
-                            onPressed: () => Navigator.of(context).pop(),
+                            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                              return const mainPage();
+                            })),
                           ),
                           backgroundColor:setAppBarColor(themeColor, themeBrightness),
                           title: const Text("Messaging"),

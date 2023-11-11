@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:roommates/Messaging/EditGroupChatView.dart';
+import 'package:roommates/Messaging/GroupChatsListPageUpdated.dart';
 import 'package:roommates/Messaging/chat_bubble.dart';
 import 'package:roommates/Messaging/chat_service.dart';
 import 'package:roommates/themeData.dart';
@@ -90,8 +92,7 @@ class _ChatPage extends State<ChatPage> {
     // groupChatTitle = widget.chatTitle;
 
     return FutureBuilder(
-        future: Future.wait(
-            [futureThemeBrightness, futureThemeColor]),
+        future: Future.wait([futureThemeBrightness, futureThemeColor]),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           // If the snapshot has an error.
           if (snapshot.hasError) {
@@ -107,12 +108,30 @@ class _ChatPage extends State<ChatPage> {
             return StreamBuilder(
                 stream: readGroupChats(),
                 builder: (context, snapshot) {
-
                   if (snapshot.hasError) {
                     return Text('Something went wrong! ${snapshot.error}');
                   }
 
                   if (snapshot.hasData) {
+
+                    // // If current user is no longer apart of the chat, navigate them back to the group chat list page.
+                    // if (!snapshot.data![0].groupChatMembers.contains(uID)) {
+                    //   WidgetsBinding.instance.addPostFrameCallback((_) =>
+                    //       Navigator.push(context, MaterialPageRoute(builder: (context) => profile())
+                    //   );
+                    //
+                    //   return const Center();
+                    //
+                    // }
+
+                    if (!snapshot.data![0].groupChatMembers.contains(uID)){
+                      SchedulerBinding.instance.addPostFrameCallback((_) {
+                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                            builder: (context) =>
+                            const GroupChatsListPageUpdated(gotKicked: true)), (
+                            route) => false);
+                      });
+                    }
 
                     groupChatTitle = snapshot.data![0].title;
 
@@ -121,12 +140,19 @@ class _ChatPage extends State<ChatPage> {
                       home: Scaffold(
                         appBar: AppBar(
                           leading: IconButton(
-                            icon: Icon(Icons.arrow_back,
-                                color: setBackGroundBarColor(themeBrightness)),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
+                              icon: Icon(Icons.arrow_back,
+                                  color:
+                                      setBackGroundBarColor(themeBrightness)),
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (_) {
+                                  return const GroupChatsListPageUpdated(
+                                    gotKicked: false,
+                                  );
+                                }));
+                              }),
                           backgroundColor:
-                          setAppBarColor(themeColor, themeBrightness),
+                              setAppBarColor(themeColor, themeBrightness),
 
                           // Needs to be title of the group chat!
                           title: Text(groupChatTitle),
@@ -143,8 +169,6 @@ class _ChatPage extends State<ChatPage> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               EditGroupChatView(
-                                                groupChatMembers: widget
-                                                    .groupChatMembers,
                                                 chatID: widget.chatID,
                                                 chatTitle: groupChatTitle,
                                               )));
@@ -155,8 +179,8 @@ class _ChatPage extends State<ChatPage> {
                                 }),
                           ],
                         ),
-                        backgroundColor: const Color.fromARGB(
-                            255, 227, 227, 227),
+                        backgroundColor:
+                            const Color.fromARGB(255, 227, 227, 227),
                         body: Column(children: [
                           //const SizedBox(height: 10,),
 
@@ -181,7 +205,6 @@ class _ChatPage extends State<ChatPage> {
                       child: CircularProgressIndicator(),
                     );
                   }
-
                 });
           }
 

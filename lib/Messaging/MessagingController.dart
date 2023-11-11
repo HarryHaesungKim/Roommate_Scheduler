@@ -34,7 +34,6 @@ class MessagingController {
   /// This method updates information of a group chat in Firebase.
   void updateChat(String chatID, String newTitle, List<String> newMembers){
     FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'title': newTitle, 'groupChatMembers': newMembers});
-
   }
 
   /// This method returns the title of the group chat through their ID.
@@ -53,5 +52,49 @@ class MessagingController {
   // void updateGroupMembers(String chatID, List<String> updatedMembers) async {
   //   FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'groupChatMembers': updatedMembers});
   // }
+
+  /// This method determines whether or not the current user is the owner of the chat.
+  Future<bool> isUserTheOwner(chatID, uID) async {
+    final groupChatRef = await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
+    String owner = groupChatRef.data()?['owner'];
+    if(owner == uID){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  Future<List<dynamic>> getGroupChatMembers(chatID) async {
+    final groupChatRef = await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
+    return groupChatRef.data()?['groupChatMembers'];
+  }
+
+  void selectNewOwner(String chatID, String newOwnerID){
+    FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'owner': newOwnerID});
+  }
+
+  void leaveChat(chatID, uID) async {
+    final groupChatRef = await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
+    String owner = groupChatRef.data()?['owner'];
+    
+    // If the current user is the owner of the chat.
+    if(owner == uID){
+
+      // Removing the current user.
+      FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'groupChatMembers': FieldValue.arrayRemove([uID])});
+
+      // Setting the new owner to whoever is first in line.
+      String newOwner = groupChatRef.data()?['groupChatMembers'][0];
+      FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'owner': newOwner});
+    }
+
+    // If the current user is not the owner of the chat.
+    else{
+      // Removing the current user.
+      FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'groupChatMembers': FieldValue.arrayRemove([uID])});
+    }
+    
+  }
 
 }
