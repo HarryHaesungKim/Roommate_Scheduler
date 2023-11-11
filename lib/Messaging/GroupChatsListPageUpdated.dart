@@ -12,6 +12,8 @@ import 'ChatPage.dart';
 
 import 'package:get/get.dart';
 
+import 'chat_service.dart';
+
 class GroupChatsListPageUpdated extends StatefulWidget {
 
   final bool gotKicked;
@@ -39,6 +41,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
   final groupController groupCon = groupController();
   final userController userCon = userController();
   final MessagingController messagingCon = MessagingController();
+  final ChatService chatServiceCon = ChatService();
 
   // Key
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -225,15 +228,18 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
 
                               // Three dots button at the end of the group chat tile.
                               trailing: GestureDetector(
+
                                   onTap: () {
                                     showDialog(context: context, builder: (context) {
 
                                       // set up the buttons
                                       Widget continueButton = ElevatedButton(
-                                        child: const Text("Delete"),
+                                        child: const Text("Leave"),
                                         onPressed: () {
                                           // print("Need to delete chat...");
-                                          messagingCon.deleteChat(groupChats[index].id);
+                                          // messagingCon.deleteChat(groupChats[index].id);
+                                          messagingCon.leaveChat(groupChats[index].id, uID);
+                                          chatServiceCon.sendMessage([], '${iDNameMap[uID]} has left the chat.', groupChats[index].id, true);
                                           Navigator.of(context).pop();
                                         },
                                       );
@@ -247,7 +253,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                                       // Call the alert dialogue.
                                       return AlertDialog(
                                         scrollable: true,
-                                        title: const Text("Delete Chat?"),
+                                        title: const Text("Leave Chat?"),
                                         actionsAlignment: MainAxisAlignment.spaceEvenly,
                                         actions: [
                                           continueButton,

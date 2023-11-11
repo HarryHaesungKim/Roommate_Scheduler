@@ -418,6 +418,8 @@ class EditGroupChatPage extends State<EditGroupChatView> {
                       // Leave the chat and be taken back to the group chat page.
                       messagingCon.leaveChat(widget.chatID, uID);
 
+                      chatServiceCon.sendMessage([], '${iDNameMap[uID]} has left the chat.', widget.chatID, true);
+
                       Navigator.of(context).push(MaterialPageRoute(builder: (_) {
                         return const GroupChatsListPageUpdated(gotKicked: false);
                       }));

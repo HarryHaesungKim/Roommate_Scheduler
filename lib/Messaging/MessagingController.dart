@@ -80,6 +80,10 @@ class MessagingController {
   void leaveChat(chatID, uID) async {
     final groupChatRef = await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
     String owner = groupChatRef.data()?['owner'];
+
+    if(groupChatRef.data()?['groupChatMembers'].length == 1){
+      await FirebaseFirestore.instance.collection('Chats').doc(chatID).delete();
+    }
     
     // If the current user is the owner of the chat.
     if(owner == uID){
