@@ -65,15 +65,18 @@ class MessagingController {
     }
   }
 
+  /// This method gets the current members of the group chat.
   Future<List<dynamic>> getGroupChatMembers(chatID) async {
     final groupChatRef = await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
     return groupChatRef.data()?['groupChatMembers'];
   }
 
+  /// This method sets a new owner of a group chat.
   void selectNewOwner(String chatID, String newOwnerID){
     FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'owner': newOwnerID});
   }
 
+  /// This method removes the current user from the group chat.
   void leaveChat(chatID, uID) async {
     final groupChatRef = await FirebaseFirestore.instance.collection('Chats').doc(chatID).get();
     String owner = groupChatRef.data()?['owner'];
@@ -91,10 +94,16 @@ class MessagingController {
 
     // If the current user is not the owner of the chat.
     else{
-      // Removing the current user.
-      FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'groupChatMembers': FieldValue.arrayRemove([uID])});
-    }
-    
-  }
 
+      List<String> gcms = (await getGroupChatMembers(chatID)).cast<String>();
+
+      // Making sure that the user is in the group chat.
+      if(gcms.contains(uID)){
+        // Removing the current user.
+        FirebaseFirestore.instance.collection('Chats').doc(chatID).update({'groupChatMembers': FieldValue.arrayRemove([uID])});
+      }
+
+      // Else, just return (the owner kicked them before they could click the 'leave chat' button).
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +12,7 @@ import '../User/user_controller.dart';
 import '../themeData.dart';
 import 'ChatPage.dart';
 import 'MessagingController.dart';
+import 'chat_service.dart';
 
 class EditGroupChatView extends StatefulWidget {
   final String chatID;
@@ -37,6 +39,7 @@ class EditGroupChatPage extends State<EditGroupChatView> {
   final groupController groupCon = groupController();
   final userController userCon = userController();
   final MessagingController messagingCon = MessagingController();
+  final ChatService chatServiceCon = ChatService();
 
   // Key
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -125,9 +128,6 @@ class EditGroupChatPage extends State<EditGroupChatView> {
             // Creating a bool checklist for adding people.
             areTheyInThisChat = List.filled(peopleInGroupIDs.length, false);
 
-            // Saving who was originally in this chat.
-            areTheyInThisChatOriginally = areTheyInThisChat;
-
             // Setting the checklist depending on who is or isn't already apart of the chat.
             for (String chatMember in peopleInGroupChat) {
               int i = 0;
@@ -138,6 +138,9 @@ class EditGroupChatPage extends State<EditGroupChatView> {
                 i++;
               }
             }
+
+            // Saving who was originally in this chat.
+            areTheyInThisChatOriginally = List.from(areTheyInThisChat);
 
             return MaterialApp(
                 home: Scaffold(
@@ -380,14 +383,8 @@ class EditGroupChatPage extends State<EditGroupChatView> {
 
                   // Select different owner.
                   ElevatedButton(
-
                     onPressed: selectNewOwnerEnableOrDisable() ? null : () {
-                      // TODO: Pull up alert dialogue and select group member as new owner.
-
                       showCreateNewGroupChatAlertDialog(context);
-
-                      // Go back to the chat page.
-                      // Navigator.pop(context);
                     },
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -418,9 +415,7 @@ class EditGroupChatPage extends State<EditGroupChatView> {
                   ElevatedButton(
                     onPressed: () {
 
-
-
-                      // TODO: Leave the chat and be taken back to the group chat page.
+                      // Leave the chat and be taken back to the group chat page.
                       messagingCon.leaveChat(widget.chatID, uID);
 
                       Navigator.of(context).push(MaterialPageRoute(builder: (_) {
@@ -468,8 +463,13 @@ class EditGroupChatPage extends State<EditGroupChatView> {
     List<String> updatedMembers = [];
     int index = 0;
 
+    // If the chat title has changed.
+    if(widget.chatTitle != newTitle){
+      chatServiceCon.sendMessage(originalMembers, 'Title has been changed to: $newTitle', chatID, true);
+    }
+
     // Getting the updated people in this list.
-    if (eq(areTheyInThisChat, areTheyInThisChatOriginally)) {
+    if (!listEquals(areTheyInThisChat, areTheyInThisChatOriginally)) {
       for (bool member in areTheyInThisChat) {
         if (member == true) {
           updatedMembers.add(peopleInGroupIDs[index]);
@@ -477,19 +477,20 @@ class EditGroupChatPage extends State<EditGroupChatView> {
         index++;
       }
 
+      index = 0;
       // TODO: Letting chat know who was added or removed.
       for (bool member in areTheyInThisChat) {
-        for (bool originalMember in areTheyInThisChat) {
-          // If a member has been removed.
-          if (member == false && originalMember == true) {
-
-          }
-          // Else if a member has been added.
-          else if (member == false && originalMember == true) {
-
-          }
+        // If a member has been removed.
+        if (member == false && areTheyInThisChatOriginally[index] == true) {
+          chatServiceCon.sendMessage(originalMembers, '${iDNameMap[peopleInGroupIDs[index]]} has been removed.', chatID, true);
         }
+        // Else if a member has been added.
+        else if (member == true && areTheyInThisChatOriginally[index] == false) {
+          chatServiceCon.sendMessage(originalMembers, '${iDNameMap[peopleInGroupIDs[index]]} has been added.', chatID, true);
+        }
+        index++;
       }
+
     }
     else{
       messagingCon.updateChat(chatID, newTitle, originalMembers);
@@ -681,6 +682,9 @@ class EditGroupChatPage extends State<EditGroupChatView> {
 
                               // Update firebase.
                               messagingCon.selectNewOwner(widget.chatID, newOwner);
+
+                              // Send message that a new owner has been selected.
+                              chatServiceCon.sendMessage([], '${iDNameMap[newOwner]} is now the owner.', widget.chatID, true);
 
                               // Exit the alert dialog.
                               Navigator.pop(context);

@@ -61,7 +61,7 @@ class _ChatPage extends State<ChatPage> {
     // only send message if there is something to send.
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
-          widget.groupChatMembers, _messageController.text, widget.chatID);
+          widget.groupChatMembers, _messageController.text, widget.chatID, false);
       // clear the text controller after sending the message.
       _messageController.clear();
     }
@@ -255,35 +255,50 @@ class _ChatPage extends State<ChatPage> {
         ? Colors.blue
         : Colors.grey.shade400;
     var textColor =
-        (data['senderId'] == _firebaseAuth.currentUser!.uid) ? 0 : 1;
+    (data['senderId'] == _firebaseAuth.currentUser!.uid) ? 0 : 1;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-      child: Container(
-          alignment: alignment,
-          child: Column(
-              crossAxisAlignment:
-                  (data['senderId'] == _firebaseAuth.currentUser!.uid)
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-              mainAxisAlignment:
-                  (data['senderId'] == _firebaseAuth.currentUser!.uid)
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(data['senderUserName']),
-                const SizedBox(
-                  height: 3,
-                ),
-                ChatBubble(
-                    message: data['message'],
-                    color: bubbleColor,
-                    textColor: textColor),
-              ])),
-    );
+    if (data['senderId'] == 'ominousPresence69') {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          data['message'],
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black54,
+          ),
+        ),
+      );
+    }
+    else {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+        child: Container(
+            alignment: alignment,
+            child: Column(
+                crossAxisAlignment:
+                (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                mainAxisAlignment:
+                (data['senderId'] == _firebaseAuth.currentUser!.uid)
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(data['senderUserName']),
+                  const SizedBox(
+                    height: 3,
+                  ),
+                  ChatBubble(
+                      message: data['message'],
+                      color: bubbleColor,
+                      textColor: textColor),
+                ])),
+      );
+    }
   }
 
   // build message input
