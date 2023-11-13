@@ -47,8 +47,12 @@ class _mainPageState extends State<mainPage> {
     super.initState();
     screenCopy = widget.navigateToScreen;
     _selectedIndex = screenCopy;
-    print("Sent from mainPage.dart");
-    pushNotifCon.sendTokenToFirebase();
+    // print("Sent from mainPage.dart");
+
+    // Initialize the entire notification stuff upon start up of the app.
+    // Sends the token to firebase when the app itself is building up.
+    // Will send regardless of if person is not signed in, or already is since main page needs to build.
+    pushNotifCon.initNotifications();
   }
 
   Future getUserData() async {

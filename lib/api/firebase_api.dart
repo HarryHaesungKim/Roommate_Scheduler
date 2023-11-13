@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:roommates/Group/groupController.dart';
 import 'package:roommates/main.dart';
+import 'package:http/http.dart' as http;
 
 //https://www.youtube.com/watch?v=A3M0N_B-CR0&t=220s
 //https://firebase.google.com/codelabs/firebase-fcm-flutter#0
@@ -18,75 +23,55 @@ class FirebaseApi{
   // The FCM token
   late String fCMToken = "";
 
-  // function to initialize notifications
+  /// function to initialize notifications
   Future<void> initNotifications() async {
-    // request permission from user (will prompt user)
+
+    // Request permission from user (will prompt user).
     await _firebaseMessaging.requestPermission();
 
-    // fetch the FCM token for this device
+    // Fetch the FCM token for this device.
     fCMToken = (await _firebaseMessaging.getToken())!;
 
-    print("This is working");
+    // Send the device token to firebase.
+    FirebaseFirestore.instance.collection('Users').doc(uID).update({'DeviceToken': fCMToken});
 
-    // print the token (normally you would send this to your server).
-    print('Token: $fCMToken');
+    // For testing.
+    print("Token: $fCMToken");
 
-    // for testing
-    //print("uID is: ${uID!}");
-
-    // // Checking if a user is signed in. This works.
-    // final User? user = FirebaseAuth.instance.currentUser;
-    // if(user != null){
-    //   print("Yes");
-    // }
-    // else{
-    //   print("No..");
-    // }
-    //
-    // // send token to firebase
-    // // TODO: Need to send to firebase after user signs in.
-    // FirebaseFirestore.instance.collection('Users').doc(uID).update({'DeviceToken': fCMToken});
-
-    // // If the user is signed in.
-    if(user != null){
-      print("Sent from firebase_api.dart");
-      sendTokenToFirebase();
-    }
-    // Else, it gets done when the user signs in.
-
-    // initialize further settings for push notification
+    // Initialize the push notifications and the listeners.
     initPushNotifications();
   }
 
-  // function to send token to firebase.
-  void sendTokenToFirebase(){
-    FirebaseFirestore.instance.collection('Users').doc(uID).update({'DeviceToken': fCMToken});
+  /// function to initialize background settings
+  Future initPushNotifications() async {
+    // handle notification if the app was terminated and now opened.
+    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+
+    // attach event listeners for when a notification opens the app.
+    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
   }
 
-  // function to handle received messages
+  /// function to handle received messages
   void handleMessage(RemoteMessage? message) {
+
     // If the message is null, do nothing.
     if (message == null) return;
 
-    // navigate to new screen when message is received and user taps notification
-    // navigatorKey.currentState?.pushNamed(
-    //     '/costSplit_screen',
-    //   arguments: message,
-    // );
-
+    // Proceed only if the user is signed in.
     if(user != null) {
-      print(message.notification!.title.toString());
 
-      //TODO: Check to make sure that user is signed in first?
+      // For testing.
+      // print(message.notification!.title.toString());
+
       // We can customize where opening the app will take us by reading the notification's title or body.
+      // A few examples below.
       if (message.notification!.title.toString() == 'New event created.') {
         navigatorKey.currentState?.pushNamed(
           '/calendar_screen',
           arguments: message,
         );
       }
-      else
-      if (message.notification!.title.toString() == 'New payment created.') {
+      else if (message.notification!.title.toString() == 'New payment created.') {
         navigatorKey.currentState?.pushNamed(
           '/costSplit_screen',
           arguments: message,
@@ -101,24 +86,56 @@ class FirebaseApi{
     }
   }
 
-  // function to initialize backgorund settings
-  Future initPushNotifications() async {
-    // handle notification if the app was terminated and now opened.
-    FirebaseMessaging.instance.getInitialMessage().then(handleMessage);
+  /// This method sends notifications to every group member.
+  void sendPushNotification(String title, String body) async {
 
-    // attach event listeners for when a notification opens the app.
-    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+    // Get list of IDs of people in group.
+    List<String> groupMembers = await groupController().getUserIDsInGroup(uID!);
+
+    // Get all device tokens of each group member.
+    List<String> groupMembersDeviceTokens = [];
+    for(var member in groupMembers){
+      groupMembersDeviceTokens.add(await getDeviceToken(member));
+    }
+
+    // Send notification to every user.
+    for(var token in groupMembersDeviceTokens){
+      try {
+        await http.post(
+          Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Authorization':
+                'key=AAAAR2KvSuY:APA91bFIj0j8FbCO93rT-uCbxpFR6wL7rr3SMpYQIs-0G30B7Lzkg8_RXBr2Q6Sa8J21VMvHiQwE-Xngx7I7KKmdvNC6ja0eqPGPZzQmVbn5Gp_LTAuZ9SzW6alqOzbPOSyDiy555eBH',
+          },
+          body: jsonEncode(<String, dynamic>{
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'status': 'done',
+              'body': body,
+              'title': title,
+            },
+            // "notification": <String, dynamic>{
+            //   "title": title,
+            //   "body": body,
+            //   "android_channel_id": "roommates"
+            // },
+            "to": token,
+          }),
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          print("Error push notification.");
+        }
+      }
+    }
   }
 
-  // TODO: save the device token to firebase for each user. Probably every time user signs in.
-  // TODO: function to be called to send notifications to every group member.
-  void sendPushNotification() async {
-    // FirebaseMessaging.onBackgroundMessage((message) => null)
+  /// This method returns the user's device token given their user ID.
+  Future<String> getDeviceToken(uID) async {
+    final userRef = await FirebaseFirestore.instance.collection('Users').doc(uID).get();
+    final devToken = userRef.data()?['DeviceToken'];
+    return devToken;
   }
-
-  // String getDeviceToken() {
-  //   return devi
-  // }
-
-
 }

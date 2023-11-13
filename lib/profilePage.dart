@@ -33,6 +33,11 @@ class _profilePage extends State<ProfilePage> {
   final _uID = FirebaseAuth.instance.currentUser?.uid;
 
   Future<void> _signOut() async {
+
+    // Delete the device token associated with that account.
+    FirebaseFirestore.instance.collection('Users').doc(_uID).update({'DeviceToken': ''});
+
+    // Other stuff.
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: ((context) => const LoginPage())));

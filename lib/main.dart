@@ -28,7 +28,8 @@ void main() async{
   // print(fcmToken);
 
   // initialize push notification stuff
-  await FirebaseApi().initNotifications();
+  // await FirebaseApi().initNotifications();
+  // await FirebaseApi().initPushNotifications();
 
   runApp(const MyApp());
 }
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
       // Key to take users to a specific page when opening push notification.
       navigatorKey: navigatorKey,
 
-      home : sign(),
+      home : const sign(),
 
       // routes user to a specific screen when clicking on notification
       routes: {

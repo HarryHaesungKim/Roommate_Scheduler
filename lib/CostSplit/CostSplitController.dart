@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:roommates/api/firebase_api.dart';
 
 import 'CostSplitObject.dart';
 
@@ -75,6 +76,9 @@ class CostSplitController {
 
     // Create document and write data to firebase.
     await payment.set(announcement.toJson());
+    
+    // Send push notification.
+    FirebaseApi().sendPushNotification('New payment created.', title);
 
     // All done :)
 
