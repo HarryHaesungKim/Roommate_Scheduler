@@ -59,6 +59,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
 
   // Map of members IDs and username.
   late Map<String, String> iDNameMap = {};
+  static late MediaQueryData _mediaQueryData;
 
   @override
   void initState() {
@@ -85,6 +86,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
 
   @override
   Widget build(BuildContext context) {
+    _mediaQueryData = MediaQuery.of(context);
     return FutureBuilder(
         future: Future.wait(
             [futureGroupID, futurePeopleInGroup, futurePeopleInGroupIDs]),
@@ -208,6 +210,8 @@ class _CostSplitViewPage extends State<CostSplitView> {
                                                   // Text for you owe.
                                                   Align(
                                                     alignment: Alignment.center,
+                                                  child:FittedBox(
+                                                    fit: BoxFit.fitWidth,
                                                     child: Text(
                                                         overflow: TextOverflow.ellipsis,
                                                         //maxLines: 1,
@@ -215,11 +219,12 @@ class _CostSplitViewPage extends State<CostSplitView> {
                                                         //notificationTitles[index],
                                                         "You owe:\n\$${youOwe.toStringAsFixed(2)}",
                                                         style: GoogleFonts.lato(
-                                                          textStyle: const TextStyle(
+                                                          textStyle: TextStyle(
                                                               fontWeight: FontWeight.bold,
-                                                              fontSize: 30,
+                                                              fontSize: _mediaQueryData.size.width/15,
                                                               color: Colors.red),
                                                         )),
+                                                  )
                                                   ),
 
                                                   // Spacing.
@@ -230,18 +235,22 @@ class _CostSplitViewPage extends State<CostSplitView> {
                                                   // Text for you are owed.
                                                   Align(
                                                     alignment: Alignment.center,
-                                                    child: Text(
-                                                        overflow: TextOverflow.ellipsis,
-                                                        //maxLines: 1,
-                                                        textAlign: TextAlign.center,
-                                                        //notificationTitles[index],
-                                                        "You are owed:\n\$${youAreOwed.toStringAsFixed(2)}",
-                                                        style: GoogleFonts.lato(
-                                                          textStyle: const TextStyle(
-                                                              fontWeight: FontWeight.bold,
-                                                              fontSize: 30,
-                                                              color: Colors.green),
-                                                        )),
+                                                    child:FittedBox(
+                                                        fit: BoxFit.cover,
+                                                      child: Text(
+                                                          overflow: TextOverflow.ellipsis,
+                                                          //maxLines: 1,
+                                                          textAlign: TextAlign.center,
+                                                          //notificationTitles[index],
+                                                          "You are owed:\n\$${youAreOwed.toStringAsFixed(2)}",
+                                                          style: GoogleFonts.lato(
+                                                            textStyle: TextStyle(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: _mediaQueryData.size.width/15,
+                                                                color: Colors.green),
+                                                          )),
+                                                    )
+
                                                   ),
 
                                                 ],

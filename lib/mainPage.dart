@@ -123,7 +123,7 @@ class _mainPageState extends State<mainPage> {
                   gap: 3,
                   activeColor: setBackGroundBarColor( UserData['themeBrightness']),
                   iconSize: 25,
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                   duration: const Duration(milliseconds: 400),
                   tabBackgroundColor: deep(UserData['themeColor'],  UserData['themeBrightness']),
                   color: setBackGroundBarColor( UserData['themeBrightness']),

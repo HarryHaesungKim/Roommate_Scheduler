@@ -1,12 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:roommates/calendarPage/event.dart';
+import 'package:roommates/Task/TaskObject.dart';
+
 import '../theme.dart';
 
-class eventView extends StatelessWidget {
-  final Event event;
-  const eventView(this.event, {super.key});
+class calendar_taskView extends StatelessWidget {
+  final TaskObject task;
+  const calendar_taskView(this.task, {super.key});
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -21,7 +21,7 @@ class eventView extends StatelessWidget {
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.black87,
+          color: _getBGClr(task.color),
         ),
         child: Row(children: [
           Expanded(
@@ -31,32 +31,33 @@ class eventView extends StatelessWidget {
                 Row(
                   children:[
                     Icon(
-                      Icons.event,
+                      Icons.task,
                       color: Colors.grey[200],
                       size: 30,
                     ),
-                     SizedBox(
+                    SizedBox(
                       width: _mediaQueryData.size.width/30,
                     ),
                     Text(
-                      event.title!,
+                      task.title!,
                       style: GoogleFonts.lato(
                         textStyle: const TextStyle(
-                            fontSize: 25,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       ),
                     ),
-            ],
+                  ],
 
                 ),
+
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
-                  event.note!,
+                  task.note!,
                   style: GoogleFonts.lato(
-                    textStyle: const TextStyle(fontSize: 15, color: Colors.white),
+                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
                   ),
                 ),
               ],
@@ -66,7 +67,19 @@ class eventView extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 10),
             height: 60,
             width: 0.5,
-            color: Colors.black87.withOpacity(0.7),
+            color: Colors.grey[200]!.withOpacity(0.7),
+          ),
+          RotatedBox(
+            quarterTurns: 3,
+            child: Text(
+              task.isCompleted == 1 ? "COMPLETED" : "TODO",
+              style: GoogleFonts.lato(
+                textStyle: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ),
           ),
         ]),
       ),

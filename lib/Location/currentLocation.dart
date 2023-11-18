@@ -45,7 +45,8 @@ class _CurrentLocationState extends State<CurrentLocation> {
     futureCurrGroup = groupCon.getGroupIDFromUser(uID!);
     isGroupAdmin = groupCon.isGroupAdminModeByID(uID!);
   }
-  Future updateUserData(String email, String password, String username, String balance, String income, String expense, String imageURL, String themeBrightness, String themeColor, List<String> chatRooms, GeoPoint? location, String groupID, ) async {
+  // comment List<String> chatRooms
+  Future updateUserData(String email, String password, String username, String balance, String income, String expense, String imageURL, String themeBrightness, String themeColor, GeoPoint? location, String groupID, ) async {
     final user = UserData(
       email: email,
       password: password,
@@ -57,7 +58,7 @@ class _CurrentLocationState extends State<CurrentLocation> {
       themeBrightness: themeBrightness,
       themeColor: themeColor,
       groupID: groupID,
-      // chatRooms: chatRooms,
+      //chatRooms: chatRooms,
       location: location,
     );
     await FirebaseFirestore.instance.collection("Users").doc(uID).update(
@@ -73,82 +74,100 @@ class _CurrentLocationState extends State<CurrentLocation> {
             gotIsGroupAdmin = snapshot.data[1];
             return StreamBuilder(
               stream: FirebaseFirestore.instance
-                  .collection('Users')
-                  .doc(uID)
+                  .collection('Users').where("groupID", isEqualTo: currGroup)
                   .snapshots(),
-                builder: (context, snapshot){
-                  if (snapshot.hasError){
-                    return Text('Something went wrong! ${snapshot.data}');
+                builder: (context, snapshot1){
+                  if (snapshot1.hasError){
+                    return Text('Something went wrong! ${snapshot1.data}');
                   }
-                  else if (snapshot.hasData){
-                    final UserData = snapshot.data!;
-                    return Scaffold(
-                      appBar: AppBar(
-                        backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                        title: const Text("User current location"),
-                        centerTitle: true,
-                      ),
-                      body: GoogleMap(
-                        initialCameraPosition: initialCameraPosition,
-                        markers: markers,
-                        zoomControlsEnabled: true,
-                        myLocationEnabled: true,
-                        mapType: MapType.normal,
-                        compassEnabled: true,
-                        onMapCreated: (GoogleMapController controller) {
-                          googleMapController = controller;
-                        },
-                      ),
-                      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-                      floatingActionButton: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children:[
-                            FloatingActionButton(
-                              onPressed: () async {
-                                Position position = await _determinePosition();
-
-                                googleMapController
-                                    .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(position.latitude, position.longitude), zoom: 14)));
-
-                                markers.clear();
-
-                                markers.add(Marker(markerId: const MarkerId('currentLocation'),position: LatLng(position.latitude, position.longitude)));
-
-                                setState(() {});
-                              },
-                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                              child:const Icon(
-                                Icons.my_location,
+                  else if (snapshot1.hasData){
+                    return StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('Users')
+                          .doc(uID)
+                          .snapshots(),
+                        builder: (context, snapshot2){
+                          if (snapshot2.hasError){
+                            return Text('Something went wrong! ${snapshot2.data}');
+                          }
+                          else if (snapshot2.hasData){
+                            final UserData = snapshot2.data!;
+                            final AllUserData = snapshot1.data!;
+                            return Scaffold(
+                              appBar: AppBar(
+                                backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                title: const Text("User current location"),
+                                centerTitle: true,
                               ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            FloatingActionButton(
-                              onPressed: () async {
-                                Position position = await _determinePosition();
-                                updateUserData(UserData['Email'], UserData['Password'], UserData['UserName'], UserData['Balance'].toString(),UserData['Income'].toString(),
-                                    UserData['Expense'].toString(),UserData['imageURL'].toString(),
-                                    UserData['themeBrightness'].toString(),UserData['themeColor'].toString(),
-                                    UserData["chatRooms"].cast<String>(), GeoPoint(position.latitude, position.longitude),UserData['groupID'].toString());
-                                //_userdataController.getUserData(groupID);
-                                _userdataController.getUserLocation(uID!);
-                                markers.clear();
-                                for(int i = 0; i < _userdataController.userLocationList.length; i++){
-                                  String id = "User$i";
-                                  print(_userdataController.userLocationList[i].latitude);
-                                  markers.add(Marker(markerId: MarkerId(id),position: LatLng(_userdataController.userLocationList[i].latitude, _userdataController.userLocationList[i].longitude)));
-                                }
-                                print(markers.length);
-                                setState(() {});
-                              },
-                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                              child:const Icon(
-                                Icons.share_location,
+                              body: GoogleMap(
+                                initialCameraPosition: initialCameraPosition,
+                                markers: markers,
+                                zoomControlsEnabled: true,
+                                myLocationEnabled: true,
+                                mapType: MapType.normal,
+                                compassEnabled: true,
+                                onMapCreated: (GoogleMapController controller) {
+                                  googleMapController = controller;
+                                },
                               ),
-                            ),
-                          ]
-                      ),
+                              floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+                              floatingActionButton: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children:[
+                                    FloatingActionButton.extended(
+                                      onPressed: () async {
+                                        Position position = await _determinePosition();
+
+                                        googleMapController
+                                            .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(position.latitude, position.longitude), zoom: 14)));
+
+                                        markers.clear();
+
+                                        markers.add(Marker(markerId: const MarkerId('currentLocation'),position: LatLng(position.latitude, position.longitude)));
+
+                                        setState(() {});
+                                      },
+                                      backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                      label: Text('My Location    '),
+                                      icon: Icon(Icons.my_location),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    FloatingActionButton.extended(
+                                      onPressed: () async {
+                                        Position position = await _determinePosition();
+                                        updateUserData(UserData['Email'], UserData['Password'], UserData['UserName'], UserData['Balance'].toString(),UserData['Income'].toString(),
+                                            UserData['Expense'].toString(),UserData['imageURL'].toString(),
+                                            UserData['themeBrightness'].toString(),UserData['themeColor'].toString(),
+                                            GeoPoint(position.latitude, position.longitude),UserData['groupID'].toString());
+
+                                        //_userdataController.getUserLocation(uID!);
+                                        print(AllUserData.docs.length);
+                                        markers.clear();
+                                        for(int i = 0; i < AllUserData.docs.length; i++){
+                                          String id = "User$i";
+                                          if(AllUserData.docs[i]["location"].runtimeType == GeoPoint){
+                                            markers.add(Marker(markerId: MarkerId(id),position: LatLng(AllUserData.docs[i]["location"].latitude, AllUserData.docs[i]["location"].longitude)));
+                                          }
+
+                                        }
+                                        setState(() {});
+                                      },
+                                      backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                      label: Text('Share Location'),
+                                      icon: Icon(Icons.share_location),
+                                    ),
+                                  ]
+                              ),
+                            );
+                          }
+                          else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        }
                     );
                   }
                   else {

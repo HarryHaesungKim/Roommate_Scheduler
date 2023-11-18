@@ -32,7 +32,7 @@ class _AddEventState extends State<addEvent> {
 
   DateTime _selectedDate = DateTime.now();
   String? _startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
-
+  final DateFormat formatter = DateFormat('MM/dd/yyyy');
   String? _endTime = "9:30 AM";
 
   // Controller
@@ -87,7 +87,8 @@ class _AddEventState extends State<addEvent> {
                           controller: _noteController),
                       InputField(
                         title: "Date",
-                        hint: DateFormat.yMd().format(_selectedDate),
+                        // hint: DateFormat.yMd().format(_selectedDate),
+                        hint: formatter.format(_selectedDate),
                         widget: IconButton(
                           icon: (const Icon(
                             Icons.calendar_month_sharp,
@@ -161,12 +162,13 @@ class _AddEventState extends State<addEvent> {
 
   _addEventToDB() async {
     String groupID = await _groupController.getGroupIDFromUser(uID!);
+    final DateFormat formatter = DateFormat('MM/dd/yyyy');
     await _eventController.addEvent(
       groupID,
       event: Event(
         title: _titleController.text.toString(),
         note: _noteController.text.toString(),
-        date: DateFormat.yMd().format(_selectedDate),
+        date: formatter.format(_selectedDate),
       ),
     );
   }
