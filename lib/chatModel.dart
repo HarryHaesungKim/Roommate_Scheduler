@@ -2,7 +2,6 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:roommates/User/user_model.dart";
 
 
-import "../User/user_model.dart";
 
 class Chat {
   Timestamp? timestamp;
@@ -26,11 +25,11 @@ class Chat {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['timestamp'] = this.timestamp;
-    data['chatContent'] = this.chatContent;
-    data['toUsers'] = this.toUsers;
-    data['fromUser'] = this.fromUser;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['timestamp'] = timestamp;
+    data['chatContent'] = chatContent;
+    data['toUsers'] = toUsers;
+    data['fromUser'] = fromUser;
     return data;
   }
 }

@@ -8,6 +8,7 @@ import 'package:roommates/homePage/homePage.dart';
 import 'package:roommates/Notifications/NotificationView.dart';
 import 'package:roommates/profilePage.dart';
 import 'package:roommates/themeData.dart';
+import 'User/user_controller.dart';
 import 'calendarPage/calendarPage.dart';
 
 import 'package:roommates/api/firebase_api.dart';
@@ -25,17 +26,16 @@ class mainPage extends StatefulWidget {
 
 class _mainPageState extends State<mainPage> {
   int _selectedIndex = 0;
-  String themeBrightness = "";
-  String color = "";
-
+  final userController userCon = userController();
+  String? currUser = FirebaseAuth.instance.currentUser?.uid;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final screens = [
-    homePage(),
-    calendarPage(),
-    CostSplitView(),
-    NotificationView(),
-    ProfilePage(),
+    const homePage(),
+    const calendarPage(),
+    const CostSplitView(),
+    const NotificationView(),
+    const ProfilePage(),
   ];
 
   late int screenCopy;
@@ -55,23 +55,6 @@ class _mainPageState extends State<mainPage> {
     pushNotifCon.initNotifications();
   }
 
-  Future getUserData() async {
-    String? user = FirebaseAuth.instance.currentUser?.uid;
-    if (user != null) {
-      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
-          .doc(user)
-          .get();
-      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-      if (mounted) {
-        setState(() {
-          color = list['themeColor'];
-          themeBrightness = list['themeBrightness'];
-        });
-      }
-    }
-
-
-  }
   String returnPageTitle(int index) {
     String title = "";
     switch (index) {
@@ -172,16 +155,72 @@ class _mainPageState extends State<mainPage> {
                   text: "Profile",
                 ),
               ],
-              selectedIndex: _selectedIndex,
-              onTabChange: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 8),
+                child: GNav(
+                  rippleColor: transparent(UserData['themeColor'], UserData['themeBrightness']),
+                  hoverColor: transparent(UserData['themeColor'], UserData['themeBrightness']),
+                  gap: 3,
+                  activeColor: setBackGroundBarColor( UserData['themeBrightness']),
+                  iconSize: 25,
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                  duration: const Duration(milliseconds: 400),
+                  tabBackgroundColor: deep(UserData['themeColor'],  UserData['themeBrightness']),
+                  color: setBackGroundBarColor( UserData['themeBrightness']),
+                  tabs: const [
+                    GButton(
+                      icon: Icons.home,
+                      text: "Home",
+                    ),
+                    GButton(
+                      icon: Icons.calendar_month,
+                      text: "Calendar",
+                    ),
+                    GButton(
+                      icon: Icons.money,
+                      text: "Split Pay",
+                    ),
+                    GButton(
+                      icon: Icons.notifications,
+                      text: "Notification",
+                    ),
+                    GButton(
+                      icon: Icons.account_circle,
+                      text: "Profile",
+                    ),
+                  ],
+                  selectedIndex: _selectedIndex,
+                  onTabChange: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }
+      else {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    }
+    );
+    }
+    else if (snapshot.hasError) {
+    return Text("Something went wrong! ${snapshot.error}");
+    }
+    else {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    },
     );
   }
 }

@@ -57,11 +57,11 @@ class _LoginPageState extends State<LoginPage> {
               //   widget.icon
               //   size: 100,
               // ),
-              Text(
+              const Text(
                 'Roommates',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               //Email
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.only(left: 12.0),
                     child: TextField(
                       controller: emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(
                           Icons.email,
                           color: Colors.blue,
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               //Password
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -105,9 +105,9 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: _obscureText,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.only(top: 14.0),
+                        contentPadding: const EdgeInsets.only(top: 14.0),
                         hintText: 'Password',
-                        prefixIcon: Icon(
+                        prefixIcon: const Icon(
                           Icons.password,
                           color: Colors.blue,
                         ),
@@ -136,10 +136,10 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return ForgotPasswordPage();
+                          return const ForgotPasswordPage();
                         }));
                       },
-                      child: Text(
+                      child: const Text(
                         'Forgot Password?',
                         style: TextStyle(
                           color: Colors.blue,
@@ -151,23 +151,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              SizedBox(height: 50),
-              Container(
+              const SizedBox(height: 50),
+              SizedBox(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
                 height: 40.0,
 
                 child: ElevatedButton(
-                  child: Text(
-                    'Sign in',
-                    style: TextStyle(
-                      color: Colors.white,
-                      letterSpacing: 1.5,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'OpenSans',
-                    ),
-                  ),
                   style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -187,18 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                       signIn();
                     }
                   },
-                ),
-              ),
-
-              // Go to register page.
-              SizedBox(height: 25),
-              Container(
-                // decoration: BoxDecoration(color: Colors.green[300]),
-                width: 180.0,
-                height: 40.0,
-                child: ElevatedButton(
-                  child: Text(
-                    'Register now',
+                  child: const Text(
+                    'Sign in',
                     style: TextStyle(
                       color: Colors.white,
                       letterSpacing: 1.5,
@@ -207,6 +187,16 @@ class _LoginPageState extends State<LoginPage> {
                       fontFamily: 'OpenSans',
                     ),
                   ),
+                ),
+              ),
+
+              // Go to register page.
+              const SizedBox(height: 25),
+              SizedBox(
+                // decoration: BoxDecoration(color: Colors.green[300]),
+                width: 180.0,
+                height: 40.0,
+                child: ElevatedButton(
                   style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -217,9 +207,19 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => registrationPage()));
+                            builder: (context) => const registrationPage()));
 
                   },
+                  child: const Text(
+                    'Register now',
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
+                    ),
+                  ),
                 ),
               ),
             ],

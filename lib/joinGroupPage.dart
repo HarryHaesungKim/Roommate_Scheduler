@@ -2,16 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/mainPage.dart';
 import 'package:get/get.dart';
-
 import 'Group/groupController.dart';
 import 'Group/groupModel.dart';
 
 
-/**
- * This class holds the widget that allows users to join or create a group.
- */
+/// This class holds the widget that allows users to join or create a group.
 class joinGroupPage extends StatefulWidget {
-  joinGroupPage({Key? key}) : super(key: key);
+  const joinGroupPage({Key? key}) : super(key: key);
 
   @override
   State<joinGroupPage> createState() => _joinGroupPage();
@@ -146,8 +143,8 @@ class _joinGroupPage extends State<joinGroupPage> {
               ),
 
               // Create group button
-              SizedBox(height: 25),
-              Container(
+              const SizedBox(height: 25),
+              SizedBox(
                 // decoration: BoxDecoration(color: Colors.green[300]),
                 width: 180.0,
                 height: 40.0,

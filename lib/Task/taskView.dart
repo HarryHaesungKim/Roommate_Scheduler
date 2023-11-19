@@ -6,7 +6,7 @@ import '../theme.dart';
 
 class taskView extends StatelessWidget {
   final TaskObject task;
-  taskView(this.task);
+  const taskView(this.task, {super.key});
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -32,6 +32,20 @@ class taskView extends StatelessWidget {
                 Text(
 
                   task.title!,
+                  style: GoogleFonts.lato(
+                    textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+
+                if(task.rate != null)
+                Text(
+                  "Rate: ${task.rate}",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
                         fontSize: 20,

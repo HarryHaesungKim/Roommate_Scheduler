@@ -6,9 +6,7 @@ import 'package:roommates/joinGroupPage.dart';
 import 'package:get/get.dart';
 import 'package:roommates/User/user_model.dart';
 
-/**
- * This class holds the widget that allows users to register their information and use the app.
- */
+/// This class holds the widget that allows users to register their information and use the app.
 class registrationPage extends StatefulWidget {
   const registrationPage({Key? key}) : super(key: key);
 
@@ -28,7 +26,7 @@ class _RegPageState extends State<registrationPage> {
   final _balance = "0";
   final _income = "0";
   final _expense = "0";
-  String _imageURL = "";
+  final String _imageURL = "";
 
   @override
   void dispose() {
@@ -53,7 +51,7 @@ class _RegPageState extends State<registrationPage> {
             password: _passwordController.text.trim(),
             username: _userName.text.trim(),
             groupID: "",
-            chatRooms: [],
+            //chatRooms: [],
             balance:_balance,
             income: _income,
             expense:  _expense,
@@ -82,7 +80,7 @@ class _RegPageState extends State<registrationPage> {
       showDialog(
           context: context,
           builder: (context) {
-            return AlertDialog(
+            return const AlertDialog(
               content: Text("Passwords didn't match"),
             );
           });
@@ -97,7 +95,7 @@ class _RegPageState extends State<registrationPage> {
   @override
   Widget build(BuildContext context) {
     if (showJoinGroup) {
-      return joinGroupPage();
+      return const joinGroupPage();
     } else {
       return Scaffold(
           backgroundColor: Colors.white,
@@ -111,13 +109,13 @@ class _RegPageState extends State<registrationPage> {
                   height: 100,
                   width: 100,
                 ),
-                Text(
+                const Text(
                   'Register',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
 
                 // Username textbox
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
@@ -130,7 +128,7 @@ class _RegPageState extends State<registrationPage> {
                       padding: const EdgeInsets.only(left: 12.0),
                       child: TextField(
                         controller: _userName,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.account_circle,
                             color: Colors.blue,
@@ -144,7 +142,7 @@ class _RegPageState extends State<registrationPage> {
                   ),
                 ),
 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 //Email
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -158,7 +156,7 @@ class _RegPageState extends State<registrationPage> {
                       padding: const EdgeInsets.only(left: 12.0),
                       child: TextField(
                         controller: _emailController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.email,
                             color: Colors.blue,
@@ -172,7 +170,7 @@ class _RegPageState extends State<registrationPage> {
                   ),
                 ),
 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 //Password
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -189,9 +187,9 @@ class _RegPageState extends State<registrationPage> {
                         obscureText: _password,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.only(top: 14.0),
+                          contentPadding: const EdgeInsets.only(top: 14.0),
                           hintText: 'Password',
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.lock,
                             color: Colors.blue,
                           ), suffixIcon: GestureDetector(
@@ -210,7 +208,7 @@ class _RegPageState extends State<registrationPage> {
                 ),
 
                 /// Confirm password textbox
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Container(
@@ -226,9 +224,9 @@ class _RegPageState extends State<registrationPage> {
                         obscureText: _confirmPassword,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.only(top: 14.0),
+                          contentPadding: const EdgeInsets.only(top: 14.0),
                           hintText: 'Confirm Password',
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.password,
                             color: Colors.blue,
                           ),
@@ -250,22 +248,12 @@ class _RegPageState extends State<registrationPage> {
 
 
                 // Sign up button.
-                SizedBox(height: 20),
-                Container(
+                const SizedBox(height: 20),
+                SizedBox(
                   // decoration: BoxDecoration(color: Colors.green[300]),
                   width: 180.0,
                   height: 40.0,
                   child: ElevatedButton(
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 1.5,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
-                    ),
                     style: ButtonStyle(
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -286,18 +274,8 @@ class _RegPageState extends State<registrationPage> {
                         registerAccount();
                       }
                     },
-                  ),
-                ),
-
-                // Return to login button.
-                SizedBox(height: 20),
-                Container(
-                  // decoration: BoxDecoration(color: Colors.green[300]),
-                  width: 180.0,
-                  height: 40.0,
-                  child: ElevatedButton(
-                    child: Text(
-                      'Back to Login',
+                    child: const Text(
+                      'Sign Up',
                       style: TextStyle(
                         color: Colors.white,
                         letterSpacing: 1.5,
@@ -306,6 +284,16 @@ class _RegPageState extends State<registrationPage> {
                         fontFamily: 'OpenSans',
                       ),
                     ),
+                  ),
+                ),
+
+                // Return to login button.
+                const SizedBox(height: 20),
+                SizedBox(
+                  // decoration: BoxDecoration(color: Colors.green[300]),
+                  width: 180.0,
+                  height: 40.0,
+                  child: ElevatedButton(
                     style: ButtonStyle(
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -315,8 +303,18 @@ class _RegPageState extends State<registrationPage> {
                     ))),
                     onPressed: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
+                          MaterialPageRoute(builder: (context) => const LoginPage()));
                     },
+                    child: const Text(
+                      'Back to Login',
+                      style: TextStyle(
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'OpenSans',
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -5,10 +5,7 @@ import 'package:roommates/Location/currentLocation.dart';
 import 'package:roommates/LoginPage.dart';
 import 'package:roommates/Settings/accountInformation.dart';
 import 'package:roommates/Settings/changeThemePage.dart';
-import 'package:roommates/Settings/helpMenu.dart';
-import 'package:roommates/Settings/mangageBalance.dart';
 import 'package:roommates/Settings/mangageGroupMember.dart';
-import 'package:roommates/User/user_model.dart';
 import 'package:roommates/themeData.dart';
 class settingsProfile extends StatefulWidget {
   const settingsProfile({Key? key}) : super(key: key);
@@ -23,7 +20,7 @@ class _settingsProfileState extends State<settingsProfile> {
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: ((context) => LoginPage())));
+        MaterialPageRoute(builder: ((context) => const LoginPage())));
   }
   void getUserData() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
@@ -58,15 +55,15 @@ class _settingsProfileState extends State<settingsProfile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             children: [
               Icon(
                 Icons.person,
                 color: setAppBarColor(themeColor, themeBrightness),
               ),
-              SizedBox(width: 10,),
-              Text("Account",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
+              const SizedBox(width: 10,),
+              const Text("Account",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
             ],
           ),
           Card(
@@ -77,13 +74,13 @@ class _settingsProfileState extends State<settingsProfile> {
                 //Manage Account Information
                 ListTile(
                   leading: Icon(Icons.password,color:setAppBarColor(themeColor, themeBrightness),),
-                  title: Text("Manage Account Information"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
+                  title: const Text("Manage Account Information"),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
                   //Undo
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EditProfile()),
+                      MaterialPageRoute(builder: (context) => const EditProfile()),
                     );
                   },
 
@@ -97,45 +94,26 @@ class _settingsProfileState extends State<settingsProfile> {
                 //Mangage Group member
                 ListTile(
                   leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
-                  title: Text("Mangage Group Member"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
+                  title: const Text("Mangage Group Member"),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
                  //Undo
                   onTap: (){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => mangageGroupMember()),
+                      MaterialPageRoute(builder: (context) => const mangageGroupMember()),
                     );
                   },
                 ),
-                //Mangage balance
-                ListTile(
-                  leading: Icon(Icons.password_outlined,color:setAppBarColor(themeColor, themeBrightness),),
-                  title: Text("Mangage Balance"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  //Undo
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => mangageBalance()),
-                    );
-                  },
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 1.0,
-                  color: Colors.grey.shade300,
-                ),
-
                 //Change theme
                 ListTile(
                   leading: Icon(Icons.password_outlined,color:setAppBarColor(themeColor, themeBrightness),),
-                  title: Text("Change Theme"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
+                  title: const Text("Change Theme"),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
                   //Undo
                   onTap: (){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => changeTheme()),
+                      MaterialPageRoute(builder: (context) => const changeTheme()),
                     );
                   },
                 ),
@@ -146,29 +124,29 @@ class _settingsProfileState extends State<settingsProfile> {
                 ),
 
                 //Help menu
-                ListTile(
-                  leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
-                  title: Text("Help Menu"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: (){
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                          return HelpMenuPage();
-                        }));
-                  },
+                // ListTile(
+                //   leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
+                //   title: Text("Help Menu"),
+                //   trailing: Icon(Icons.keyboard_arrow_right),
+                //   onTap: (){
+                //     Navigator.push(context,
+                //         MaterialPageRoute(builder: (context) {
+                //           return HelpMenuPage();
+                //         }));
+                //   },
+                // ),
 
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 1.0,
-                  color: Colors.grey.shade300,
-                ),
+                // Container(
+                //   width: double.infinity,
+                //   height: 1.0,
+                //   color: Colors.grey.shade300,
+                // ),
 
                 //Help menu
                 ListTile(
-                  leading: Icon(Icons.map,color: Colors.orange,),
-                  title: Text("User Current Location"),
-                  trailing: Icon(Icons.keyboard_arrow_right),
+                  leading: Icon(Icons.map,color: setAppBarColor(themeColor, themeBrightness),),
+                  title: const Text("User Current Location"),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
                   onTap: (){
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
@@ -187,8 +165,8 @@ class _settingsProfileState extends State<settingsProfile> {
                 Icons.volume_up,
                 color: setAppBarColor(themeColor, themeBrightness),
               ),
-              SizedBox(width: 10),
-              Text("Notifications",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
+              const SizedBox(width: 10),
+              const Text("Notifications",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
             ],
 
           ),
@@ -200,7 +178,7 @@ class _settingsProfileState extends State<settingsProfile> {
                   SwitchListTile(
                     activeColor: setAppBarColor(themeColor, themeBrightness),
                     value: true,
-                    title: Text("Receive Chat Messages",),
+                    title: const Text("Receive Chat Messages",),
                     onChanged: (val){
 
                     },
@@ -208,7 +186,7 @@ class _settingsProfileState extends State<settingsProfile> {
                   SwitchListTile(
                     activeColor: setAppBarColor(themeColor, themeBrightness),
                     value: true,
-                    title: Text("Receive Notification Messages"),
+                    title: const Text("Receive Notification Messages"),
                     onChanged: (val){
 
                     },
@@ -216,19 +194,10 @@ class _settingsProfileState extends State<settingsProfile> {
                 ]
             )
           ),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
 
         Center(
         child: OutlinedButton(
-          child: Text(
-            'Sign out',
-            style: TextStyle(
-              color: setAppBarColor(themeColor, themeBrightness),
-              letterSpacing: 2,
-              fontSize: 15.0,
-
-            ),
-          ),
           style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
@@ -238,6 +207,15 @@ class _settingsProfileState extends State<settingsProfile> {
           onPressed: () {
               _signOut();
           },
+          child: Text(
+            'Sign out',
+            style: TextStyle(
+              color: setAppBarColor(themeColor, themeBrightness),
+              letterSpacing: 2,
+              fontSize: 15.0,
+
+            ),
+          ),
         ),
       ),
         ],

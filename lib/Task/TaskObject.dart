@@ -11,7 +11,7 @@ class TaskObject {
   String? repeat;
   String? assignedUserName;
   String? assignedUserID;
-
+  double? rate;
   TaskObject({
     required this.id,
     this.title,
@@ -24,7 +24,8 @@ class TaskObject {
     this.remind,
     this.repeat,
     this.assignedUserName,
-    this.assignedUserID
+    this.assignedUserID,
+    this.rate,
   });
 
   static TaskObject fromJson(Map<String, dynamic> json) => TaskObject(
@@ -40,22 +41,24 @@ class TaskObject {
     repeat : json['repeat'],
     assignedUserName : json['assignedUserName'],
     assignedUserID : json['assignedUserID'],
+    rate: json['Rate'],
   );
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['title'] = this.title;
-    data['date'] = this.date;
-    data['note'] = this.note;
-    data['isCompleted'] = this.isCompleted;
-    data['startTime'] = this.startTime;
-    data['endTime'] = this.endTime;
-    data['color'] = this.color;
-    data['remind'] = this.remind;
-    data['repeat'] = this.repeat;
-    data['assignedUserName'] = this.assignedUserName;
-    data['assignedUserID'] = this.assignedUserID;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['title'] = title;
+    data['date'] = date;
+    data['note'] = note;
+    data['isCompleted'] = isCompleted;
+    data['startTime'] = startTime;
+    data['endTime'] = endTime;
+    data['color'] = color;
+    data['Rate'] = rate;
+    data['remind'] = remind;
+    data['repeat'] = repeat;
+    data['assignedUserName'] = assignedUserName;
+    data['assignedUserID'] = assignedUserID;
     return data;
   }
 }

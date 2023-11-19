@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:roommates/Task/input_field.dart';
-import 'package:roommates/User/user_model.dart';
 import 'package:get/get.dart';
 
 import '../Group/groupController.dart';
+import '../User/user_controller.dart';
 import '../themeData.dart';
 
 class mangageGroupMember extends StatefulWidget {
@@ -16,9 +16,10 @@ class mangageGroupMember extends StatefulWidget {
 }
 
 class _mangageGroupMember extends State<mangageGroupMember> {
-  final TextEditingController _accessCodeController = TextEditingController();
 
+  final TextEditingController _accessCodeController = TextEditingController();
   final groupController _groupController = Get.put(groupController());
+  final userController _userController = Get.put(userController());
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -29,12 +30,35 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   late List<bool> addPeopleYesOrNo = List.filled(peopleInGroup.length, false);
   late String groupID;
 
-  late bool isuseringroup;
+  late bool isUseringroup;
   late bool isUserAdmin;
   late bool doesNewGroupExist;
 
   String themeBrightness = "";
   String themeColor = "";
+
+  late Future<List<String>> futurePeopleInGroup;
+  late Future<List<String>> futurePeopleInGroupID;
+  late Future<String> futureGroupID;
+  late Future<String> futureThemeBrightness;
+  late Future<String> futureThemeColor;
+  late Future<bool> futureIsUserInGroup;
+  late Future<bool> futureIsUserAdmin;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    String? uID = FirebaseAuth.instance.currentUser?.uid;
+    futureThemeBrightness = _userController.getUserThemeBrightness(uID!);
+    futureThemeColor = _userController.getUserThemeColor(uID);
+    futurePeopleInGroup =  _groupController.getUsersInGroup(uID);
+    futureGroupID = _groupController.getGroupIDFromUser(uID);
+    futurePeopleInGroupID = _groupController.getUserIDsInGroup(uID);
+    futureIsUserInGroup = _groupController.isUserInGroup(uID);
+    futureIsUserAdmin = _groupController.isUserAdmin(uID);
+
+  }
 
   void getUserData() async {
     String? user = FirebaseAuth.instance.currentUser?.uid;
@@ -55,19 +79,10 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     doesNewGroupExist = await _groupController.doesGroupExist(groupID);
   }
 
-  void isUserInGroup(String uID) async {
-    isuseringroup = await _groupController.isUserInGroup(uID);
-  }
-
   void buildIsUserAdmin(String uID) async {
     isUserAdmin = await _groupController.isUserAdmin(uID);
   }
 
-  void buildNonAdminUsers() async {
-    peopleInGroup = await _groupController.getNonAdminUserNames(_uID!);
-    peopleInGroupID = await _groupController.getNonAdminUserIDs(_uID!);
-    groupID = await _groupController.getGroupIDFromUser(_uID!);
-  }
 
   void showNotAdminUserDialog(BuildContext context) {
     Widget cancelButton = TextButton(
@@ -101,8 +116,6 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   }
 
   Future<void> showAddAdminDialog(BuildContext context) async {
-    buildNonAdminUsers();
-
     return await showDialog(
         context: context,
         builder: (context) {
@@ -326,138 +339,155 @@ class _mangageGroupMember extends State<mangageGroupMember> {
 
   @override
   Widget build(BuildContext context) {
-    buildNonAdminUsers();
-    isUserInGroup(_uID!);
-    buildIsUserAdmin(_uID!);
-    setDoesNewGroupExist(groupID);
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: setAppBarColor(themeColor, themeBrightness),
-        title: const Text("Group Member"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: setBackGroundBarColor(themeBrightness)),
-          onPressed: () => Navigator.of(context).pop(),
+    // buildNonAdminUsers();
+    // isUserInGroup(_uID!);
+    // buildIsUserAdmin(_uID!);
+    // setDoesNewGroupExist(groupID);
+
+    return FutureBuilder(
+      future: Future.wait([futureThemeBrightness, futureThemeColor, futurePeopleInGroup,
+        futureGroupID, futurePeopleInGroupID, futureIsUserInGroup, futureIsUserAdmin]),
+    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if(!snapshot.hasData) return Container();
+        themeBrightness = snapshot.data[0];
+        themeColor = snapshot.data[1];
+        peopleInGroup = snapshot.data[2];
+        groupID = snapshot.data[3];
+        peopleInGroupID = snapshot.data[4];
+        isUseringroup = snapshot.data[5];
+        isUserAdmin = snapshot.data[6];
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: setAppBarColor(themeColor, themeBrightness),
+          title: const Text("Group Member"),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back,
+                color: setBackGroundBarColor(themeBrightness)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: ListView(
-          children: [
-            SizedBox(
-              width: 50,
-              child: InputField(
-                title: "Group Code",
-                hint: "Enter your code",
-                controller: _accessCodeController,
+        body: Container(
+          padding: const EdgeInsets.all(10),
+          child: ListView(
+            children: [
+              SizedBox(
+                width: 50,
+                child: InputField(
+                  title: "Group Code",
+                  hint: "Enter your code",
+                  controller: _accessCodeController,
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-                width: 15,
-                child: ElevatedButton(
-                  onPressed: () {
-                    //check to see if the user is in a group first
-                    isUserInGroup(_uID!);
-                    setDoesNewGroupExist(_accessCodeController.text.trim());
-                    if (isuseringroup) {
-                      showAlreadyInGroupDialog(context);
-                      return;
-                    }
-                    if (_accessCodeController.text.isEmpty) {
-                      showEmptyGroupIDDialog(context);
-                      return;
-                    }
-                    if (!isGroupIDFormatted(
-                        _accessCodeController.text.trim())) {
-                      showGroupIDNotFormatted(context);
-                      return;
-                    }
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                  width: 15,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      //check to see if the user is in a group first
 
-                    if (!doesNewGroupExist!) {
-                      showGroupDoesNotExist(context);
-                      return;
-                    }
-                    _groupController.addUserToGroup(_accessCodeController.text.trim(), _uID!);
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          setAppBarColor(themeColor, themeBrightness),
-                      side: BorderSide.none,
-                      shape: const StadiumBorder()),
-                  child: const Text(
-                    "Join Different Group",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )),
-            const SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-                width: 15,
-                child: ElevatedButton(
-                  onPressed: () {
-                    //Back-End from Groups database
+                      setDoesNewGroupExist(_accessCodeController.text.trim());
+                      if (isUseringroup) {
+                        showAlreadyInGroupDialog(context);
+                        return;
+                      }
+                      if (_accessCodeController.text.isEmpty) {
+                        showEmptyGroupIDDialog(context);
+                        return;
+                      }
+                      if (!isGroupIDFormatted(
+                          _accessCodeController.text.trim())) {
+                        showGroupIDNotFormatted(context);
+                        return;
+                      }
 
-                    isUserInGroup(_uID!);
-                    //check if the user is already groupless
-                    if (!(isuseringroup)) {
-                      Get.snackbar("Error",
-                          "You cannot leave group because you are not in a group!");
-                      return;
-                    }
-                    showAlertDialog(context);
-                    // provide a "Are you sure you want to leave prompt"
+                      if (!doesNewGroupExist) {
+                        showGroupDoesNotExist(context);
+                        return;
+                      }
+                      _groupController.addUserToGroup(
+                          _accessCodeController.text.trim(), _uID!);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                        setAppBarColor(themeColor, themeBrightness),
+                        side: BorderSide.none,
+                        shape: const StadiumBorder()),
+                    child: const Text(
+                      "Join Different Group",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                  width: 15,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      //Back-End from Groups database
 
-                    // if there is other users in the group and the group is
-                    // in parentMode and this user is the only admin, make sure
-                    // they make another member an admin before they leave,
-                    // if they are the only member just let them leave group and
-                    // delete group
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          setAppBarColor(themeColor, themeBrightness),
-                      side: BorderSide.none,
-                      shape: const StadiumBorder()),
-                  child: const Text(
-                    "Leave Group",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )),
-            SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-                width: 15,
-                child: ElevatedButton(
-                  onPressed: () {
-                    buildIsUserAdmin(_uID!);
-                    //check if the current user is an admin user
-                    if (isUserAdmin) {
-                      showAddAdminDialog(context);
-                    } else {
-                      showNotAdminUserDialog(context);
-                    }
-                    //first check to see if this user is an admin use for the group
+                      //check if the user is already groupless
+                      if (!(isUseringroup)) {
+                        Get.snackbar("Error",
+                            "You cannot leave group because you are not in a group!");
+                        return;
+                      }
+                      showAlertDialog(context);
+                      // provide a "Are you sure you want to leave prompt"
 
-                    // IF the user is admin pull list of users in the group who are not admins
-                    //have a list to select users and make them admins for the group
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      side: BorderSide.none,
-                      shape: const StadiumBorder()),
-                  child: const Text(
-                    "Add Admin Users",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ))
-          ],
+                      // if there is other users in the group and the group is
+                      // in parentMode and this user is the only admin, make sure
+                      // they make another member an admin before they leave,
+                      // if they are the only member just let them leave group and
+                      // delete group
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                        setAppBarColor(themeColor, themeBrightness),
+                        side: BorderSide.none,
+                        shape: const StadiumBorder()),
+                    child: const Text(
+                      "Leave Group",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+              SizedBox(
+                  width: 15,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      buildIsUserAdmin(_uID!);
+                      //check if the current user is an admin user
+                      if (isUserAdmin) {
+                        showAddAdminDialog(context);
+                      } else {
+                        showNotAdminUserDialog(context);
+                      }
+                      //first check to see if this user is an admin use for the group
+
+                      // IF the user is admin pull list of users in the group who are not admins
+                      //have a list to select users and make them admins for the group
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                        setAppBarColor(themeColor, themeBrightness),
+                        side: BorderSide.none,
+                        shape: const StadiumBorder()),
+                    child: const Text(
+                      "Add Admin Users",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ))
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
+
+
 }
