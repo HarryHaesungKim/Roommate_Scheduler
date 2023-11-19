@@ -1,5 +1,5 @@
 How to build and run on Android Studio:
--Open device manager and "Create Device".
+-Open device manager and "Create Device" within Android Studio project window.
 -Within the "Phone" category, select a device (We used Pixel 6).
 -For the system image, select the "Tiramisu" release (API level 33 and ABI x86_64).
 -Name the device to your choosing and click "Finish".
