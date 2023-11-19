@@ -124,7 +124,7 @@ class _homePage extends State<homePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const GroupChatsListPageUpdated()),
+                                      builder: (context) => const GroupChatsListPageUpdated(gotKicked: false,)),
                                 );
                               },
                               child: const Icon(Icons.send),
