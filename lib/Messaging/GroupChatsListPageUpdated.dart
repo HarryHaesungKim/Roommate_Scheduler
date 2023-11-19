@@ -186,7 +186,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                           leading: IconButton(
                             icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
                             onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                              return const mainPage();
+                              return const mainPage(navigateToScreen: 0,);
                             })),
                           ),
                           backgroundColor:setAppBarColor(themeColor, themeBrightness),
