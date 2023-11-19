@@ -11,12 +11,16 @@ import 'package:roommates/themeData.dart';
 import 'User/user_controller.dart';
 import 'calendarPage/calendarPage.dart';
 
+import 'package:roommates/api/firebase_api.dart';
+
 class mainPage extends StatefulWidget {
-  const mainPage({super.key});
+
+  final int navigateToScreen;
+
+  const mainPage({Key? key, required this.navigateToScreen}) : super(key: key);
 
   @override
-  _mainPageState createState() => _mainPageState();
-
+  State<mainPage> createState() => _mainPageState();
 
 }
 
@@ -34,10 +38,22 @@ class _mainPageState extends State<mainPage> {
     const ProfilePage(),
   ];
 
+  late int screenCopy;
+
+  FirebaseApi pushNotifCon = FirebaseApi();
+
   @override
   void initState() {
     super.initState();
-}
+    screenCopy = widget.navigateToScreen;
+    _selectedIndex = screenCopy;
+    // print("Sent from mainPage.dart");
+
+    // Initialize the entire notification stuff upon start up of the app.
+    // Sends the token to firebase when the app itself is building up.
+    // Will send regardless of if person is not signed in, or already is since main page needs to build.
+    pushNotifCon.initNotifications();
+  }
 
   String returnPageTitle(int index) {
     String title = "";
@@ -82,35 +98,62 @@ class _mainPageState extends State<mainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Future.wait([]),
-    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-    if (snapshot.hasData) {
-    return StreamBuilder(
-    stream: FirebaseFirestore.instance
-        .collection('Users')
-        .doc(currUser!)
-        .snapshots(),
-    builder: (context, snapshot) {
-      // If there's an error.
-      if (snapshot.hasError) {
-        return Text('Something went wrong! ${snapshot.data}');
-      }
-      // If there's no error and the snapshot has data.
-      else if (snapshot.hasData) {
-        // Setting the task data.
-        final UserData = snapshot.data!;
-        return Scaffold(
-          backgroundColor: setBackGroundBarColor(UserData['themeBrightness']),
-          body: screens[_selectedIndex],
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              color: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 20,
-                  color: Colors.black.withOpacity(.1),
-                )
+    getUserData();
+    return Scaffold(
+      // Don't need appbar for mainPage.dart. Each page will have it's own appbar.
+      //appBar: AppBar(
+      //    backgroundColor: Colors.orange[700],
+      //    title: Text(returnPageTitle(_selectedIndex))
+      //),
+      backgroundColor: setBackGroundBarColor(themeBrightness),
+      body: screens[_selectedIndex],
+      // body: Center(
+      //   child: _widgetOptions.elementAt(_selectedIndex),
+      // ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: setAppBarColor(color, themeBrightness),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 20,
+              color: Colors.black.withOpacity(.1),
+            )
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+            child: GNav(
+              rippleColor:transparent(color, themeBrightness),
+              hoverColor: transparent(color, themeBrightness),
+              gap: 3,
+              activeColor: setBackGroundBarColor(themeBrightness),
+              iconSize: 25,
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+              duration: const Duration(milliseconds: 400),
+              tabBackgroundColor: deep(color, themeBrightness),
+              color: setBackGroundBarColor(themeBrightness),
+              tabs: const [
+                GButton(
+                  icon: Icons.home,
+                  text: "Home",
+                ),
+                GButton(
+                  icon: Icons.calendar_month,
+                  text: "Calendar",
+                ),
+                GButton(
+                  icon: Icons.money,
+                  text: "Split Pay",
+                ),
+                GButton(
+                  icon: Icons.notifications,
+                  text: "Notification",
+                ),
+                GButton(
+                  icon: Icons.account_circle,
+                  text: "Profile",
+                ),
               ],
             ),
             child: SafeArea(

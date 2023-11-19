@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -94,9 +95,17 @@ class _CostSplitViewPage extends State<CostSplitView> {
             return Text("Something went wrong! ${snapshot.error}");
           }
 
-          // If there's no error and the snapshot has data.
-          else if (snapshot.hasData) {
-            currGroupID = snapshot.data[0];
+    // Testing notification routing stuff
+    // final message = ModalRoute.of(context)!.settings.arguments as RemoteMessage;
+    // print(message.notification!.title.toString());
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.orange[700],
+          title: const Text("Split Pay"),
+          //title: Text( message.notification!.title.toString()),
+        ),
 
             // Setting the group members and their IDs.
             peopleInGroup = snapshot.data[1];

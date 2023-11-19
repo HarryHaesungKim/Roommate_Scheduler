@@ -26,12 +26,47 @@ class _profilePage extends State<ProfilePage> {
   final groupController groupCon = groupController();
   String? currUser = FirebaseAuth.instance.currentUser?.uid;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    isGroupAdmin = groupCon.isGroupAdminModeByID(currUser!);
-    isFutureAdmin = groupCon.isUserAdmin(currUser!);
+  Future<void> _signOut() async {
+
+    // Delete the device token associated with that account.
+    FirebaseFirestore.instance.collection('Users').doc(_uID).update({'DeviceToken': ''});
+
+    // Other stuff.
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: ((context) => const LoginPage())));
+  }
+
+  void getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if (user != null) {
+      DocumentSnapshot db =
+          await FirebaseFirestore.instance.collection("Users").doc(user).get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          userName = list['UserName'];
+          email = list['Email'];
+          password = list['Password'];
+          groupID = list['groupID'];
+          imageURL = list['imageURL'];
+          themeBrightness = list['themeBrightness'];
+          themeColor = list['themeColor'];
+        });
+
+        if (await _groupController.isUserAdmin(_uID!)) {
+          isAdmin = "True";
+        } else {
+          isAdmin = "False";
+        }
+
+        if (await _groupController.isGroupAdminMode(groupID)) {
+          adminMode = "True";
+        } else {
+          adminMode = "False";
+        }
+      }
+    }
   }
 
   @override
