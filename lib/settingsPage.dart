@@ -93,7 +93,7 @@ class _settingsProfileState extends State<settingsProfile> {
 
                 //Mangage Group member
                 ListTile(
-                  leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
+                  leading: Icon(Icons.group_add,color: setAppBarColor(themeColor, themeBrightness),),
                   title: const Text("Mangage Group Member"),
                   trailing: const Icon(Icons.keyboard_arrow_right),
                  //Undo
@@ -106,7 +106,7 @@ class _settingsProfileState extends State<settingsProfile> {
                 ),
                 //Change theme
                 ListTile(
-                  leading: Icon(Icons.password_outlined,color:setAppBarColor(themeColor, themeBrightness),),
+                  leading: Icon(Icons.color_lens,color:setAppBarColor(themeColor, themeBrightness),),
                   title: const Text("Change Theme"),
                   trailing: const Icon(Icons.keyboard_arrow_right),
                   //Undo
@@ -145,7 +145,7 @@ class _settingsProfileState extends State<settingsProfile> {
                 //Help menu
                 ListTile(
                   leading: Icon(Icons.map,color: setAppBarColor(themeColor, themeBrightness),),
-                  title: const Text("User Current Location"),
+                  title: const Text("Location"),
                   trailing: const Icon(Icons.keyboard_arrow_right),
                   onTap: (){
                     Navigator.push(context,
