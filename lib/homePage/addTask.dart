@@ -359,6 +359,7 @@ class _AddTaskPageState extends State<addTask> {
         rates: 0.0,
         voteRecord: 0,
         rate:0.0,
+        overallRate:0.0,
       ),
     );
   }

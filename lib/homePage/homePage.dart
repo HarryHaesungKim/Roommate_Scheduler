@@ -547,7 +547,7 @@ class _homePage extends State<homePage> {
                     ),
                     const SizedBox(height: 25,),
                     RatingBar.builder(
-                      initialRating: 1,
+                      initialRating: 0,
                       minRating: 0,
                       direction: Axis.horizontal,
                       allowHalfRating: true,
@@ -578,10 +578,7 @@ class _homePage extends State<homePage> {
                   taskCon.setRate(currGroup,task,taskRate);
                   taskCon.setRates(currGroup,task,task.rates!+taskRate);
                   taskCon.setVoteRecord(currGroup,task,task.voteRecord!);
-                  print(task.rate!);
-                  print(task.rates!);
-                  print(task.voteRecord!);
-                  taskCon.setOverAllRate(currGroup, task, task.rates!);
+                  taskCon.setOverAllRate(currGroup, task, taskRate, task.overallRate!);
                   Get.back();
                 },
               ),

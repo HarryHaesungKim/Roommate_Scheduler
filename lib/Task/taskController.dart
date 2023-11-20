@@ -50,8 +50,8 @@ class taskController extends GetxController {
     await _db.setVoteRecord(groupID, task,voteRecord);
     getTasks(groupID);
   }
-  void setOverAllRate(String groupID,TaskObject task, double rates) async {
-    await _db.setOverallRate(groupID, task,rates);
+  void setOverAllRate(String groupID,TaskObject task, double rate,double rates) async {
+    await _db.setOverallRate(groupID, task,rate,rates);
     getTasks(groupID);
   }
   }

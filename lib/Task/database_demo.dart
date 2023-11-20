@@ -36,19 +36,22 @@ class DBHelper {
   }
   setVoteRecord(String groupID,TaskObject Task, int voteRecord) async {
     final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(Task.id);
-    voteRecord +=1;
+    voteRecord++;
     docref.update({"voteRecord": voteRecord,});
   }
-  setOverallRate(String groupID,TaskObject Task, double rates) async {
+  setOverallRate(String groupID,TaskObject Task, double rate, double overallRate) async {
     final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(Task.id);
-    double rates =(Task.rate! + Task.rates!)/(Task.voteRecord! +1);
-    docref.update({"Rates": rates,});
+    print(Task.voteRecord!);
+    print(Task.rates!);
+    double overallRate =(rate + Task.rates!)/(Task.voteRecord! +1);
+    docref.update({"overallRate": overallRate,});
   }
   /// This method returns whether user [uID] is an admin in their group
   Future<bool> isUserAdmin(String uID) async {
     // get the groupID of the user/ see if the user is in a group.
     String gID = await getGroupID(uID);
 
+    //4+5+3+5/ 4
     // get the list of the admins in this group
     final groupRef = await _db.collection("Group").doc(gID).get();
     var arr = groupRef.data()?['parentUsers'];

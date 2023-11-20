@@ -14,6 +14,7 @@ class TaskObject {
   String? assignedUserName;
   String? assignedUserID;
   double? rate;
+  double? overallRate;
   TaskObject({
     required this.id,
     this.title,
@@ -30,6 +31,7 @@ class TaskObject {
     this.rate,
     this.rates,
     this.voteRecord,
+    this.overallRate,
   });
 
   static TaskObject fromJson(Map<String, dynamic> json) => TaskObject(
@@ -48,6 +50,7 @@ class TaskObject {
     rate: json['Rate'],
     voteRecord : json['voteRecord'],
     rates : json['Rates'],
+    overallRate : json['overallRate'],
   );
 
   Map<String, dynamic> toJson() {
@@ -67,6 +70,7 @@ class TaskObject {
     data['assignedUserID'] = assignedUserID;
     data['voteRecord'] = voteRecord;
     data['Rates'] = rates;
+    data['overallRate'] = overallRate;
     return data;
   }
 }
