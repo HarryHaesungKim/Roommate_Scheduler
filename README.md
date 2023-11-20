@@ -29,24 +29,44 @@
 -Install and run "Roommate Scheduler" on your device.
 
 ## extra libraries:
-  cupertino_icons: ^1.0.2
-  firebase_core: ^2.9.0
-  google_nav_bar: ^5.0.6
-  table_calendar: ^3.0.9
-  firebase_auth: ^4.4.0
-  google_fonts: ^4.0.3
-  get_storage: ^2.0.3
-  path_provider: ^2.1.1
-  image_picker: ^1.0.4
-  sqflite: ^2.0.2
-  firebase_messaging: ^14.4.1
-  firebase_analytics: ^10.2.1
-  cloud_firestore: ^4.5.2
-  number_text_input_formatter: ^1.0.0+7
-  date_picker_timeline:
-  dropdown_button2:
-  firebase_storage: ^11.2.7
-  google_maps_flutter: ^2.5.0
-  geolocator: ^9.0.1
-  flutter_rating_bar: ^4.0.1
-  label_marker: ^1.0.1
+-cupertino_icons: ^1.0.2
+
+-firebase_core: ^2.9.0
+
+-google_nav_bar: ^5.0.6
+
+-table_calendar: ^3.0.9
+
+-firebase_auth: ^4.4.0
+
+-google_fonts: ^4.0.3
+
+-get_storage: ^2.0.3
+
+-path_provider: ^2.1.1
+
+-image_picker: ^1.0.4
+
+-sqflite: ^2.0.2
+
+-firebase_messaging: ^14.4.1
+
+-firebase_analytics: ^10.2.1
+
+-cloud_firestore: ^4.5.2
+
+-number_text_input_formatter: ^1.0.0+7
+
+-date_picker_timeline:
+
+-dropdown_button2:
+
+-firebase_storage: ^11.2.7
+
+-google_maps_flutter: ^2.5.0
+
+-geolocator: ^9.0.1
+
+-flutter_rating_bar: ^4.0.1
+
+-label_marker: ^1.0.1
