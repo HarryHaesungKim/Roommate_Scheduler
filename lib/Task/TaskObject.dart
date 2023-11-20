@@ -7,7 +7,9 @@ class TaskObject {
   String? startTime;
   String? endTime;
   int? color;
-  int? remind;
+  double? rates ;
+  int? voteRecord;
+  int? remind ;
   String? repeat;
   String? assignedUserName;
   String? assignedUserID;
@@ -26,6 +28,8 @@ class TaskObject {
     this.assignedUserName,
     this.assignedUserID,
     this.rate,
+    this.rates,
+    this.voteRecord,
   });
 
   static TaskObject fromJson(Map<String, dynamic> json) => TaskObject(
@@ -42,6 +46,8 @@ class TaskObject {
     assignedUserName : json['assignedUserName'],
     assignedUserID : json['assignedUserID'],
     rate: json['Rate'],
+    voteRecord : json['voteRecord'],
+    rates : json['Rates'],
   );
 
   Map<String, dynamic> toJson() {
@@ -59,6 +65,8 @@ class TaskObject {
     data['repeat'] = repeat;
     data['assignedUserName'] = assignedUserName;
     data['assignedUserID'] = assignedUserID;
+    data['voteRecord'] = voteRecord;
+    data['Rates'] = rates;
     return data;
   }
 }

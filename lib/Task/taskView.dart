@@ -42,7 +42,7 @@ class taskView extends StatelessWidget {
                 const SizedBox(
                   height: 12,
                 ),
-
+//First question, how to let user only vote once every task?
                 if(task.rate != null)
                 Text(
                   "Rate: ${task.rate}",
