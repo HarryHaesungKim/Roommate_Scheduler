@@ -87,6 +87,12 @@ class _RegPageState extends State<registrationPage> {
     }
   }
 
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: ((context) => const joinGroupPage())));
+  }
+
   bool passwordsMatch() {
     return (_passwordController.text.trim() ==
         _confirmPasswordController.text.trim());

@@ -71,6 +71,7 @@ class _homePage extends State<homePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    //FirebaseAuth.instance.signOut();
     futureCurrGroup = groupCon.getGroupIDFromUser(currUser!);
     isGroupAdmin = groupCon.isGroupAdminModeByID(currUser!);
     futureThemeBrightness = userCon.getUserThemeBrightness(currUser!);

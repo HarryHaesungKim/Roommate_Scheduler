@@ -23,7 +23,7 @@ class _joinGroupPage extends State<joinGroupPage> {
   /// groupController
   final _groupController = Get.put(groupController());
 
-  final _uID = FirebaseAuth.instance.currentUser?.uid;
+  var _uID = FirebaseAuth.instance.currentUser?.uid;
 
   late bool _adminMode = false;
 
@@ -158,6 +158,8 @@ class _joinGroupPage extends State<joinGroupPage> {
                   onPressed: () async {
                     //first create an new groupID that is not taken
                     late GroupModel group;
+                    _uID = FirebaseAuth.instance.currentUser?.uid;
+                    print("User id is $_uID");
                     if(_adminMode)
                       {
                          group = GroupModel(
