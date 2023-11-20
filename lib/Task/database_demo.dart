@@ -20,16 +20,29 @@ class DBHelper {
     return gID.isNumericOnly;
   }
   setRate(String groupID,TaskObject Task, double rate) async {
+
     final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(Task.id);
-    docref.update({"Rate": rate}).whenComplete(() =>
+    docref.update({"Rate": rate,},).whenComplete(() =>
         Get.snackbar("Completed",
-            "Task marked as complete.")).
+            "Rate shows.")).
     catchError((error, stackTrace) {
       //something went wrong. tell user
       Get.snackbar("ERROR", "Whoops, something went wrong.");
     });
   }
-
+  setRates(String groupID,TaskObject Task, double rates) async {
+    final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(Task.id);
+    docref.update({"Rates": rates,});
+  }
+  setVoteRecord(String groupID,TaskObject Task, int voteRecord) async {
+    final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(Task.id);
+    voteRecord++;
+    docref.update({"voteRecord": voteRecord,});
+  }
+  setOverallRate(String groupID,TaskObject Task, double rates) async {
+    final docref = _db.collection("Group").doc(groupID).collection("tasks").doc(Task.id);
+    docref.update({"Rates": rates/Task.voteRecord!,});
+  }
   /// This method returns whether user [uID] is an admin in their group
   Future<bool> isUserAdmin(String uID) async {
     // get the groupID of the user/ see if the user is in a group.
@@ -180,16 +193,20 @@ class DBHelper {
 
   /// removes user [uID] from the current group they are in, also removes them
   /// from any tasks, events, etc. that they are in. Also sets the users
-  ///  groupID to NULL.
+  ///  groupID to "".
   removeUserFromGroup(String uID) async {
     //remove from group
     String groupID = await getGroupID(uID);
-    final groupRef = await _db
+
+    print("UserID of user leaving is: $uID");
+    print('Group ID $groupID');
+    await _db
         .collection("Group")
         .doc(groupID)
         .collection("users")
         .doc(uID)
         .delete();
+
 
     //remove them from all events, tasks, etc. from this group
 

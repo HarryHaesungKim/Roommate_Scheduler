@@ -71,6 +71,7 @@ class _homePage extends State<homePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    //FirebaseAuth.instance.signOut();
     futureCurrGroup = groupCon.getGroupIDFromUser(currUser!);
     isGroupAdmin = groupCon.isGroupAdminModeByID(currUser!);
     futureThemeBrightness = userCon.getUserThemeBrightness(currUser!);
@@ -340,7 +341,7 @@ class _homePage extends State<homePage> {
           ),
           const Spacer(),
           //if you are an admin user, you can vote other's task. others can't vote.
-          //if you are not admin user, everyone can vote other's task.
+          //if you are not admin user, everyone can vote other's task, but can't vote yourself.
           task.isCompleted == 1
               ? _buildBottomSheetButton(
               label: "Vote task",
@@ -350,37 +351,40 @@ class _homePage extends State<homePage> {
                     await createVoting(context, task);
                     Get.back();
                   }else{
-                    Get.snackbar("Error:", "You aren't admin, and you can't vote other's task");
+                    Get.snackbar("Warning:", "You aren't admin, and you can't vote other's task");
                   }
                 }else{
                   if (task.assignedUserName != currentName) {
                     await createVoting(context, task);
                     Get.back();
                   }else{
-                    Get.snackbar("Error:", "You can‘t vote your task");
+                    Get.snackbar("Warning:", "You can‘t vote your task");
                   }
                 }
               },
               clr: Colors.yellow[300])
               : _buildBottomSheetButton(
               label: "Task Completed",
-              //Question here: Admin or not admin can only mark his own task
+              //Only you can mark your task completed, or only admin users can mark your task completed
               onTap: () async {
                 if (gotIsGroupAdmin) {
                   if (await groupCon.isUserAdmin(currUser!)) {
+                    if (await groupCon.isUserAdmin(currUser!)){
+                      taskCon.markTaskCompleted(currGroup, task.id);
+                      Get.back();
+                    }
+                  }
+                }else{
+                  if (task.assignedUserName == currentName) {
                     taskCon.markTaskCompleted(currGroup, task.id);
                     Get.back();
-                  } else {
-                    Get.back();
-                    Get.snackbar("Not Admin!",
-                        "Not an admin user, cannot mark tasks as complete");
+                  }else{
+                    Get.snackbar("Warning:", "You can‘t complete other tasks ");
                   }
-                } else {
-                  taskCon.markTaskCompleted(currGroup, task.id);
-                  Get.back();
                 }
               },
               clr: primaryClr),
+          //Only admin users can delete tasks, or you can delete your task
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () async {
@@ -394,8 +398,15 @@ class _homePage extends State<homePage> {
                         "Not Admin!", "Not an admin user, cannot delete tasks");
                   }
                 } else {
-                  taskCon.deleteTask(currGroup, task);
-                  Get.back();
+                  if (task.assignedUserName == currentName) {
+                    taskCon.deleteTask(currGroup, task);
+                    Get.back();
+                  }else{
+                    Get.back();
+                    Get.snackbar(
+                        "Warning:", "You can‘t delete others task ");
+                  }
+
                 }
               },
               clr: Colors.red[300]),
@@ -565,7 +576,10 @@ class _homePage extends State<homePage> {
                 child: const Text('Submit'),
                 onPressed: () {
                   taskCon.setRate(currGroup,task,taskRate);
-
+                  taskCon.setRates(currGroup,task,task.rates!+taskRate);
+                  Get.back();
+                  taskCon.setVoteRecord(currGroup,task,task.voteRecord!);
+                 taskCon.setOverAllRate(currGroup, task, task.rates!);
                 },
               ),
             ),

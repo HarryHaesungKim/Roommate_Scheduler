@@ -115,45 +115,79 @@ class _mainPageState extends State<mainPage> {
 
   @override
   Widget build(BuildContext context) {
-    getUserData();
-    return Scaffold(
-      // Don't need appbar for mainPage.dart. Each page will have it's own appbar.
-      //appBar: AppBar(
-      //    backgroundColor: Colors.orange[700],
-      //    title: Text(returnPageTitle(_selectedIndex))
-      //),
-      backgroundColor: setBackGroundBarColor(themeBrightness),
-      body: screens[_selectedIndex],
-      // body: Center(
-      //   child: _widgetOptions.elementAt(_selectedIndex),
-      // ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: setAppBarColor(color, themeBrightness),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Colors.black.withOpacity(.1),
-            )
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-            child: GNav(
-              rippleColor:transparent(color, themeBrightness),
-              hoverColor: transparent(color, themeBrightness),
-              gap: 3,
-              activeColor: setBackGroundBarColor(themeBrightness),
-              iconSize: 25,
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              duration: const Duration(milliseconds: 400),
-              tabBackgroundColor: deep(color, themeBrightness),
-              color: setBackGroundBarColor(themeBrightness),
-              tabs: const [
-                GButton(
-                  icon: Icons.home,
-                  text: "Home",
+    return FutureBuilder(
+        future: Future.wait([]),
+    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+    if (snapshot.hasData) {
+    return StreamBuilder(
+    stream: FirebaseFirestore.instance
+        .collection('Users')
+        .doc(currUser!)
+        .snapshots(),
+    builder: (context, snapshot) {
+      // If there's an error.
+      if (snapshot.hasError) {
+        return Text('Something went wrong! ${snapshot.data}');
+      }
+      // If there's no error and the snapshot has data.
+      else if (snapshot.hasData) {
+        // Setting the task data.
+        final UserData = snapshot.data!;
+        return Scaffold(
+          backgroundColor: setBackGroundBarColor(UserData['themeBrightness']),
+          body: screens[_selectedIndex],
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 20,
+                  color: Colors.black.withOpacity(.1),
+                )
+              ],
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 8),
+                child: GNav(
+                  rippleColor: transparent(UserData['themeColor'], UserData['themeBrightness']),
+                  hoverColor: transparent(UserData['themeColor'], UserData['themeBrightness']),
+                  gap: 3,
+                  activeColor: setBackGroundBarColor( UserData['themeBrightness']),
+                  iconSize: 25,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  duration: const Duration(milliseconds: 400),
+                  tabBackgroundColor: deep(UserData['themeColor'],  UserData['themeBrightness']),
+                  color: setBackGroundBarColor( UserData['themeBrightness']),
+                  tabs: const [
+                    GButton(
+                      icon: Icons.home,
+                      text: "Home",
+                    ),
+                    GButton(
+                      icon: Icons.calendar_month,
+                      text: "Calendar",
+                    ),
+                    GButton(
+                      icon: Icons.money,
+                      text: "Split Pay",
+                    ),
+                    GButton(
+                      icon: Icons.notifications,
+                      text: "Notification",
+                    ),
+                    GButton(
+                      icon: Icons.account_circle,
+                      text: "Profile",
+                    ),
+                  ],
+                  selectedIndex: _selectedIndex,
+                  onTabChange: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
                 ),
                 GButton(
                   icon: Icons.calendar_month,

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:roommates/Task/input_field.dart';
 import 'package:get/get.dart';
+import 'package:roommates/joinGroupPage.dart';
 
 import '../Group/groupController.dart';
 import '../User/user_controller.dart';
@@ -57,23 +58,9 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     futurePeopleInGroupID = _groupController.getUserIDsInGroup(uID);
     futureIsUserInGroup = _groupController.isUserInGroup(uID);
     futureIsUserAdmin = _groupController.isUserAdmin(uID);
-
   }
 
-  void getUserData() async {
-    String? user = FirebaseAuth.instance.currentUser?.uid;
-    if (user != null) {
-      DocumentSnapshot db =
-          await FirebaseFirestore.instance.collection("Users").doc(user).get();
-      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-      if (mounted) {
-        setState(() {
-          themeBrightness = list['themeBrightness'];
-          themeColor = list['themeColor'];
-        });
-      }
-    }
-  }
+
 
   void setDoesNewGroupExist(String groupID) async {
     doesNewGroupExist = await _groupController.doesGroupExist(groupID);
@@ -119,8 +106,6 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     return await showDialog(
         context: context,
         builder: (context) {
-          // Replaced textEditingController with _newChatNameController.
-          // final TextEditingController textEditingController = TextEditingController();
           bool? isChecked = false;
 
           return StatefulBuilder(builder: (context, setState) {
@@ -213,10 +198,15 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
     Widget continueButton = TextButton(
       child: const Text("Continue"),
-      onPressed: () {
-        _groupController.removeUser(_uID!).whenComplete(
+      onPressed: () async {
+        print("User ID at time if leaving is $_uID");
+        await _groupController.removeUser(_uID!).whenComplete(
                 () => Get.snackbar("Left Group", "You have left the group"));
         Navigator.pop(context, 'Continue');
+        // take user back to the joinGroupPage
+        //await FirebaseAuth.instance.signOut();
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: ((context) => const joinGroupPage())));
       },
     );
     AlertDialog alert = AlertDialog(

@@ -94,7 +94,7 @@ class _AddTaskPageState extends State<addTask> {
     final format = DateFormat.jm();
 
     print(format.format(dt));
-    print("add Task date: ${DateFormat.yMd().format(_selectedDate)}");
+    print("add Task date: ${DateFormat('MM/dd/yyyy').format(_selectedDate)}");
     print("List of assignees$AssigneesList");
     print("user id $uID");
     return FutureBuilder(
@@ -129,7 +129,7 @@ class _AddTaskPageState extends State<addTask> {
                         controller: _noteController),
                     InputField(
                       title: "Date",
-                      hint: DateFormat.yMd().format(_selectedDate),
+                      hint: DateFormat('MM/dd/yyyy').format(_selectedDate),
                       widget: IconButton(
                         icon: (const Icon(
                           Icons.calendar_month_sharp,
@@ -347,7 +347,7 @@ class _AddTaskPageState extends State<addTask> {
         id: '',
         note: _noteController.text.toString(),
         title: _titleController.text.toString(),
-        date: DateFormat.yMd().format(_selectedDate),
+        date: DateFormat('MM/dd/yyyy').format(_selectedDate),
         startTime: _startTime,
         endTime: _endTime,
         remind: _selectedRemind,
@@ -356,6 +356,8 @@ class _AddTaskPageState extends State<addTask> {
         isCompleted: 0,
         assignedUserID: uID,
         assignedUserName: _selectedAssigness,
+        rates: 0.0,
+        voteRecord: 0,
       ),
     );
   }

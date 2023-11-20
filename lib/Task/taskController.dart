@@ -5,7 +5,6 @@ import 'package:roommates/Task/TaskObject.dart';
 class taskController extends GetxController {
   //this will hold the data and update the ui
   final _db = Get.put(DBHelper());
-
   @override
   void onReady() {
     //getTasks();
@@ -37,10 +36,25 @@ class taskController extends GetxController {
      await _db.markTaskDone(groupID, id);
      getTasks(groupID);
    }
+//user only can vote once
+  //all rate numbsers / all vote numbers
   void setRate(String groupID,TaskObject task, double rate) async {
     await _db.setRate(groupID, task,rate);
     getTasks(groupID);
+}
+  void setRates(String groupID,TaskObject task, double rates) async {
+    await _db.setRates(groupID, task,rates);
+    getTasks(groupID);
+  }
+  void setVoteRecord(String groupID,TaskObject task, int voteRecord) async {
+
+    await _db.setVoteRecord(groupID, task,voteRecord);
+    getTasks(groupID);
+  }
+  void setOverAllRate(String groupID,TaskObject task, double rates) async {
+    await _db.setOverallRate(groupID, task,rates);
+    getTasks(groupID);
+  }
   }
 
 
-}

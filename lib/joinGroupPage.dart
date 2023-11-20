@@ -23,7 +23,7 @@ class _joinGroupPage extends State<joinGroupPage> {
   /// groupController
   final _groupController = Get.put(groupController());
 
-  final _uID = FirebaseAuth.instance.currentUser?.uid;
+  var _uID = FirebaseAuth.instance.currentUser?.uid;
 
   late bool _adminMode = false;
 
@@ -157,12 +157,27 @@ class _joinGroupPage extends State<joinGroupPage> {
                   ))),
                   onPressed: () async {
                     //first create an new groupID that is not taken
-                    final group = GroupModel(
-                      id: await GroupModel.groupGenerator(),
-                      parentMode: _adminMode,
-                      users: [_uID!],
-                      tasks: [],
-                      parentUsers: [_uID!]);
+                    late GroupModel group;
+                    _uID = FirebaseAuth.instance.currentUser?.uid;
+                    print("User id is $_uID");
+                    if(_adminMode)
+                      {
+                         group = GroupModel(
+                            id: await GroupModel.groupGenerator(),
+                            parentMode: _adminMode,
+                            users: [_uID!],
+                            tasks: [],
+                            parentUsers: [_uID!]);
+                      }
+                    else
+                      {
+                         group = GroupModel(
+                            id: await GroupModel.groupGenerator(),
+                            parentMode: _adminMode,
+                            users: [_uID!],
+                            tasks: [],
+                            parentUsers: []);
+                      }
 
                     // Need to wait for group to finish creating before taking the user to the main page.
                     // Else, you get an error.

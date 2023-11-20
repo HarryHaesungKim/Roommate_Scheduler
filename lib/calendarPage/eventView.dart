@@ -14,43 +14,43 @@ class eventView extends StatelessWidget {
     _mediaQueryData = MediaQuery.of(context);
     return Container(
       padding:
-      EdgeInsets.symmetric(horizontal: (20 / 375.0) * _mediaQueryData.size.width),
+      EdgeInsets.symmetric(horizontal: (10 / 375.0) * _mediaQueryData.size.width),
       width: _mediaQueryData.size.width,
-      margin: EdgeInsets.only(bottom: (12 / 375.0) * _mediaQueryData.size.width),
       child: Container(
         padding: const EdgeInsets.all(16),
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.grey,
+          color: Colors.black87,
         ),
         child: Row(children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      event.title!,
+                  children:[
+                    Icon(
+                      Icons.event,
+                      color: Colors.grey[200],
+                      size: 30,
+                    ),
+                     SizedBox(
+                      width: _mediaQueryData.size.width/50,
+                    ),
+                    Flexible(
+                      child: Text(
+                      "Event: ${event.title!}",
                       style: GoogleFonts.lato(
                         textStyle: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87),
+                            color: Colors.white),
                       ),
                     ),
-                    SizedBox(width: _mediaQueryData.size.width*0.2),
-                    Text(
-                      "${event.date}",
-                      style: GoogleFonts.lato(
-                        textStyle:
-                        const TextStyle(fontSize: 13, color: Colors.black87),
-                      ),
                     ),
-                  ],
+            ],
+
                 ),
                 const SizedBox(
                   height: 10,
@@ -58,7 +58,7 @@ class eventView extends StatelessWidget {
                 Text(
                   event.note!,
                   style: GoogleFonts.lato(
-                    textStyle: const TextStyle(fontSize: 15, color: Colors.black87),
+                    textStyle: const TextStyle(fontSize: 15, color: Colors.white),
                   ),
                 ),
               ],

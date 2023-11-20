@@ -4,9 +4,9 @@ import 'package:roommates/Task/TaskObject.dart';
 
 import '../theme.dart';
 
-class taskView extends StatelessWidget {
+class calendar_taskView extends StatelessWidget {
   final TaskObject task;
-  const taskView(this.task, {super.key});
+  const calendar_taskView(this.task, {super.key});
   static late MediaQueryData _mediaQueryData;
 
   @override
@@ -14,9 +14,8 @@ class taskView extends StatelessWidget {
     _mediaQueryData = MediaQuery.of(context);
     return Container(
       padding:
-      EdgeInsets.symmetric(horizontal: (20 / 375.0) * _mediaQueryData.size.width),
+      EdgeInsets.symmetric(horizontal: (10 / 375.0) * _mediaQueryData.size.width),
       width: _mediaQueryData.size.width,
-      margin: EdgeInsets.only(bottom: (12 / 375.0) * _mediaQueryData.size.width),
       child: Container(
         padding: const EdgeInsets.all(16),
         //  width: SizeConfig.screenWidth * 0.78,
@@ -29,64 +28,48 @@ class taskView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-
-                  task.title!,
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-//First question, how to let user only vote once every task?
-                if(task.rate != null)
-                Text(
-                  "Rate: ${task.rate}",
-                  style: GoogleFonts.lato(
-                    textStyle: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
+                  children:[
                     Icon(
-                      Icons.alarm,
+                      Icons.task,
                       color: Colors.grey[200],
-                      size: 18,
+                      size: 30,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      "${task.startTime} - ${task.endTime}",
+                    SizedBox(
+                      width: _mediaQueryData.size.width/100,
+                    ),
+                    Flexible(
+                      child: Text(
+                      "Task: ${task.title!}",
                       style: GoogleFonts.lato(
-                        textStyle:
-                        TextStyle(fontSize: 13, color: Colors.grey[100]),
+                        textStyle: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      "${task.date}",
-                      style: GoogleFonts.lato(
-                        textStyle:
-                        TextStyle(fontSize: 13, color: Colors.grey[100]),
-                      ),
                     ),
+
                   ],
+
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "${task.startTime} - ${task.endTime}",
+                  style: GoogleFonts.lato(
+                    textStyle:
+                    TextStyle(fontSize: 13, color: Colors.grey[100]),
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
                 Text(
                   task.note!,
                   style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
+                    textStyle: TextStyle(fontSize: 15, color: Colors.white),
                   ),
                 ),
               ],

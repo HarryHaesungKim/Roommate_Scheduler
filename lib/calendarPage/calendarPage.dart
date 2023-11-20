@@ -1,5 +1,8 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:roommates/calendarPage/addEvent.dart';
 import 'package:roommates/calendarPage/eventView.dart';
@@ -7,8 +10,11 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:get/get.dart';
 import 'package:roommates/calendarPage/event.dart';
 import '../Group/groupController.dart';
+import '../Task/TaskObject.dart';
+import '../Task/taskController.dart';
 import '../theme.dart';
 import '../themeData.dart';
+import 'calendar_taskview.dart';
 import 'eventController.dart';
 import 'package:intl/intl.dart';
 
@@ -34,6 +40,10 @@ class _calendarPage extends State<calendarPage> {
   late Future<String> futureCurrGroup;
   String currGroup = '';
   RxMap<String?, int> eventsCountMap = RxMap<String?,int>();
+  List<Object> todo = [];
+  final DateFormat formatter = DateFormat('MM/dd/yyyy');
+  final taskController taskCon = taskController();
+  bool isNothing = true;
 
   // For Events
   // Map<DateTime, List<Event>> events = {};
@@ -56,6 +66,16 @@ class _calendarPage extends State<calendarPage> {
         .map((snapshot) => snapshot.docs
         .map((doc) => Event.fromJson(doc.data()))
         .toList());
+  }
+  Stream<List<TaskObject>> readTasks() {
+    return FirebaseFirestore.instance
+        .collection('Group')
+        .doc(currGroup)
+        .collection('tasks')
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+        .map((doc) => TaskObject.fromJson(doc.data()))
+        .toList());// .where("date", isEqualTo: today)
   }
   Stream<DocumentSnapshot<Map<String, dynamic>>> readUser() {
     return FirebaseFirestore.instance
@@ -89,7 +109,7 @@ class _calendarPage extends State<calendarPage> {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
-        selectedDayString = DateFormat('M/d/yyyy').format(_selectedDay!);
+        selectedDayString = DateFormat('MM/dd/yyyy').format(_selectedDay!);
         //_selectedEvents.value = _getEventsForDay(selectedDay!);
       });
     }
@@ -139,10 +159,6 @@ class _calendarPage extends State<calendarPage> {
           _buildBottomSheetButton(
               label: "Delete Event",
               onTap: () async {
-                // String groupID =
-                // _groupController.getGroupIDFromUser(uID!).toString();
-                // _eventController.deleteEvent(groupID, event);
-                // Get.back();
                 if (gotIsGroupAdmin) {
                   if (await groupCon.isUserAdmin(currUser!)) {
                     _eventController.deleteEvent(currGroup, event);
@@ -150,10 +166,59 @@ class _calendarPage extends State<calendarPage> {
                 } else {
                 Get.back();
                 Get.snackbar(
-                "Not Admin!", "Not an admin user, cannot delete tasks");
+                "Not Admin!", "Not an admin user, cannot delete events");
                 }
                 } else {
                   _eventController.deleteEvent(currGroup, event);
+                  Get.back();
+                }
+              },
+              clr: Colors.red[300]),
+          const SizedBox(
+            height: 20,
+          ),
+          _buildBottomSheetButton(
+              label: "Close",
+              onTap: () {
+                Get.back();
+              },
+              isClose: true),
+          const SizedBox(
+            height: 20,
+          ),
+        ]),
+      ),
+    );
+  }
+  showBottomSheet_task(BuildContext context, TaskObject task) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.only(top: 4),
+        height: _mediaQueryData.size.height * 0.2,
+        width: _mediaQueryData.size.width,
+        color: Get.isDarkMode ? darkHeaderClr : Colors.white,
+        child: Column(children: [
+          Container(
+            height: 6,
+            width: 120,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
+          ),
+          _buildBottomSheetButton(
+              label: "Delete Task",
+              onTap: () async {
+                if (gotIsGroupAdmin) {
+                  if (await groupCon.isUserAdmin(currUser!)) {
+                    taskCon.deleteTask(currGroup, task);
+                    Get.back();
+                  } else {
+                    Get.back();
+                    Get.snackbar(
+                        "Not Admin!", "Not an admin user, cannot delete tasks");
+                  }
+                } else {
+                  taskCon.deleteTask(currGroup, task);
                   Get.back();
                 }
               },
@@ -227,168 +292,238 @@ class _calendarPage extends State<calendarPage> {
                     return Text('Something went wrong! ${snapshot.data}');
                   }
                   else if (snapshot.hasData){
-                    return StreamBuilder<List<Event>>(
-                        stream: readEvent(),
-                        builder: (context, snapshot2) {
-                          if (snapshot2.hasError) {
-                            return Text('Something went wrong! ${snapshot2
+                    return StreamBuilder<List<TaskObject>>(
+                        stream: readTasks(),
+                        builder: (context, snapshot3){
+                          if (snapshot3.hasError) {
+                            return Text('Something went wrong! ${snapshot3
                                 .data}');
                           }
-                          else if (snapshot2.hasData) {
-                            final EventData = snapshot2.data!;
-                            final UserData = snapshot.data!;
-                            eventsCountMap.clear();
-                            for(int i = 0; i < EventData.length; i++){
-                              if (eventsCountMap.containsKey(EventData[i].date)) {
-                                if(eventsCountMap[EventData[i].date] != null){
-                                  eventsCountMap[EventData[i].date] =eventsCountMap[EventData[i].date]! + 1;
-                                }
-                              }
-                              else{
-                                // eventsMap.addAll({
-                                //   eventsCountMap[i].date: 1
-                                // });
-                                eventsCountMap[EventData[i].date] = 1;
-                              }
-                            }
-                            return MaterialApp(
-                                title: "Calendar",
-                                theme: showOption(UserData['themeBrightness']),
-                                home: Scaffold(
-                                  appBar: AppBar(
-                                    backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                                    title: const Text("Calendar"),
-                                  ),
-                                  floatingActionButton: FloatingActionButton(
-                                      backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                                      onPressed: () async {
-                                        if (await isGroupAdmin) {
-                                          if (!await _groupController.isUserAdmin(uID!)) {
-                                            showNotAdminUser(context);
-                                          } else {
-                                            await Get.to(const addEvent());
-                                            _eventController.getEvents(groupID);
+                          else if (snapshot3.hasData){
+                            return StreamBuilder<List<Event>>(
+                                stream: readEvent(),
+                                builder: (context, snapshot2) {
+                                  if (snapshot2.hasError) {
+                                    return Text('Something went wrong! ${snapshot2
+                                        .data}');
+                                  }
+                                  else if (snapshot2.hasData) {
+                                    final EventData = snapshot2.data!;
+                                    final UserData = snapshot.data!;
+                                    final TaskData = snapshot3.data!;
+                                    eventsCountMap.clear();
+                                    todo =  [EventData, TaskData].expand((x) => x).toList();
+                                    for(int i = 0; i < todo.length; i++){
+                                      if(todo[i].runtimeType == Event){
+                                        Event event = todo[i] as Event;
+                                        if (eventsCountMap.containsKey(event.date)) {
+                                          if(eventsCountMap[event.date] != null){
+                                            eventsCountMap[event.date] =eventsCountMap[event.date]! + 1;
                                           }
-                                        } else {
-                                          await Get.to(const addEvent());
-                                          _eventController.getEvents(groupID);
                                         }
-                                        // await Get.to(addEvent());
-                                        // _eventController.getEvents(groupID);
-                                      },
-                                      child: const Icon(Icons.add)),
-                                  body: Container(
-                                    child: Column(
-                                      children: [
-                                        TableCalendar(
-                                          // firstDay is the first available day for the calendar. Users will not be able to access days before it.
-                                          // lastDay is the last available day for the calendar. Users will not be able to access days after it.
-                                          // focusedDay is the currently targeted day. Use this property to determine which month should be currently visible.
-                                          // firstDay and lastDay can change depending on how far or early we want the user to be able to view the date.
-                                          firstDay: DateTime.utc(2010, 10, 16),
-                                          lastDay: DateTime.utc(2030, 3, 14),
-                                          focusedDay: _focusedDay,
-                                          calendarFormat: _calendarFormat,
-                                          selectedDayPredicate: (day) {
-                                            return isSameDay(_selectedDay, day);
-                                          },
-                                          //eventLoader: _getEventsForDay,
-                                          onDaySelected: _onDaySelected,
+                                        else{
+                                          eventsCountMap[event.date] = 1;
+                                        }
+                                      }
+                                      else{
+                                        TaskObject task = todo[i] as TaskObject;
+                                        if (eventsCountMap.containsKey(task.date)) {
+                                          if(eventsCountMap[task.date] != null){
+                                            eventsCountMap[task.date] =eventsCountMap[task.date]! + 1;
+                                          }
+                                        }
+                                        else{
+                                          eventsCountMap[task.date] = 1;
+                                        }
+                                      }
 
-                                          // Change the layout of the calendar.
-                                          // Currently changes from month to 2 weeks to 1 week view. Can change to fit our needs.
-                                          onFormatChanged: (format) {
-                                            if (_calendarFormat != format) {
-                                              // Call `setState()` when updating calendar format
-                                              setState(() {
-                                                _calendarFormat = format;
-                                              });
-                                            }
-                                          },
-                                          // Allows users to keep their selected dates between closing/reopening the app.
-                                          // Currently commented out because I want it to reset to the current date. We can change this if we wanted to.
-                                          onPageChanged: (focusedDay) {
-                                            _focusedDay = focusedDay;
-                                          },
-                                            calendarBuilders: CalendarBuilders(
-                                              markerBuilder: (context, day, events) {
-                                                String curDay = '${day.month}/${day.day}/${day.year}';
-                                                int countEvent = 0;
-                                                if(eventsCountMap[curDay]==null){
-                                                  countEvent = 0;
+                                    }
+                                    return MaterialApp(
+                                        title: "Calendar",
+                                        theme: showOption(UserData['themeBrightness']),
+                                        home: Scaffold(
+                                          appBar: AppBar(
+                                            backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                            title: const Text("Calendar"),
+                                          ),
+                                          floatingActionButton: FloatingActionButton(
+                                              backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                              onPressed: () async {
+                                                if (await isGroupAdmin) {
+                                                  if (!await _groupController.isUserAdmin(uID!)) {
+                                                    showNotAdminUser(context);
+                                                  } else {
+                                                    await Get.to(const addEvent());
+                                                    //_eventController.getEvents(groupID);
+                                                  }
+                                                } else {
+                                                  await Get.to(const addEvent());
+                                                  //_eventController.getEvents(groupID);
                                                 }
-                                                else{
-                                                  countEvent = eventsCountMap[curDay]!;
-                                                  return Container(
-                                                    width: 20,
-                                                    height: 15,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(4.0),
-                                                      color: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
-                                                    ),
-                                                    child: Text(
-                                                      '$countEvent',
-                                                      style: const TextStyle(color: Colors.white),
-                                                    ),
-                                                  );
-                                                }
-                                                return null;
-                                              }
-                                        ),
-                                        ),
-                                        // Spacer
-                                        const SizedBox(height: 8.0),
-                                        Expanded(
-                                          child: LayoutBuilder(
-                                              builder: (BuildContext context, BoxConstraints constraints) {
-                                                return Column(
-                                                  children: [
-                                                    SizedBox(
-                                                      width: constraints.maxWidth - constraints.maxWidth * 0.05,
-                                                      height:
-                                                      constraints.maxHeight - constraints.maxHeight * 0.2,
-                                                      //thumbVisibility: true,
-                                                      //thickness: 10,
-                                                      child: ListView.builder(
-                                                          primary: true,
-                                                          itemCount: EventData.length,
-                                                          itemBuilder: (BuildContext context, int index) {
-                                                            if(EventData[index].date == selectedDayString){
-                                                              Event event = EventData[index];
-                                                              return Padding(
-                                                                // Spacing between elements:
-                                                                padding:
-                                                                const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                                // await Get.to(addEvent());
+                                                // _eventController.getEvents(groupID);
+                                              },
+                                              child: const Icon(Icons.add)),
+                                          body: Container(
+                                            child: Column(
+                                              children: [
+                                                TableCalendar(
+                                                  // firstDay is the first available day for the calendar. Users will not be able to access days before it.
+                                                  // lastDay is the last available day for the calendar. Users will not be able to access days after it.
+                                                  // focusedDay is the currently targeted day. Use this property to determine which month should be currently visible.
+                                                  // firstDay and lastDay can change depending on how far or early we want the user to be able to view the date.
+                                                  firstDay: DateTime.utc(2010, 10, 16),
+                                                  lastDay: DateTime.utc(2030, 3, 14),
+                                                  focusedDay: _focusedDay,
+                                                  calendarFormat: _calendarFormat,
+                                                  selectedDayPredicate: (day) {
+                                                    return isSameDay(_selectedDay, day);
+                                                  },
+                                                  //eventLoader: _getEventsForDay,
+                                                  onDaySelected: _onDaySelected,
 
-                                                                child: InkWell(
-                                                                  child: eventView(event),
-                                                                  onTap: () {
-                                                                    showBottomSheet(context, event);
-                                                                  },
-                                                                ),
-                                                              );
-                                                            }
-                                                            else{
-                                                              return const Padding(
-                                                                // Spacing between elements:
-                                                                padding:
-                                                                EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                              );
-                                                            }
-                                                          }
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              }),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
+                                                  // Change the layout of the calendar.
+                                                  // Currently changes from month to 2 weeks to 1 week view. Can change to fit our needs.
+                                                  onFormatChanged: (format) {
+                                                    if (_calendarFormat != format) {
+                                                      // Call `setState()` when updating calendar format
+                                                      setState(() {
+                                                        _calendarFormat = format;
+                                                      });
+                                                    }
+                                                  },
+                                                  // Allows users to keep their selected dates between closing/reopening the app.
+                                                  // Currently commented out because I want it to reset to the current date. We can change this if we wanted to.
+                                                  onPageChanged: (focusedDay) {
+                                                    _focusedDay = focusedDay;
+                                                  },
+                                                  calendarBuilders: CalendarBuilders(
+                                                      markerBuilder: (context, day, events) {
+                                                        // String curDay = '${day.month}/${day.day}/${day.year}';
+                                                        String curDay = formatter.format(day);
+                                                        int countEvent = 0;
+                                                        if(eventsCountMap[curDay]==null){
+                                                          countEvent = 0;
+                                                        }
+                                                        else{
+                                                          countEvent = eventsCountMap[curDay]!;
+                                                          return Container(
+                                                            width: 20,
+                                                            height: 15,
+                                                            alignment: Alignment.center,
+                                                            decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(4.0),
+                                                              color: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),
+                                                            ),
+                                                            child: Text(
+                                                              '$countEvent',
+                                                              style: const TextStyle(color: Colors.white),
+                                                            ),
+                                                          );
+                                                        }
+                                                        return null;
+                                                      }
+                                                  ),
+                                                ),
+                                                // Spacer
+                                                const SizedBox(height: 8.0),
+                                                Expanded(
+                                                  child: LayoutBuilder(
+                                                      builder: (BuildContext context, BoxConstraints constraints) {
+                                                        String curDay = formatter.format(_selectedDay!);
+                                                        if(eventsCountMap[curDay] == null){
+                                                          return Flex(
+                                                            direction: Axis.horizontal,
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: <Widget>[
+                                                              Text("No entries.",
+                                                                style: headingTextStyle,),
+                                                            ],
+                                                          );
+                                                        }
+                                                        return Column(
+                                                          children: [
+                                                            SizedBox(
+                                                              width: constraints.maxWidth - constraints.maxWidth * 0.05,
+                                                              height:
+                                                              constraints.maxHeight,
+                                                              //thumbVisibility: true,
+                                                              //thickness: 10,
+                                                              child: ListView.builder(
+                                                                  primary: true,
+                                                                  itemCount: todo.length,
+                                                                  itemBuilder: (BuildContext context, int index) {
+                                                                    if(todo[index].runtimeType == Event){
+                                                                      Event event = todo[index] as Event;
+                                                                      if(event.date == selectedDayString){
+                                                                        return Padding(
+                                                                          // Spacing between elements:
+                                                                          padding:
+                                                                          const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                                                          child: InkWell(
+                                                                            child: eventView(event),
+                                                                            onTap: () {
+                                                                              showBottomSheet(context, event);
+                                                                            },
+                                                                          ),
+                                                                        );
+                                                                      }
+                                                                      else{
+                                                                        return const Padding(
+                                                                          // Spacing between elements:
+                                                                          padding:
+                                                                          EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                                                        );
+                                                                      }
+                                                                    }
+                                                                    else {
+                                                                      TaskObject task = todo[index] as TaskObject;
+                                                                      if(task.date == selectedDayString){
+
+                                                                        return Padding(
+                                                                          // Spacing between elements:
+                                                                          padding:
+                                                                          const EdgeInsets.fromLTRB(10, 5, 10, 5),
+
+                                                                          child: InkWell(
+                                                                            child: calendar_taskView(task),
+                                                                            onTap: () {
+                                                                              showBottomSheet_task(context, task);
+                                                                            },
+                                                                          ),
+                                                                        );
+                                                                      }
+                                                                      else{
+                                                                        return const Padding(
+                                                                          // Spacing between elements:
+                                                                          padding:
+                                                                          EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                                                        );
+                                                                      }
+
+                                                                    }
+                                                                  }
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      }),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                    );
+                                  } else {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                }
                             );
-                          } else {
+                          }
+                          else {
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
@@ -414,186 +549,6 @@ class _calendarPage extends State<calendarPage> {
             );
           }
         }
-    );
-    _mediaQueryData = MediaQuery.of(context);
-    return MaterialApp(
-      title: "Calendar",
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.orange[700],
-          title: const Text("Calendar"),
-        ),
-        // body: const Center(child: MyStatefulWidget()),
-        body:FutureBuilder(
-          future: Future.wait([futureCurrGroup, isGroupAdmin]),
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.hasData) {
-                currGroup = snapshot.data[0];
-                gotIsGroupAdmin = snapshot.data[1];
-
-                return StreamBuilder<List<Event>>(
-                  stream: readEvent(),
-                    builder: (context, snapshot){
-                    if (snapshot.hasError){
-                      return Text('Something went wrong! ${snapshot.data}');
-                    }
-                    else if (snapshot.hasData){
-                      final EventData = snapshot.data!;
-                      return LayoutBuilder(builder:
-                      (BuildContext context, BoxConstraints constraints){
-                        FloatingActionButton(
-                            backgroundColor: Colors.orange[700],
-                            onPressed: () async {
-                              if (await isGroupAdmin) {
-                                if (!await _groupController.isUserAdmin(uID!)) {
-                                  showNotAdminUser(context);
-                                } else {
-                                  await Get.to(const addEvent());
-                                  _eventController.getEvents(groupID);
-                                }
-                              } else {
-                                await Get.to(const addEvent());
-                                _eventController.getEvents(groupID);
-                              }
-                              // await Get.to(addEvent());
-                              // _eventController.getEvents(groupID);
-                            },
-                            child: const Icon(Icons.add));
-                        return Scaffold(
-                          floatingActionButton: FloatingActionButton(
-                              backgroundColor: Colors.orange[700],
-                              onPressed: () async {
-                                if (await isGroupAdmin) {
-                                  if (!await _groupController.isUserAdmin(uID!)) {
-                                    showNotAdminUser(context);
-                                  } else {
-                                    await Get.to(const addEvent());
-                                    _eventController.getEvents(groupID);
-                                  }
-                                } else {
-                                  await Get.to(const addEvent());
-                                  _eventController.getEvents(groupID);
-                                }
-                                // await Get.to(addEvent());
-                                // _eventController.getEvents(groupID);
-                              },
-                              child: const Icon(Icons.add)),
-                          body: Column(
-                            children: [
-                              TableCalendar(
-                                // firstDay is the first available day for the calendar. Users will not be able to access days before it.
-                                // lastDay is the last available day for the calendar. Users will not be able to access days after it.
-                                // focusedDay is the currently targeted day. Use this property to determine which month should be currently visible.
-                                // firstDay and lastDay can change depending on how far or early we want the user to be able to view the date.
-                                firstDay: DateTime.utc(2010, 10, 16),
-                                lastDay: DateTime.utc(2030, 3, 14),
-                                focusedDay: _focusedDay,
-                                calendarFormat: _calendarFormat,
-                                selectedDayPredicate: (day) {
-                                  return isSameDay(_selectedDay, day);
-                                },
-                                //eventLoader: _getEventsForDay,
-                                onDaySelected: _onDaySelected,
-
-                                // Change the layout of the calendar.
-                                // Currently changes from month to 2 weeks to 1 week view. Can change to fit our needs.
-                                onFormatChanged: (format) {
-                                  if (_calendarFormat != format) {
-                                    // Call `setState()` when updating calendar format
-                                    setState(() {
-                                      _calendarFormat = format;
-                                    });
-                                  }
-                                },
-                                // Allows users to keep their selected dates between closing/reopening the app.
-                                // Currently commented out because I want it to reset to the current date. We can change this if we wanted to.
-                                onPageChanged: (focusedDay) {
-                                  _focusedDay = focusedDay;
-                                },
-                              ),
-
-                              // Spacer
-                              const SizedBox(height: 8.0),
-                              Expanded(
-                                child: LayoutBuilder(
-                                    builder: (BuildContext context, BoxConstraints constraints) {
-                                      return Column(
-                                        children: [
-                                          SizedBox(
-                                              width: constraints.maxWidth - constraints.maxWidth * 0.05,
-                                              height:
-                                              constraints.maxHeight - constraints.maxHeight * 0.2,
-                                                //thumbVisibility: true,
-                                                //thickness: 10,
-                                                child: ListView.builder(
-                                                    primary: true,
-                                                    // itemCount: _eventController
-                                                    //     .eventsMap[selectedDayString]?.length ??
-                                                    //     0,
-                                                    itemCount: EventData.length,
-                                                    itemBuilder: (BuildContext context, int index) {
-                                                      //Event event = _eventController.eventList[index]
-                                                      // print("_eventController.eventsMap[_focusedDay]?.length");
-                                                      // print(_eventController
-                                                      //     .eventsMap[selectedDayString]?.length);
-                                                      // int temp = _eventController
-                                                      //     .eventsMap[selectedDayString]![index];
-                                                      // Event event = _eventController.eventList[temp];
-                                                      if(EventData[index].date == selectedDayString){
-                                                        Event event = EventData[index];
-                                                        var title = event.title;
-                                                        return Padding(
-                                                          // Spacing between elements:
-                                                          padding:
-                                                          const EdgeInsets.fromLTRB(10, 5, 10, 5),
-
-                                                          child: InkWell(
-                                                            child: eventView(event),
-                                                            onTap: () {
-                                                              showBottomSheet(context, event);
-                                                            },
-                                                          ),
-                                                        );
-                                                      }
-                                                      else{
-                                                        return const Padding(
-                                                          // Spacing between elements:
-                                                          padding:
-                                                          EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                                        );
-                                                      }
-                                                    }
-                                                    ),
-                                          ),
-                                        ],
-                                      );
-                                    }),
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                    }
-                    else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    }
-                );
-              }
-              else if (snapshot.hasError) {
-                return Text("Something went wrong! ${snapshot.error}");
-              }
-              else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            }
-        ),
-
-      ),
     );
   }
 }
