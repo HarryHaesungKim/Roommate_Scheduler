@@ -35,11 +35,11 @@ class _CostSplitViewPage extends State<CostSplitView> {
 
   // Text controller for adding new title for the payment pop-up.
   final TextEditingController _newPaymentTitleController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _newPaymentDescriptionController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _newPaymentAmountController =
-      TextEditingController();
+  TextEditingController();
 
   // Lists
   late List<String> peopleInGroup = [];
@@ -80,8 +80,8 @@ class _CostSplitViewPage extends State<CostSplitView> {
         .collection('Payments')
         .snapshots()
         .map((snapshot) => snapshot.docs
-            .map((doc) => CostSplitObject.fromJson(doc.data()))
-            .toList());
+        .map((doc) => CostSplitObject.fromJson(doc.data()))
+        .toList());
   }
 
   @override
@@ -400,7 +400,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                             controller: _newPaymentAmountController,
                             validator: (value) {
                               return (alphanumeric.hasMatch(value!) &&
-                                      value.isNotEmpty)
+                                  value.isNotEmpty)
                                   ? null
                                   : "Invalid Field";
                             },
@@ -408,7 +408,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                               hintText: "Enter your number",
                               prefixIcon: Text("\$ "),
                               prefixIconConstraints:
-                                  BoxConstraints(minWidth: 0, minHeight: 0),
+                              BoxConstraints(minWidth: 0, minHeight: 0),
                             ),
                             inputFormatters: [
                               DecimalTextInputFormatter(decimalRange: 2)
@@ -595,7 +595,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                         "@ ${TimeOfDay.fromDateTime(payment.time).format(context)} on ${payment.time.month}/${payment.time.day}/${payment.time.year}",
                         style: GoogleFonts.lato(
                           textStyle: const TextStyle(
-                              //fontWeight: FontWeight.bold,
+                            //fontWeight: FontWeight.bold,
                               fontSize: 14,
                               color: Colors.white),
                         )),
@@ -615,7 +615,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                         "$creatorName paid \$${double.parse(payment.amount).toStringAsFixed(2)}",
                         style: GoogleFonts.lato(
                           textStyle: const TextStyle(
-                              //fontWeight: FontWeight.bold,
+                            //fontWeight: FontWeight.bold,
                               fontSize: 17,
                               color: Colors.white),
                         )),
@@ -739,7 +739,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                 "@ ${TimeOfDay.fromDateTime(payment.time).format(context)} on ${payment.time.month}/${payment.time.day}/${payment.time.year}",
                 style: GoogleFonts.lato(
                   textStyle: const TextStyle(
-                      //fontWeight: FontWeight.bold,
+                    //fontWeight: FontWeight.bold,
                       fontSize: 18,
                       color: Colors.white),
                 )),
@@ -758,7 +758,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                 "Description: ${payment.description}",
                 style: GoogleFonts.lato(
                   textStyle: const TextStyle(
-                      //fontWeight: FontWeight.bold,
+                    //fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: Colors.white),
                 )),
@@ -778,7 +778,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                 "$creatorName paid \$${double.parse(payment.amount).toStringAsFixed(2)}",
                 style: GoogleFonts.lato(
                   textStyle: const TextStyle(
-                      //fontWeight: FontWeight.bold,
+                    //fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: Colors.white),
                 )),
@@ -798,7 +798,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                 "Everyone owes ${iDNameMap[payment.creator]}: \$${double.parse(payment.howMuchDoesEachPersonOwe).toStringAsFixed(2)}",
                 style: GoogleFonts.lato(
                   textStyle: const TextStyle(
-                      //fontWeight: FontWeight.bold,
+                    //fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: Colors.white),
                 )),
@@ -818,7 +818,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                   "Those who still need to pay:\n${peopleApartOfPayment.join('\n')}",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
-                        //fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                         fontSize: 16,
                         color: Colors.white),
                   ))),
@@ -858,7 +858,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
           "No one has paid yet.",
           style: GoogleFonts.lato(
             textStyle: const TextStyle(
-                //fontWeight: FontWeight.bold,
+              //fontWeight: FontWeight.bold,
                 fontSize: 16,
                 color: Colors.white),
           ));
@@ -869,7 +869,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
           "People who have paid:\n${whoHasPaidNameList.join('\n')}",
           style: GoogleFonts.lato(
             textStyle: const TextStyle(
-                //fontWeight: FontWeight.bold,
+              //fontWeight: FontWeight.bold,
                 fontSize: 16,
                 color: Colors.white),
           ));
@@ -1144,9 +1144,9 @@ class DecimalTextInputFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue, // unused.
-    TextEditingValue newValue,
-  ) {
+      TextEditingValue oldValue, // unused.
+      TextEditingValue newValue,
+      ) {
     TextSelection newSelection = newValue.selection;
     String truncated = newValue.text;
 

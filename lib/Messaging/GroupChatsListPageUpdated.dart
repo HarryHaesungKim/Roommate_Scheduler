@@ -1,15 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:roommates/Messaging/GroupChatObject.dart';
 import 'package:roommates/Messaging/MessagingController.dart';
+import 'package:roommates/mainPage.dart';
 import '../Group/groupController.dart';
 import '../User/user_controller.dart';
 import '../themeData.dart';
 import 'ChatPage.dart';
 
+import 'package:get/get.dart';
+
+import 'chat_service.dart';
+
 class GroupChatsListPageUpdated extends StatefulWidget {
-  const GroupChatsListPageUpdated({Key? key}) : super(key: key);
+
+  final bool gotKicked;
+
+  //const GroupChatsListPageUpdated({Key? key}) : super(key: key);
+  const GroupChatsListPageUpdated({
+    super.key,
+    required this.gotKicked,
+  });
 
   @override
   State<GroupChatsListPageUpdated> createState() => _messagingPage();
@@ -28,6 +41,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
   final groupController groupCon = groupController();
   final userController userCon = userController();
   final MessagingController messagingCon = MessagingController();
+  final ChatService chatServiceCon = ChatService();
 
   // Key
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -71,12 +85,48 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
         .toList());
   }
 
+  void showAlert(BuildContext context) {
+
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Kicked!"),
+      content: const Text("You have been removed from the chat."),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder: (context) => alert,
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    // if(widget.gotKicked) {
+    //   SchedulerBinding.instance.addPostFrameCallback((_) {
+    //     //Future.delayed(Duration.zero, () => showAlert(context));
+    //     showAlert(context);
+    //   });
+    // }
+
+    // When trying to show an alert dialog after user has been kicked, errors pop up. Why?
 
     return FutureBuilder(
         future: Future.wait([futureThemeColor, futureThemeBrightness, futurePeopleInGroup, futurePeopleInGroupIDs]),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+
+          // Get.snackbar("ERROR", "Whoops, something went wrong.");
+          // showAlertDialog(context);
 
           // If the snapshot has an error.
           if (snapshot.hasError) {
@@ -127,13 +177,17 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                     // The group chat objects.
                     var groupChats = snapshot.data!;
 
+                    groupChats.sort((a, b) => b.lastSentMessageTime.compareTo(a.lastSentMessageTime));
+
                     return MaterialApp(
                       theme: showOption(themeBrightness),
                       home: Scaffold(
                         appBar: AppBar(
                           leading: IconButton(
                             icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
-                            onPressed: () => Navigator.of(context).pop(),
+                            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                              return const mainPage(navigateToScreen: 0,);
+                            })),
                           ),
                           backgroundColor:setAppBarColor(themeColor, themeBrightness),
                           title: const Text("Messaging"),
@@ -151,7 +205,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                                 Navigator.push(context, MaterialPageRoute(
                                     builder: (context) =>
                                         ChatPage(
-                                          groupMembers: groupChats[index].groupChatMembers,
+                                          groupChatMembers: groupChats[index].groupChatMembers,
                                           chatID: groupChats[index].id,
                                         )
                                 ));
@@ -166,17 +220,26 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                               // Group chat title
                               title: Text(groupChats[index].title),
 
+                              subtitle: Text(
+                                groupChats[index].lastSentMessage,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+
                               // Three dots button at the end of the group chat tile.
                               trailing: GestureDetector(
+
                                   onTap: () {
                                     showDialog(context: context, builder: (context) {
 
                                       // set up the buttons
                                       Widget continueButton = ElevatedButton(
-                                        child: const Text("Delete"),
+                                        child: const Text("Leave"),
                                         onPressed: () {
                                           // print("Need to delete chat...");
-                                          messagingCon.deleteChat(groupChats[index].id);
+                                          // messagingCon.deleteChat(groupChats[index].id);
+                                          messagingCon.leaveChat(groupChats[index].id, uID);
+                                          chatServiceCon.sendMessage([], '${iDNameMap[uID]} has left the chat.', groupChats[index].id, true);
                                           Navigator.of(context).pop();
                                         },
                                       );
@@ -190,7 +253,7 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                                       // Call the alert dialogue.
                                       return AlertDialog(
                                         scrollable: true,
-                                        title: const Text("Delete Chat?"),
+                                        title: const Text("Leave Chat?"),
                                         actionsAlignment: MainAxisAlignment.spaceEvenly,
                                         actions: [
                                           continueButton,
@@ -348,14 +411,14 @@ class _messagingPage extends State<GroupChatsListPageUpdated> {
                   receiverids.add(uID!);
 
                   // Creating a new group chat and getting it's ID.
-                  String chatID = await messagingCon.createChatRoom(receiverids, _newChatNameController.text);
+                  String chatID = await messagingCon.createChatRoom(uID!, receiverids, _newChatNameController.text, '');
 
                   // Avoids annoying "Do not use BuildContexts across async gaps" warning.
                   if (context.mounted){
                     Navigator.of(context).pop();
                     Navigator.push(context, MaterialPageRoute(builder: (context) =>
                         ChatPage(
-                          groupMembers: receiverids, 
+                          groupChatMembers: receiverids, 
                           chatID: chatID,
                         )
                     ),);

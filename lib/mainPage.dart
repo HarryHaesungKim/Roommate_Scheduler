@@ -8,37 +8,70 @@ import 'package:roommates/homePage/homePage.dart';
 import 'package:roommates/Notifications/NotificationView.dart';
 import 'package:roommates/profilePage.dart';
 import 'package:roommates/themeData.dart';
-import 'User/user_controller.dart';
 import 'calendarPage/calendarPage.dart';
 
+import 'package:roommates/api/firebase_api.dart';
+
 class mainPage extends StatefulWidget {
-  const mainPage({super.key});
+
+  final int navigateToScreen;
+
+  const mainPage({Key? key, required this.navigateToScreen}) : super(key: key);
 
   @override
-  _mainPageState createState() => _mainPageState();
-
+  State<mainPage> createState() => _mainPageState();
 
 }
 
 class _mainPageState extends State<mainPage> {
   int _selectedIndex = 0;
-  final userController userCon = userController();
-  String? currUser = FirebaseAuth.instance.currentUser?.uid;
+  String themeBrightness = "";
+  String color = "";
+
   static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+  TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   final screens = [
-    const homePage(),
-    const calendarPage(),
-    const CostSplitView(),
-    const NotificationView(),
-    const ProfilePage(),
+    homePage(),
+    calendarPage(),
+    CostSplitView(),
+    NotificationView(),
+    ProfilePage(),
   ];
+
+  late int screenCopy;
+
+  FirebaseApi pushNotifCon = FirebaseApi();
 
   @override
   void initState() {
     super.initState();
-}
+    screenCopy = widget.navigateToScreen;
+    _selectedIndex = screenCopy;
+    // print("Sent from mainPage.dart");
 
+    // Initialize the entire notification stuff upon start up of the app.
+    // Sends the token to firebase when the app itself is building up.
+    // Will send regardless of if person is not signed in, or already is since main page needs to build.
+    pushNotifCon.initNotifications();
+  }
+
+  Future getUserData() async {
+    String? user = FirebaseAuth.instance.currentUser?.uid;
+    if (user != null) {
+      DocumentSnapshot db = await FirebaseFirestore.instance.collection("Users")
+          .doc(user)
+          .get();
+      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
+      if (mounted) {
+        setState(() {
+          color = list['themeColor'];
+          themeBrightness = list['themeBrightness'];
+        });
+      }
+    }
+
+
+  }
   String returnPageTitle(int index) {
     String title = "";
     switch (index) {
@@ -156,28 +189,33 @@ class _mainPageState extends State<mainPage> {
                     });
                   },
                 ),
-              ),
+                GButton(
+                  icon: Icons.calendar_month,
+                  text: "Calendar",
+                ),
+                GButton(
+                  icon: Icons.money,
+                  text: "Split Pay",
+                ),
+                GButton(
+                  icon: Icons.notifications,
+                  text: "Notification",
+                ),
+                GButton(
+                  icon: Icons.account_circle,
+                  text: "Profile",
+                ),
+              ],
+              selectedIndex: _selectedIndex,
+              onTabChange: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
             ),
           ),
-        );
-      }
-      else {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }
-    }
-    );
-    }
-    else if (snapshot.hasError) {
-    return Text("Something went wrong! ${snapshot.error}");
-    }
-    else {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    },
+        ),
+      ),
     );
   }
 }
