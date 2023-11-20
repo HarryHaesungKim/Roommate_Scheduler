@@ -19,6 +19,7 @@ class settingsProfile extends StatefulWidget {
 class _settingsProfileState extends State<settingsProfile> {
   String themeBrightness = "";
   String themeColor = "";
+
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(

@@ -193,16 +193,20 @@ class DBHelper {
 
   /// removes user [uID] from the current group they are in, also removes them
   /// from any tasks, events, etc. that they are in. Also sets the users
-  ///  groupID to NULL.
+  ///  groupID to "".
   removeUserFromGroup(String uID) async {
     //remove from group
     String groupID = await getGroupID(uID);
-    final groupRef = await _db
+
+    print("UserID of user leaving is: $uID");
+    print('Group ID $groupID');
+    await _db
         .collection("Group")
         .doc(groupID)
         .collection("users")
         .doc(uID)
         .delete();
+
 
     //remove them from all events, tasks, etc. from this group
 
