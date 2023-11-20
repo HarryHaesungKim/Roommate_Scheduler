@@ -5,24 +5,18 @@ import 'package:get/get.dart';
 import 'package:roommates/joinGroupPage.dart';
 import 'package:roommates/mainPage.dart';
 import 'package:roommates/registrationPageCreatGroup.dart';
-
 import 'Group/groupController.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage> {
   bool _obscureText= true;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final _groupController = Get.put(groupController());
-
   late Future<bool> futureIsUserInGroup;
-
   Future<void> signIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -41,14 +35,6 @@ class _LoginPageState extends State<LoginPage> {
           });
     }
   }
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   String? uID = FirebaseAuth.instance.currentUser?.uid;
-  //   futureIsUserInGroup = _groupController.isUserInGroup(uID!);
-  //   }
 
   @override
   void dispose() {

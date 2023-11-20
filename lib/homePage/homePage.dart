@@ -577,9 +577,12 @@ class _homePage extends State<homePage> {
                 onPressed: () {
                   taskCon.setRate(currGroup,task,taskRate);
                   taskCon.setRates(currGroup,task,task.rates!+taskRate);
-                  Get.back();
                   taskCon.setVoteRecord(currGroup,task,task.voteRecord!);
-                 taskCon.setOverAllRate(currGroup, task, task.rates!);
+                  print(task.rate!);
+                  print(task.rates!);
+                  print(task.voteRecord!);
+                  taskCon.setOverAllRate(currGroup, task, task.rates!);
+                  Get.back();
                 },
               ),
             ),

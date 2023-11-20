@@ -358,6 +358,7 @@ class _AddTaskPageState extends State<addTask> {
         assignedUserName: _selectedAssigness,
         rates: 0.0,
         voteRecord: 0,
+        rate:0.0,
       ),
     );
   }

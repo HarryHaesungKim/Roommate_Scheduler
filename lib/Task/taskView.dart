@@ -45,7 +45,7 @@ class taskView extends StatelessWidget {
 //First question, how to let user only vote once every task?
                 if(task.rate != null)
                 Text(
-                  "Rate: ${task.rate}",
+                  "Rate: ${task.rates}",
                   style: GoogleFonts.lato(
                     textStyle: const TextStyle(
                         fontSize: 20,

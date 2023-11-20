@@ -478,6 +478,4 @@ class _mangageGroupMember extends State<mangageGroupMember> {
       );
     });
   }
-
-
 }

@@ -1,13 +1,18 @@
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:roommates/User/user_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 
+import '../LoginPage.dart';
 import '../themeData.dart';
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -20,8 +25,8 @@ class _EditProfilePage extends State<EditProfile> {
   final _uID = FirebaseAuth.instance.currentUser?.uid;
   File? _image;
   bool isClicked = false;
-late String name;
-late String password;
+ String name = "";
+  String password = "";
   final picker = ImagePicker();
 
   Future<String> getImageURL() async {
@@ -56,9 +61,7 @@ late String password;
     setState(() {
       if (file != null) {
         _image = File(file.path);
-        isClicked = true;
-        name = _userNameController.text.trim();
-        password = _passWordController.text.trim();
+
       }
     });
   }
@@ -69,6 +72,7 @@ late String password;
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+
       }
     });
   }
@@ -131,7 +135,7 @@ late String password;
   final TextEditingController _passWordController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
-  Future <bool> updateEmailAndPassWord(String email, String password, String newPassWord) async {
+  Future <bool> updatePassWord(String email, String password, String newPassWord) async {
     bool success= false;
     var user = FirebaseAuth.instance.currentUser!;
     final cred = EmailAuthProvider.credential(email: email, password: password);
@@ -141,6 +145,7 @@ late String password;
     });
     return success;
   }
+
 
   @override
   void initState() {
@@ -170,13 +175,14 @@ late String password;
               else if (snapshot.hasData) {
                 // Setting the task data.
                 final UserData = snapshot.data!;
-                if (isClicked == false){
-                  _userNameController.text =  UserData['UserName'];
-                  _passWordController.text = UserData['Password'];
-                }else{
+                if(isClicked){
                   _userNameController.text =  name;
                   _passWordController.text = password;
+                }else{
+                  _userNameController.text =  UserData['UserName'];
+                  _passWordController.text = UserData['Password'];
                 }
+
 
                 //controller
                 return MaterialApp(
@@ -236,8 +242,7 @@ late String password;
                                           shape: BoxShape.circle,
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
-                                            image: NetworkImage(
-                                                UserData['imageURL']),
+                                            image: NetworkImage(UserData['imageURL']),
                                           )),
                                     ),
                                     Positioned(
@@ -307,8 +312,12 @@ late String password;
                                               });
                                         }
                                         else{
-                                          updateEmailAndPassWord(UserData['Email'].toString(),UserData['Password'].toString(),_passWordController.text.trim());
+                                          updatePassWord(UserData['Email'].toString(),UserData['Password'].toString(),_passWordController.text.trim());
                                           updateUserData(UserData['Email'].toString(),UserData['Balance'].toString(),UserData['Income'].toString(),UserData['Expense'].toString(),UserData['imageURL'].toString(),UserData['themeBrightness'].toString(),UserData['themeColor'].toString(),  UserData['location'],UserData['groupID'].toString());
+                                          Navigator.push(context,
+                                              MaterialPageRoute(builder: (context) => const LoginPage()));
+
+
                                         }
                                       },
                                       style:ElevatedButton.styleFrom(
