@@ -135,10 +135,32 @@ class _homePage extends State<homePage> {
                     floatingActionButton: FloatingActionButton(
                         backgroundColor: setAppBarColor(themeColor, themeBrightness),
                         onPressed: () async {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => const addTask()),
-                          );
-                          Get.lazyPut(() => taskController());
+
+                          if(gotIsGroupAdmin)
+                            {
+                              if(await groupCon.isUserAdmin(currUser!))
+                                {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (context) => const addTask()),
+                                  );
+                                  Get.lazyPut(() => taskController());
+                                }
+                              else
+                                {
+                                  showNotAdminUser(context);
+                                }
+                            }
+                          else
+                            {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => const addTask()),
+                              );
+                              Get.lazyPut(() => taskController());
+                            }
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(builder: (context) => const addTask()),
+                          // );
+                          // Get.lazyPut(() => taskController());
 
                           // Add task.
                         },

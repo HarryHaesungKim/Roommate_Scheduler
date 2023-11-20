@@ -204,12 +204,11 @@ class DBHelper {
 
     print("UserID of user leaving is: $uID");
     print('Group ID $groupID');
-    await _db
-        .collection("Group")
-        .doc(groupID)
-        .collection("users")
-        .doc(uID)
-        .delete();
+
+    List<String> user = [uID];
+    final groupref = _db.collection("Group").doc(groupID);
+    groupref.update({'users': FieldValue.arrayRemove(user)});
+
 
 
     //remove them from all events, tasks, etc. from this group

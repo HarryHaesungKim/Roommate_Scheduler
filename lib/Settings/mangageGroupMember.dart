@@ -34,6 +34,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   late bool isUseringroup;
   late bool isUserAdmin;
   late bool doesNewGroupExist;
+  late bool isGroupInAdminMode;
 
   String themeBrightness = "";
   String themeColor = "";
@@ -45,6 +46,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
   late Future<String> futureThemeColor;
   late Future<bool> futureIsUserInGroup;
   late Future<bool> futureIsUserAdmin;
+  late Future<bool> futureGroupInAdminMode;
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     futurePeopleInGroupID = _groupController.getUserIDsInGroup(uID);
     futureIsUserInGroup = _groupController.isUserInGroup(uID);
     futureIsUserAdmin = _groupController.isUserAdmin(uID);
+    futureGroupInAdminMode = _groupController.isGroupAdminModeByID(uID);
   }
 
 
@@ -191,7 +194,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     Widget cancelButton = TextButton(
       child: const Text("Cancel"),
       onPressed: () {
-        Navigator.pop(context, 'Cancel');
+        Navigator.pop(context);
 
         Get.snackbar("Canceled", "Leaving group has been canceled");
       },
@@ -231,7 +234,9 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     Widget cancelButton = TextButton(
       child: const Text("Okay"),
       onPressed: () {
-        Navigator.pop(context, 'Okay');
+        // Navigator.push(context, MaterialPageRoute(
+        //     builder: (context) => const mangageGroupMember()));
+        showDialog(context: context, builder: (context) => const mangageGroupMember());
       },
     );
 
@@ -327,6 +332,31 @@ class _mangageGroupMember extends State<mangageGroupMember> {
     );
   }
 
+  showGroupNotInAdmin(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: const Text("Okay"),
+      onPressed: () {
+        Navigator.pop(context, 'Okay');
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Group not in Admin Mode!"),
+      content: const Text("Your group is not in Admin Mode, cannot add admin user(s)!"),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // buildNonAdminUsers();
@@ -336,7 +366,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
 
     return FutureBuilder(
       future: Future.wait([futureThemeBrightness, futureThemeColor, futurePeopleInGroup,
-        futureGroupID, futurePeopleInGroupID, futureIsUserInGroup, futureIsUserAdmin]),
+        futureGroupID, futurePeopleInGroupID, futureIsUserInGroup, futureIsUserAdmin, futureGroupInAdminMode]),
     builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if(!snapshot.hasData) return Container();
         themeBrightness = snapshot.data[0];
@@ -346,6 +376,8 @@ class _mangageGroupMember extends State<mangageGroupMember> {
         peopleInGroupID = snapshot.data[4];
         isUseringroup = snapshot.data[5];
         isUserAdmin = snapshot.data[6];
+        isGroupInAdminMode = snapshot.data[7];
+
       return Scaffold(
         appBar: AppBar(
           backgroundColor: setAppBarColor(themeColor, themeBrightness),
@@ -452,11 +484,24 @@ class _mangageGroupMember extends State<mangageGroupMember> {
                     onPressed: () {
                       buildIsUserAdmin(_uID!);
                       //check if the current user is an admin user
-                      if (isUserAdmin) {
-                        showAddAdminDialog(context);
-                      } else {
-                        showNotAdminUserDialog(context);
+
+                      if(isGroupInAdminMode)
+                      {
+                        if (isUserAdmin) {
+                          showAddAdminDialog(context);
+                        } else {
+                          showNotAdminUserDialog(context);
+                        }
                       }
+                      else
+                      {
+                        showGroupNotInAdmin(context);
+                      }
+                      // if (isUserAdmin) {
+                      //   showAddAdminDialog(context);
+                      // } else {
+                      //   showNotAdminUserDialog(context);
+                      // }
                       //first check to see if this user is an admin use for the group
 
                       // IF the user is admin pull list of users in the group who are not admins
