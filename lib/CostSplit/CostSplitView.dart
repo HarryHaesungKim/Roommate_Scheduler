@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:roommates/CostSplit/CostSplitController.dart';
 import 'package:roommates/CostSplit/CostSplitObject.dart';
+import 'package:get/get.dart';
 
 import '../Group/groupController.dart';
 
@@ -957,7 +958,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                     costSplitCon.deletePayment(payment);
 
                     // Exit the alert dialog.
-                    Navigator.pop(context);
+                    Get.back();
                   },
                 ),
               ),
@@ -973,7 +974,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                     ),
                     child: const Text('Cancel'),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Get.back();
                     }),
               ),
             ],
@@ -1041,7 +1042,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                     costSplitCon.unsettlePayment(payment);
 
                     // Exit the alert dialog.
-                    Navigator.pop(context);
+                    Get.back();
                   },
                 ),
               ),
@@ -1057,7 +1058,8 @@ class _CostSplitViewPage extends State<CostSplitView> {
                     ),
                     child: const Text('Cancel'),
                     onPressed: () {
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
+                      Get.back();
                     }),
               ),
             ],
@@ -1107,7 +1109,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                     costSplitCon.settlePayment(payment);
 
                     // Exit the alert dialog.
-                    Navigator.pop(context);
+                    Get.back();
                   },
                 ),
               ),
@@ -1123,7 +1125,7 @@ class _CostSplitViewPage extends State<CostSplitView> {
                     ),
                     child: const Text('Cancel'),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Get.back();
                     }),
               ),
             ],
