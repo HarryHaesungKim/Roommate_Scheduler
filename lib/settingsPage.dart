@@ -46,13 +46,104 @@ class _settingsProfileState extends State<settingsProfile> {
           themeColor = snapshot.data[1];
           return MaterialApp(
 
-              theme: showOption(themeBrightness),
-              home: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: setAppBarColor(themeColor, themeBrightness),
-                  leading: IconButton(
-                    icon: Icon(Icons.arrow_back, color: setBackGroundBarColor(themeBrightness)),
-                    onPressed: () => Navigator.of(context).pop(),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 1.0,
+                  color: Colors.grey.shade300,
+                ),
+
+                //Mangage Group member
+                ListTile(
+                  leading: Icon(Icons.group_add,color: setAppBarColor(themeColor, themeBrightness),),
+                  title: const Text("Mangage Group Member"),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
+                 //Undo
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const mangageGroupMember()),
+                    );
+                  },
+                ),
+                //Change theme
+                ListTile(
+                  leading: Icon(Icons.color_lens,color:setAppBarColor(themeColor, themeBrightness),),
+                  title: const Text("Change Theme"),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
+                  //Undo
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const changeTheme()),
+                    );
+                  },
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 1.0,
+                  color: Colors.grey.shade300,
+                ),
+
+                //Help menu
+                // ListTile(
+                //   leading: Icon(Icons.password_outlined,color: setAppBarColor(themeColor, themeBrightness),),
+                //   title: Text("Help Menu"),
+                //   trailing: Icon(Icons.keyboard_arrow_right),
+                //   onTap: (){
+                //     Navigator.push(context,
+                //         MaterialPageRoute(builder: (context) {
+                //           return HelpMenuPage();
+                //         }));
+                //   },
+                // ),
+
+                // Container(
+                //   width: double.infinity,
+                //   height: 1.0,
+                //   color: Colors.grey.shade300,
+                // ),
+
+                //Help menu
+                ListTile(
+                  leading: Icon(Icons.map,color: setAppBarColor(themeColor, themeBrightness),),
+                  title: const Text("Location"),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
+                  onTap: (){
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          return const CurrentLocation();
+                        }));
+                  },
+
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(
+                Icons.volume_up,
+                color: setAppBarColor(themeColor, themeBrightness),
+              ),
+              const SizedBox(width: 10),
+              const Text("Notifications",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
+            ],
+
+          ),
+          Card(
+            margin: const EdgeInsets.fromLTRB(25, 12, 25, 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Column(
+                children:  <Widget>[
+                  SwitchListTile(
+                    activeColor: setAppBarColor(themeColor, themeBrightness),
+                    value: true,
+                    title: const Text("Receive Chat Messages",),
+                    onChanged: (val){
+
+                    },
                   ),
                   title: const Text("Settings"),
                 ),

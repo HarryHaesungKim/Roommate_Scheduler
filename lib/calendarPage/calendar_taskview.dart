@@ -36,10 +36,11 @@ class calendar_taskView extends StatelessWidget {
                       size: 30,
                     ),
                     SizedBox(
-                      width: _mediaQueryData.size.width/30,
+                      width: _mediaQueryData.size.width/100,
                     ),
-                    Text(
-                      task.title!,
+                    Flexible(
+                      child: Text(
+                      "Task: ${task.title!}",
                       style: GoogleFonts.lato(
                         textStyle: const TextStyle(
                             fontSize: 20,
@@ -47,17 +48,28 @@ class calendar_taskView extends StatelessWidget {
                             color: Colors.white),
                       ),
                     ),
+                    ),
+
                   ],
 
                 ),
-
                 const SizedBox(
                   height: 10,
                 ),
                 Text(
+                  "${task.startTime} - ${task.endTime}",
+                  style: GoogleFonts.lato(
+                    textStyle:
+                    TextStyle(fontSize: 13, color: Colors.grey[100]),
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
                   task.note!,
                   style: GoogleFonts.lato(
-                    textStyle: TextStyle(fontSize: 15, color: Colors.grey[100]),
+                    textStyle: TextStyle(fontSize: 15, color: Colors.white),
                   ),
                 ),
               ],

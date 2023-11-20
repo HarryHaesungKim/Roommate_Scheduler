@@ -36,16 +36,18 @@ class eventView extends StatelessWidget {
                       size: 30,
                     ),
                      SizedBox(
-                      width: _mediaQueryData.size.width/30,
+                      width: _mediaQueryData.size.width/50,
                     ),
-                    Text(
-                      event.title!,
+                    Flexible(
+                      child: Text(
+                      "Event: ${event.title!}",
                       style: GoogleFonts.lato(
                         textStyle: const TextStyle(
-                            fontSize: 25,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       ),
+                    ),
                     ),
             ],
 
