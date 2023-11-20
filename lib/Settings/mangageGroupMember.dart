@@ -60,20 +60,7 @@ class _mangageGroupMember extends State<mangageGroupMember> {
 
   }
 
-  void getUserData() async {
-    String? user = FirebaseAuth.instance.currentUser?.uid;
-    if (user != null) {
-      DocumentSnapshot db =
-          await FirebaseFirestore.instance.collection("Users").doc(user).get();
-      Map<String, dynamic> list = db.data() as Map<String, dynamic>;
-      if (mounted) {
-        setState(() {
-          themeBrightness = list['themeBrightness'];
-          themeColor = list['themeColor'];
-        });
-      }
-    }
-  }
+
 
   void setDoesNewGroupExist(String groupID) async {
     doesNewGroupExist = await _groupController.doesGroupExist(groupID);

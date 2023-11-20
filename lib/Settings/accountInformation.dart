@@ -19,7 +19,9 @@ class EditProfile extends StatefulWidget {
 class _EditProfilePage extends State<EditProfile> {
   final _uID = FirebaseAuth.instance.currentUser?.uid;
   File? _image;
-
+  bool isClicked = false;
+late String name;
+late String password;
   final picker = ImagePicker();
 
   Future<String> getImageURL() async {
@@ -54,7 +56,9 @@ class _EditProfilePage extends State<EditProfile> {
     setState(() {
       if (file != null) {
         _image = File(file.path);
-
+        isClicked = true;
+        name = _userNameController.text.trim();
+        password = _passWordController.text.trim();
       }
     });
   }
@@ -80,6 +84,9 @@ class _EditProfilePage extends State<EditProfile> {
               // close the options modal
               Navigator.of(context).pop();
               // get image from gallery
+              isClicked = true;
+              name = _userNameController.text.trim();
+              password = _passWordController.text.trim();
               getImageFromGallery();
             },
           ),
@@ -89,6 +96,9 @@ class _EditProfilePage extends State<EditProfile> {
               // close the options modal
               Navigator.of(context).pop();
               // get image from camera
+              isClicked = true;
+              name = _userNameController.text.trim();
+              password = _passWordController.text.trim();
               getImageFromCamera();
             },
           ),
@@ -97,10 +107,10 @@ class _EditProfilePage extends State<EditProfile> {
     );
   }
 
-  Future updateUserData(String balance, String income, String expense, String imageURL, String themeBrightness, String themeColor, List<String> chatRooms, GeoPoint? location, String groupID, ) async {
+  Future updateUserData(String email,String balance, String income, String expense, String imageURL, String themeBrightness, String themeColor, GeoPoint? location, String groupID, ) async {
     imageURL = await getImageURL();
     final user = UserData(
-      email: _emailController.text.trim(),
+      email: email,
       password: _passWordController.text.trim(),
       username: _userNameController.text.trim(),
       balance: balance,
@@ -119,15 +129,13 @@ class _EditProfilePage extends State<EditProfile> {
   }
 
   final TextEditingController _passWordController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
 
-  Future <bool> updateEmailAndPassWord(String email, String newEmail, String password, String newPassWord) async {
+  Future <bool> updateEmailAndPassWord(String email, String password, String newPassWord) async {
     bool success= false;
     var user = FirebaseAuth.instance.currentUser!;
     final cred = EmailAuthProvider.credential(email: email, password: password);
     await user.reauthenticateWithCredential(cred).then((value) async{
-      user.updateEmail(newEmail);
       user.updatePassword(newPassWord);
       success = true;
     });
@@ -162,6 +170,15 @@ class _EditProfilePage extends State<EditProfile> {
               else if (snapshot.hasData) {
                 // Setting the task data.
                 final UserData = snapshot.data!;
+                if (isClicked == false){
+                  _userNameController.text =  UserData['UserName'];
+                  _passWordController.text = UserData['Password'];
+                }else{
+                  _userNameController.text =  name;
+                  _passWordController.text = password;
+                }
+
+                //controller
                 return MaterialApp(
                     theme: showOption(UserData['themeBrightness']),
                     home: Scaffold(
@@ -251,13 +268,6 @@ class _EditProfilePage extends State<EditProfile> {
                                     controller: _userNameController,
                                     decoration: InputDecoration(
                                       label:const Text("Full Name"),
-                                      hintText: UserData['UserName'],
-                                      hintStyle: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'OpenSans',
-                                        color: Colors.black,
-                                      ),
                                       floatingLabelBehavior: FloatingLabelBehavior.always,
                                       prefixIcon: const Icon(Icons.people),
 
@@ -265,33 +275,9 @@ class _EditProfilePage extends State<EditProfile> {
                                   ),
                                   const SizedBox(height: 20,),
                                   TextFormField(
-                                    controller: _emailController,
-                                    decoration: InputDecoration(
-                                        hintText: UserData['Email'],
-                                        hintStyle: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'OpenSans',
-                                          color: Colors.black,
-                                        ),
-                                        label:const Text("Email"),
-                                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                                        prefixIcon: const Icon(Icons.email,color: Colors.black)
-
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20,),
-                                  TextFormField(
                                     controller: _passWordController,
                                     decoration: InputDecoration(
-                                      hintText: UserData['Password'],
                                       label:const Text("Password"),
-                                      hintStyle: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'OpenSans',
-                                        color: Colors.black,
-                                      ),
                                       floatingLabelBehavior: FloatingLabelBehavior.always,
                                       prefixIcon: const Icon(Icons.password,color: Colors.black),
 
@@ -302,8 +288,7 @@ class _EditProfilePage extends State<EditProfile> {
                                     width: double.infinity,
                                     child: ElevatedButton(
                                       onPressed: ()  {
-                                        if (_passWordController.text.isEmpty || _image==null||
-                                            _userNameController.text.isEmpty) {
+                                        if (_passWordController.text.isEmpty || _userNameController.text.isEmpty) {
                                           Get.snackbar(
                                             "Required",
                                             "All fields are required.",
@@ -322,15 +307,15 @@ class _EditProfilePage extends State<EditProfile> {
                                               });
                                         }
                                         else{
-                                          updateEmailAndPassWord(UserData['Email'].toString(),_emailController.text.trim(),UserData['Password'].toString(),_passWordController.text.trim());
-                                          updateUserData(UserData['Balance'].toString(),UserData['Income'].toString(),UserData['Expense'].toString(),UserData['imageURL'].toString(),UserData['themeBrightness'].toString(),UserData['themeColor'].toString(), UserData["chatRooms"].cast<String>(), UserData['location'],UserData['groupID'].toString());
+                                          updateEmailAndPassWord(UserData['Email'].toString(),UserData['Password'].toString(),_passWordController.text.trim());
+                                          updateUserData(UserData['Email'].toString(),UserData['Balance'].toString(),UserData['Income'].toString(),UserData['Expense'].toString(),UserData['imageURL'].toString(),UserData['themeBrightness'].toString(),UserData['themeColor'].toString(),  UserData['location'],UserData['groupID'].toString());
                                         }
                                       },
                                       style:ElevatedButton.styleFrom(
                                           backgroundColor: setAppBarColor(UserData['themeColor'], UserData['themeBrightness']),side: BorderSide.none, shape: const StadiumBorder()
                                       ) ,
                                       child: const Text(
-                                        "Edit Profile",style: TextStyle(color:Colors.white),
+                                        "Save",style: TextStyle(color:Colors.white),
                                       ),
                                     ),
                                   )
