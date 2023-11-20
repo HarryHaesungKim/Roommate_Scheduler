@@ -47,7 +47,6 @@ class taskController extends GetxController {
     getTasks(groupID);
   }
   void setVoteRecord(String groupID,TaskObject task, int voteRecord) async {
-
     await _db.setVoteRecord(groupID, task,voteRecord);
     getTasks(groupID);
   }
