@@ -49,10 +49,16 @@ class FirebaseApi{
 
     // attach event listeners for when a notification opens the app.
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
+
+  /// function is used to handle background messages?
+  Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    print("Handling a background message");
   }
 
   /// function to handle received messages
-  void handleMessage(RemoteMessage? message) {
+  void handleMessage(RemoteMessage? message) async {
 
     // If the message is null, do nothing.
     if (message == null) return;

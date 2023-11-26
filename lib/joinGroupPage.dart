@@ -71,6 +71,7 @@ class _joinGroupPage extends State<joinGroupPage> {
                 height: 100,
                 width: 100,
               ),
+              const SizedBox(height: 10),
               const Text(
                 'Join/Create Group',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),

@@ -58,9 +58,10 @@ class _LoginPageState extends State<LoginPage> {
                   //   widget.icon
                   //   size: 100,
                   // ),
+                  const SizedBox(height: 15),
                   const Text(
-                    'Roommates',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    'Roommate Scheduler',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                   const SizedBox(height: 15),
                   //Email
