@@ -1,4 +1,4 @@
-# The Roommates
+# Roommate Scheduler
 
 ## How to build and run on Android Studio:
 -Open device manager and "Create Device" within Android Studio project window.
